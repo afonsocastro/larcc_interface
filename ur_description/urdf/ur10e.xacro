@@ -1,0 +1,47 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://wiki.ros.org/xacro" name="ur10e_robot">
+  <!--
+    This is a convenience top-level xacro which loads the macro for the UR10e
+    which defines the default values for the various "parameters files"
+    parameters for a UR10e.
+
+    This file is only useful when loading a stand-alone, completely isolated
+    robot with only default values for all parameters such as the kinematics,
+    visual and physical parameters and joint limits.
+
+    This file is not intended to be integrated into a larger scene or other
+    composite xacro.
+
+    Instead, xacro:include 'inc/ur10e_macro.xacro' and override the defaults
+    for the arguments to that macro.
+
+    Refer to 'inc/ur_macro.xacro' for more information.
+  -->
+
+<!--  <link name="base_link"/>-->
+  <xacro:include filename="$(find ur_description)/urdf/inc/ur10e_macro.xacro"/>
+  <xacro:ur10e_robot prefix="" />
+
+<!--  Sensor-->
+  <xacro:include filename="$(find realsense2_description)/urdf/test_d435i_camera.urdf.xacro" />
+  <xacro:realsense2_camera parent="base_link" use_nominal_extrinsics="true">
+<!--      <origin xyz="0.758 -0.715 0.491 " rpy="3.067 2.351 -1.724"/>-->
+<!--    2.402 = -0.74 + pi &ndash;&gt; para fazer a calib, meter a garra (tool0_controller) e gravar tudo igual exceto esta rotacao-->
+<!--      <origin xyz="0.758 -0.715 0.491 " rpy="3.131 2.402 -1.711"/>-->
+      <origin xyz="0.7 -0.833 0.424 " rpy="3.073 2.627 -1.650"/>
+  </xacro:realsense2_camera>
+
+<!--  <xacro:realsense2_camera use_nominal_extrinsics="true">-->
+<!--  </xacro:realsense2_camera>-->
+
+  <!-- Gripper -->
+<!--  <xacro:include filename="$(find robotiq_2f_140_gripper_visualization)/urdf/robotiq_arg2f_140.xacro" />-->
+<!--  <xacro:robotiq_arg2f_140_model parent="base_link">-->
+<!--      <origin xyz="1.7 -0.833 0.424 " rpy="3.073 2.627 -1.650"/>-->
+<!--  </xacro:robotiq_arg2f_140_model>-->
+
+
+<!--&lt;!&ndash;   Gripper &ndash;&gt;-->
+<!--  <xacro:include filename="$(find robotiq_2f_140_gripper_visualization)/urdf/robotiq_arg2f_140.xacro" />-->
+<!--  <xacro:robotiq_arg2f_140_model/>-->
+</robot>

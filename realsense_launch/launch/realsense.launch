@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+
+<launch>
+    <arg name="align_depth" default="true"/>
+    <arg name="enable_infra" default="true"/>
+    <arg name="enable_infra1" default="true"/>
+    <arg name="enable_infra2" default="true"/>
+
+
+<!--     <include file="$(find realsense2_camera)/launch/rs_aligned_depth.launch">-->
+
+    <include file="$(find ur_robot_driver)/launch/ur10e_bringup.launch">
+        <arg name="robot_ip" value="192.168.56.2"/>
+    </include>
+
+    <include file="$(find ur10e_moveit_config)/launch/ur10e_moveit_planning_execution.launch">
+    </include>
+
+    <node pkg="object_picking" type="client.py" name="client"/>
+    <node pkg="object_picking" type="robot_controller.py" name="robot_controller"/>
+
+<!--    <include file="$(find realsense2_camera)/launch/rs_camera.launch">-->
+<!--        <arg name="align_depth" value="$(arg align_depth)"/>-->
+<!--        <arg name="enable_infra" value="$(arg enable_infra)"/>-->
+<!--        <arg name="enable_infra1" value="$(arg enable_infra1)"/>-->
+<!--        <arg name="enable_infra2" value="$(arg enable_infra2)"/>-->
+<!--    </include>-->
+
+<!--    <param name="robot_description" command="$(find xacro)/xacro &#45;&#45;inorder '$(find realsense2_description)/urdf/test_d435i_camera.urdf.xacro' use_nominal_extrinsics:=true" />-->
+<!--    <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" />-->
+    <node type="rviz" name="rviz" pkg="rviz" args="-d $(find realsense_launch)/rviz/rs.rviz" />
+
+</launch>

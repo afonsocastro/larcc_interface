@@ -1,0 +1,15 @@
+<launch>
+  <arg name="sim" default="false" />
+  <arg name="debug" default="false" />
+  <arg name="load_robot_description" default="true" />
+
+  <!-- Remap follow_joint_trajectory -->
+  <!--  <remap if="$(arg sim)" from="/scaled_pos_joint_traj_controller/follow_joint_trajectory" to="/arm_controller/follow_joint_trajectory"/>-->
+  <remap if="$(arg sim)" from="/scaled_pos_joint_traj_controller/follow_joint_trajectory" to="/pos_joint_traj_controller/follow_joint_trajectory"/>
+
+  <!-- Launch moveit -->
+  <include file="$(find ur10e_moveit_config)/launch/larcc_move_group.launch">
+    <arg name="debug" default="$(arg debug)" />
+    <arg name="load_robot_description" value="$(arg load_robot_description)" />
+  </include>
+</launch>

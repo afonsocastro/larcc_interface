@@ -1,0 +1,8 @@
+prefix=/home/afonso/catkin_ws/install
+
+Name: realsense_launch
+Description: Description of realsense_launch
+Version: 0.0.0
+Cflags: 
+Libs: -L${prefix}/lib 
+Requires: 
