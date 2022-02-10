@@ -20,20 +20,37 @@ This repository was built to work with:
 2. [On computer](#on-computer)
 
 ### On UR10e controller
-For working on a real robot you need to install the externalcontrol-1.0.5.urcap (**insert link**) which can be found inside the resources folder of this repository.
+For working on a real robot you need to install the [externalcontrol-1.0.5.urcap](https://github.com/afonsocastro/larcc_interface/blob/master/resources/externalcontrol-1.0.5.urcap) which can be found inside the resources folder of this repository.
 
 Using a USB pen drive, follow:
 1. Format the flash drive
 2. Download and save the externalcontrol-1.0.5.urcap on the USB pen drive
 3. Insert the USB drive on UR10e controller (the controller has two USB ports)
 
-![controller](docs/controller.png)
-![controller2]<img src="https://github.com/afonsocastro/larcc_interface/docs/controller.png" width="100" height="100">
 ![controller-ports](docs/controller_ports.png)
 
+4. Turn on the Teach Pendant
+ 
+![tp1](docs/es_01_welcome.png)
 
+5. Click on *Menu* (top right corner) + *System* + *URCaps* + Select *External Control* and press "+"
 
-4.
+![tp2](docs/es_05_urcaps_installed.png)
+
+6. Configure the remote host's IP to ```192.168.56.1```
+
+![tp3](docs/es_07_installation_excontrol.png)
+
+7. Click on *Menu* (top right corner) + *System* + *Network*
+8. Configure:
+   1. Network method : Static Address
+   2. IP address: ```192.168.56.2```
+   3. Subnet mask: ```255.255.255.0
+   4. Default gateway: ```192.168.56.2```
+
+9. Click on *Apply*
+
+![tp4](docs/tp1.jpg)
 
 
 ### On computer
