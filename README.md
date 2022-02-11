@@ -45,7 +45,7 @@ Using a USB pen drive, follow:
 8. Configure:
    1. Network method : Static Address
    2. IP address: ```192.168.56.2```
-   3. Subnet mask: ```255.255.255.0
+   3. Subnet mask: ```255.255.255.0```
    4. Default gateway: ```192.168.56.2```
 
 9. Click on *Apply*
@@ -80,11 +80,17 @@ git clone https://github.com/afonsocastro/larcc_interface.git
 git clone https://github.com/ros-industrial/ur_msgs.git
 ```
 
-Finally, lets compile our catkin workspace:
+Now compile your catkin workspace:
 ```
 cd ~/catkin_ws
 catkin_make
 ```
+
+Finally, to establish the communication between the robot and the computer, it is required to **connect an Ethernet cable from the UR10e controller to the computer**. 
+After you connect the cable, you need to configure the IPv4 adress to...
+[Insert here the screenshot of the Wired connection]
+
+[//]: # (todo: insert the image of the wired connection and end the phrase)
 
 ## Controlling UR10e through MoveIt with RViz
 
@@ -96,6 +102,9 @@ roslaunch ur10e_moveit_config ur10e_moveit_planning_execution.launch
 roslaunch ur10e_moveit_config moveit_rviz.launch config:=true
 
 ## Real-time UR10e following a tracked object
+
+[//]: # (todo: create this section)
+(Under construction)
 
 
 
