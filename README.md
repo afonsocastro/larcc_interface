@@ -93,13 +93,25 @@ After you connect the cable, you need to configure the IPv4 adress to...
 [//]: # (todo: insert the image of the wired connection and end the phrase)
 
 ## Controlling UR10e through MoveIt with RViz
+Just need to follow these next 4 steps to remotely control the real UR10e robot, connected via the Ethernet cable to your computer.
 
-roslaunch ur_robot_driver ur10e_bringup.launch robot_ip:=192.168.56.2
+1. ```roslaunch ur_robot_driver ur10e_bringup.launch robot_ip:=192.168.56.2 ```
+2. Run the external control program on the teach pendant:
 
-*connect the cable and open the external control program on the teach pendant*
+   Click on *Program* + *URCaps* + *External Control* + Press "play"
+![tp5](docs/tp2.jpg)
 
-roslaunch ur10e_moveit_config ur10e_moveit_planning_execution.launch
-roslaunch ur10e_moveit_config moveit_rviz.launch config:=true
+3. ``` roslaunch ur10e_moveit_config ur10e_moveit_planning_execution.launch```
+4. ``` roslaunch ur10e_moveit_config moveit_rviz.launch config:=true```
+
+Before executing the step 4, you should see a green message on the step 3 terminal window saying "*You can start planning now!*"
+[Verify this]
+
+[//]: # (todo: verify this)
+
+Now you can simply move the manipulator marker on RViz and then ask the robot to move to that goal. MoveIt will plan the trajetory.
+[Insert image]
+
 
 ## Real-time UR10e following a tracked object
 
