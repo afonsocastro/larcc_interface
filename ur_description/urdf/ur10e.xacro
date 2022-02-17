@@ -26,15 +26,10 @@
   <xacro:include filename="$(find realsense2_description)/urdf/test_d435i_camera.urdf.xacro" />
 
   <xacro:realsense2_camera parent="base_link" use_nominal_extrinsics="true">
-
 <!--    For this manual calibration, drag the gripper (tool0_controller) to the camera mass
         center and record here the tf values (/base_link to /tool0_controller).-->
-
 <!--    The second rotation value (P) you should add pi constant: 2.627 = −0,515 + pi -->
-<!--      <origin xyz="0.7 -0.833 0.424 " rpy="3.073 2.627 -1.650"/>-->
-
-      <origin xyz="0.857 -0.075 0.378 " rpy="-3.075 3,330 -2.741"/>
-
+      <origin xyz="0.7 -0.833 0.424 " rpy="3.073 2.627 -1.650"/>
   </xacro:realsense2_camera>
 
 <!--  <xacro:realsense2_camera use_nominal_extrinsics="true">-->
