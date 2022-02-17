@@ -91,11 +91,11 @@ cd ~/catkin_ws
 catkin_make
 ```
 
-Finally, to establish the communication between the robot and the computer, it is required to **connect an Ethernet cable from the UR10e controller to the computer**. 
-After you connect the cable, you need to configure the IPv4 adress to...
-[Insert here the screenshot of the Wired connection]
 
-[//]: # (todo: insert the image of the wired connection and end the phrase)
+Finally, to establish the communication between the robot and the computer, it is required to **connect an Ethernet cable from the UR10e controller to the computer**.
+After you connect the cable, you need to configure the IPv4 like this:
+
+![tp6](docs/ip.jpeg)
 
 ## Controlling UR10e through MoveIt with RViz
 Just need to follow these next 4 steps to remotely control the real UR10e robot, connected via the Ethernet cable to your computer.
@@ -104,18 +104,24 @@ Just need to follow these next 4 steps to remotely control the real UR10e robot,
 2. Run the external control program on the teach pendant:
 
    Click on *Program* + *URCaps* + *External Control* + Press "play"
-![tp5](docs/tp2.jpg)
+
+![tp7](docs/tp2.jpg)
+
+At this point, you should get the message "_Robot connected to reverse interface. Ready to receive control commands._" printed out on your terminal window.
 
 3. ``` roslaunch ur10e_moveit_config ur10e_moveit_planning_execution.launch```
+
+At this point, you should get the green message "_You can start planning now!_" printed out on your terminal window, just like this:
+
+![tp8](docs/you_can_start_planning.png)
+
 4. ``` roslaunch ur10e_moveit_config moveit_rviz.launch config:=true```
 
-Before executing the step 4, you should see a green message on the step 3 terminal window saying "*You can start planning now!*"
-[Verify this]
 
-[//]: # (todo: verify this)
+Now you can control the real robot, by simply moving the manipulator marker on RViz and then asking the robot to move to that goal (using the Motion Planning Panel).
+MoveIt will plan the trajetory.
 
-Now you can simply move the manipulator marker on RViz and then ask the robot to move to that goal. MoveIt will plan the trajetory.
-[Insert image]
+![tp9](docs/UR10e_moving_moveit.mp4)
 
 
 ## Real-time UR10e following a tracked object
