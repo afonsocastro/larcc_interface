@@ -52,6 +52,11 @@ Using a USB pen drive, follow:
 
 ![tp4](docs/tp1.jpg)
 
+10. Disable EtherNet/IP fieldbus:
+
+Installation > Fieldbus > EtherNet/IP > Disable
+
+![tp5](docs/tp_ethernet_fieldbus.png)
 
 ### On computer
 First, it is required to have MoveIt installed in your system:
