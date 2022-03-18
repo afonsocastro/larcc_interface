@@ -1,5 +1,3 @@
-#! /usr/bin/python3
-
 # Python 2/3 compatibility imports
 from __future__ import print_function
 from six.moves import input
@@ -11,6 +9,7 @@ import rospy
 import moveit_commander
 import moveit_msgs.msg
 import geometry_msgs.msg
+from moveit_commander.conversions import pose_to_list
 
 try:
     from math import pi, tau, dist, fabs, cos
@@ -21,12 +20,6 @@ except:  # For Python 2 compatibility
 
     def dist(p, q):
         return sqrt(sum((p_i - q_i) ** 2.0 for p_i, q_i in zip(p, q)))
-
-
-from std_msgs.msg import String
-from moveit_commander.conversions import pose_to_list
-
-## END_SUB_TUTORIAL
 
 
 def all_close(goal, actual, tolerance):
@@ -59,17 +52,19 @@ def all_close(goal, actual, tolerance):
     return True
 
 
-class MoveGroupPythonInterfaceTutorial(object):
-    """MoveGroupPythonInterfaceTutorial"""
+class MoveGroupPythonInterface(object):
+    """MoveGroupPythonInterface"""
 
     def __init__(self):
-        super(MoveGroupPythonInterfaceTutorial, self).__init__()
+        super(MoveGroupPythonInterface, self).__init__()
 
         ## BEGIN_SUB_TUTORIAL setup
         ##
         ## First initialize `moveit_commander`_ and a `rospy`_ node:
         moveit_commander.roscpp_initialize(sys.argv)
-        rospy.init_node("move_group_python_interface_tutorial", anonymous=True)
+
+
+        # rospy.init_node("move_group_python_interface", anonymous=True)
 
         ## Instantiate a `RobotCommander`_ object. Provides information such as the robot's
         ## kinematic model and the robot's current joint states
@@ -91,8 +86,6 @@ class MoveGroupPythonInterfaceTutorial(object):
             moveit_msgs.msg.DisplayTrajectory,
             queue_size=20,
         )
-
-        pub = rospy.Publisher("request_gripper", std_msgs.msg.String, queue_size=20)
 
         ## END_SUB_TUTORIAL
 
@@ -125,7 +118,6 @@ class MoveGroupPythonInterfaceTutorial(object):
         self.scene = scene
         self.move_group = move_group
         self.display_trajectory_publisher = display_trajectory_publisher
-        self.pub = pub
         self.planning_frame = planning_frame
         self.eef_link = eef_link
         self.group_names = group_names
@@ -239,47 +231,3 @@ class MoveGroupPythonInterfaceTutorial(object):
         display_trajectory_publisher.publish(display_trajectory)
 
         ## END_SUB_TUTORIAL
-
-    def pub_method(self, message):
-        pub = self.pub
-        # Publish
-        pub.publish(message)
-
-
-def main():
-    try:
-        print("")
-        print("----------------------------------------------------------")
-        print("Welcome to the MoveIt MoveGroup Python Interface Tutorial")
-        print("----------------------------------------------------------")
-        print("Press Ctrl-D to exit at any time")
-        print("")
-        # input(
-        #     "============ Press `Enter` to begin the tutorial by setting up the moveit_commander ..."
-        # )
-        tutorial = MoveGroupPythonInterfaceTutorial()
-
-        # # Sleep so that we give other threads time on the processor
-        # rospy.sleep(0.1)
-        # seconds = rospy.get_time()
-
-        # input(
-        #     "============ Press `Enter` to execute a movement using a joint state goal ..."
-        # )
-        # tutorial.go_to_joint_state()
-
-        input("============ Press `Enter` to execute a movement using a pose goal ...")
-        while 1:
-            tutorial.go_to_pose_goal(1, 1, 1.72)
-            tutorial.go_to_pose_goal(-0.28, 1, 1)
-
-        print("============ Python tutorial demo complete!")
-
-    except rospy.ROSInterruptException:
-        return
-    except KeyboardInterrupt:
-        return
-
-
-if __name__ == "__main__":
-    main()

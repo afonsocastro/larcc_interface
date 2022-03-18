@@ -4,8 +4,17 @@ import numpy as np
 from move_group_python_interface_tutorial import *
 import rospy
 import time
+from std_msgs.msg import String
 import tf
 from transformation_t import *
+
+
+import time
+from RobotiqHand import RobotiqHand
+import keyboard  # using module keyboard
+
+HOST = "192.168.56.2"
+PORT = 54321
 
 
 def move_robot(tutorial, centroid_coord, is_far):
@@ -30,6 +39,8 @@ def main():
 
     # diagonal_size = 1468.60478
     # step = 700
+
+
     # --------------------------------------------------------------------
     # -------------------------initialization-----------------------------
     # --------------------------------------------------------------------
@@ -37,6 +48,9 @@ def main():
     move_group = tutorial.move_group
     # move_robot_initial_position(tutorial)
     listener = tf.TransformListener()
+
+    # pub = rospy.Publisher('request_gripper', String, queue_size=10)
+
     br = tf.TransformBroadcaster()
     wood_block_T_tool0_controller = TransformationT("wood_block", "tool0_controller")
     # fixed_trans = [0.03, -0.02, 0.2]
@@ -59,9 +73,11 @@ def main():
 
     # print("\nwood_block_T_tool0_controller:\n")
     # print(wood_block_T_tool0_controller)
-
+    start_time = time.time()
     rate = rospy.Rate(10.0)
     while not rospy.is_shutdown():
+        # message1 = "just to see"
+        # pub.publish(message1)
 
         # input("Press Enter to continue...")
         time.sleep(0.5)
@@ -110,6 +126,16 @@ def main():
         # current_pose = move_group.get_current_pose().pose
         # print(current_pose)
         tutorial.go_to_pose_goal(new2_trans[0], new2_trans[1], new2_trans[2], new2_quat[0], new2_quat[1], new2_quat[2], new2_quat[3])
+
+        now_time = time.time()
+
+        time_elapsed = (now_time - start_time)
+
+        if time_elapsed > 30:
+            message = "30 seconds time limit"
+            tutorial.pub_method(message)
+            break
+
         rate.sleep()
 
 
