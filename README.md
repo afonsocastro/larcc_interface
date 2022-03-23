@@ -8,6 +8,7 @@
 3. [Controlling UR10e through MoveIt with RViz](#controlling-ur10e-through-moveit-with-rviz)
 4. [Real-time UR10e following a tracked object](#real-time-ur10e-following-a-tracked-object)
 5. [Gripper Remote Control](#gripper-remote-control)
+6. [Real-time UR10e following & picking a tracked object](#real-time-ur10e-following-&-picking-a-tracked-object)
 
 
 ## Configuration
@@ -139,17 +140,30 @@ In order to control the ROBOTIQ 2F-140 gripper from an external computer, it is 
 4. **Install the [rs485-1.0.urcap](https://github.com/afonsocastro/larcc_interface/blob/master/resources/rs485-1.0.urcap)**. See the first 5 points of [on-ur10e-controller](#on-ur10e-controller).
 
 Finally, for testing:
+
 7. ```cd larcc_interface/gripper/src```
+
 8. ```python3 test_robotiq.py ```
 
-![gripper_open_close](docs/Gripper_Open_Close.gif)
+[//]: # (![gripper_open_close]&#40;docs/Gripper_Open_Close.gif&#41;)
 
-![test image size]<img src="https://github.com/afonsocastro/larcc_interface/blob/master/resources/rs485-1.0.urcap" width="200" height="300">
+[//]: # (![gripper_open_close])
+<p align="center">
+<img src="docs/Gripper_Open_Close.gif" width="25%" height="25%"/>
+</p>
 
 The Python module for controlling Robotiq 2F-140 from an external PC can be found [here](https://github.com/afonsocastro/larcc_interface/tree/master/gripper/src).
-On _test_robotiq.py_, you may have to change HOST ip address to UR10e.
- 
 
+On _test_robotiq.py_, you may have to change HOST ip address to UR10e.
+
+Notes:
+1. UR10e can either be on _Remote Control_ or in _Local Control_ mode (does not make any difference).
+2. It is not required to launch any robot driver. The TCP/IP connection is enough, since the RS485 communication will be directly established between the gripper and the external PC
+3. It is necessary rs485 URcap. That is daemon for communicate between UR10e's rs485 network and external pc via tcp (port 54321). RobotiqHand module use this mechanism. So you must activate rs485 URCap on UR10e. And, If you activate Robotiq_Gripper URCap on UR10e, that URCap always use inner rs485 network without exclusive. This means external rs485 communication make conflict communication contents. So if you want to control 2f-140 via rs485 from external pc, you must deactivate Robotiq_Gripper URCap on UR10e
+ 
+## Real-time UR10e following & picking a tracked object
+
+![arm_and_gripper_control](docs/Arm_and_Gripper_Control.gif)
 
 
 
