@@ -20,7 +20,7 @@ This repository was built to work with:
 1. [On UR10e controller](#on-ur10e-controller)
 2. [On computer](#on-computer)
 
-### On UR10e controller
+### On UR10e controller 
 For working on a real robot you need to install the [externalcontrol-1.0.5.urcap](https://github.com/afonsocastro/larcc_interface/blob/master/resources/externalcontrol-1.0.5.urcap) which can be found inside the resources folder of this repository.
 
 Using a USB pen drive, follow:
@@ -135,8 +135,23 @@ it was developed this demonstration of a real-time followed object that is being
 In order to control the ROBOTIQ 2F-140 gripper from an external computer, it is required to:
 1. Turn on the robot (UR10e)
 2. Connect the TCP/IP communication between the robot and the computer
-3. **Remove/Uninstall any robotiq urcap**: remove 'Robotiq_Grippers' on UR10e Teach Pendant (Click on Menu (top right corner) + System + URCaps)
-4. Install the
+3. **Remove/Uninstall any ROBOTIQ URCap**: remove 'Robotiq_Grippers' on UR10e Teach Pendant (Click on Menu (top right corner) + System + URCaps)
+4. **Install the [rs485-1.0.urcap](https://github.com/afonsocastro/larcc_interface/blob/master/resources/rs485-1.0.urcap)**. See the first 5 points of [on-ur10e-controller](#on-ur10e-controller).
+
+Finally, for testing:
+7. ```cd larcc_interface/gripper/src```
+8. ```python3 test_robotiq.py ```
+
+![gripper_open_close](docs/Gripper_Open_Close.gif)
+
+![test image size]<img src="https://github.com/afonsocastro/larcc_interface/blob/master/resources/rs485-1.0.urcap" width="200" height="300">
+
+The Python module for controlling Robotiq 2F-140 from an external PC can be found [here](https://github.com/afonsocastro/larcc_interface/tree/master/gripper/src).
+On _test_robotiq.py_, you may have to change HOST ip address to UR10e.
+ 
+
+
+
 
 
 
