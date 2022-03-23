@@ -7,6 +7,7 @@
 2. [Installation](#installation)
 3. [Controlling UR10e through MoveIt with RViz](#controlling-ur10e-through-moveit-with-rviz)
 4. [Real-time UR10e following a tracked object](#real-time-ur10e-following-a-tracked-object)
+5. [Gripper Remote Control](#gripper-remote-control)
 
 
 ## Configuration
@@ -125,10 +126,17 @@ MoveIt will plan the trajetory.
 
 
 ## Real-time UR10e following a tracked object
+By using ViSP RGB-D object tracking (see [this repository](https://github.com/afonsocastro/generic-rgbd)) and MoveIt to remotely control the UR10e,
+it was developed this demonstration of a real-time followed object that is being tracked with one RGB-D camera (Intel RealSense D435):
 
-[//]: # (todo: create this section)
-(Under construction)
+![rgbd_tracking_ur10e_following](docs/RGBD_tracking_n_control_demo.gif)
 
+## Gripper Remote Control
+In order to control the ROBOTIQ 2F-140 gripper from an external computer, it is required to:
+1. Turn on the robot (UR10e)
+2. Connect the TCP/IP communication between the robot and the computer
+3. **Remove/Uninstall any robotiq urcap**: remove 'Robotiq_Grippers' on UR10e Teach Pendant (Click on Menu (top right corner) + System + URCaps)
+4. Install the
 
 
 
