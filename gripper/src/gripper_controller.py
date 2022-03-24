@@ -41,13 +41,16 @@ def request_gripper_callback(data):
         status, position_mm, force_mA = move(position, speed, force)
 
         if status == 0:
-            result = 'no object detected: position = {:.1f}mm, force = {:.1f}mA '.format(position_mm, force_mA)
+            # result = 'no object detected: position = {:.1f}mm, force = {:.1f}mA '.format(position_mm, force_mA)
+            result = 'No object detected.'
             print(result)
         elif status == 1:
-            result = 'object detected closing: position = {:.1f}mm, force = {:.1f}mA '.format(position_mm, force_mA)
+            # result = 'object detected closing: position = {:.1f}mm, force = {:.1f}mA '.format(position_mm, force_mA)
+            result = 'Object detected.'
             print(result)
         elif status == 2:
-            result = 'object detected opening: position = {:.1f}mm, force = {:.1f}mA '.format(position_mm, force_mA)
+            # result = 'object detected opening: position = {:.1f}mm, force = {:.1f}mA '.format(position_mm, force_mA)
+            result = 'Object detected.'
             print(result)
         else:
             result = 'failed'

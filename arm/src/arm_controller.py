@@ -21,7 +21,7 @@ def request_arm_callback(data):
 
     if arm_request_dict['action'] == 'move_to_initial_pose':
         state = move_arm_to_initial_pose()
-        if state == 1:
+        if state == True:
             result = 'Arm is now at initial pose.'
             print(result)
             pub.publish(result)
@@ -31,7 +31,7 @@ def request_arm_callback(data):
         quat = arm_request_dict['quat']
 
         state = move_arm_to_pose_goal(trans, quat)
-        if state == 1:
+        if state == True:
             result = 'Arm is now at requested pose goal.'
             print(result)
             pub.publish(result)
@@ -40,25 +40,25 @@ def request_arm_callback(data):
         joints_state = arm_request_dict['joints']
 
         state = move_arm_to_joints_state(joints_state)
-        if state == 1:
+        if state == True:
             result = 'Arm is now at requested joints state goal.'
             print(result)
             pub.publish(result)
 
 
 def move_arm_to_initial_pose():
-    arm.go_to_joint_state(0.01725006103515625, -1.9415461025633753, 1.8129728476153772, -1.5927173099913539, -1.5878670851336878, 0.03150486946105957)
-    return 1
+    state = arm.go_to_joint_state(0.01725006103515625, -1.9415461025633753, 1.8129728476153772, -1.5927173099913539, -1.5878670851336878, 0.03150486946105957)
+    return state
 
 
 def move_arm_to_pose_goal(trans, quat):
-    arm.go_to_pose_goal(trans[0], trans[1], trans[2], quat[0], quat[1], quat[2], quat[3])
-    return 1
+    state = arm.go_to_pose_goal(trans[0], trans[1], trans[2], quat[0], quat[1], quat[2], quat[3])
+    return state
 
 
 def move_arm_to_joints_state(joints_state):
-    arm.go_to_joint_state(joints_state[0], joints_state[1], joints_state[2], joints_state[3], joints_state[4], joints_state[5])
-    return 1
+    state = arm.go_to_joint_state(joints_state[0], joints_state[1], joints_state[2], joints_state[3], joints_state[4], joints_state[5])
+    return state
 
 
 if __name__ == '__main__':

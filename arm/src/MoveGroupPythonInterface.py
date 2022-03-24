@@ -155,8 +155,8 @@ class MoveGroupPythonInterface(object):
         ## END_SUB_TUTORIAL
 
         # # For testing:
-        # current_joints = move_group.get_current_joint_values()
-        # return all_close(joint_goal, current_joints, 0.01)
+        current_joints = move_group.get_current_joint_values()
+        return all_close(joint_goal, current_joints, 0.01)
 
     def go_to_pose_goal(self, trans_x, trans_y, trans_z, q1, q2, q3, q4):
         # Copy class variables to local variables to make the web tutorials more clear.
@@ -203,8 +203,8 @@ class MoveGroupPythonInterface(object):
         # For testing:
         # Note that since this section of code will not be included in the tutorials
         # we use the class variable rather than the copied state variable
-        # current_pose = self.move_group.get_current_pose().pose
-        # return all_close(pose_goal, current_pose, 0.01)
+        current_pose = self.move_group.get_current_pose().pose
+        return all_close(pose_goal, current_pose, 0.01)
 
     def display_trajectory(self, plan):
         # Copy class variables to local variables to make the web tutorials more clear.
