@@ -12,9 +12,7 @@ arm = MoveGroupPythonInterface()
 
 
 def request_arm_callback(data):
-    pub = rospy.Publisher('arm_response', String, queue_size=10)
-
-    rospy.loginfo(rospy.get_caller_id() + "I heard %s", data.data)
+    # rospy.loginfo(rospy.get_caller_id() + "I heard %s", data.data)
     print("I heard %s", data.data)
 
     arm_request_dict = json.loads(data.data)
@@ -71,6 +69,7 @@ if __name__ == '__main__':
     # run simultaneously.
     rospy.init_node('arm_controller', anonymous=True)
 
+    pub = rospy.Publisher('arm_response', String, queue_size=10)
     rospy.Subscriber("arm_request", String, request_arm_callback)
 
     # spin() simply keeps python from exiting until this node is stopped

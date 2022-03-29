@@ -26,4 +26,4 @@ if __name__ == '__main__':
 
 
         rate.sleep()
-    rospy.spin()
+

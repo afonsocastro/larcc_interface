@@ -16,9 +16,7 @@ hand = RobotiqHand()
 
 
 def request_gripper_callback(data):
-    pub = rospy.Publisher('gripper_response', String, queue_size=10)
-
-    rospy.loginfo(rospy.get_caller_id() + "I heard %s", data.data)
+    # rospy.loginfo(rospy.get_caller_id() + "I heard %s", data.data)
     print("I heard %s", data.data)
 
     gripper_request_dict = json.loads(data.data)
@@ -96,7 +94,7 @@ if __name__ == '__main__':
     # name for our 'listener' node so that multiple listeners can
     # run simultaneously.
     rospy.init_node('gripper_controller', anonymous=True)
-
+    pub = rospy.Publisher('gripper_response', String, queue_size=10)
     rospy.Subscriber("gripper_request", String, request_gripper_callback)
 
     # spin() simply keeps python from exiting until this node is stopped

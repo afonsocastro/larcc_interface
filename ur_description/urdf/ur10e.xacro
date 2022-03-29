@@ -29,7 +29,10 @@
 <!--    For this manual calibration, drag the gripper (tool0_controller) to the camera mass
         center and record here the tf values (/base_link to /tool0_controller).-->
 <!--    The second rotation value (P) you should add pi constant: 2.627 = −0,515 + pi -->
-      <origin xyz="0.793 -0.804 0.425" rpy="-3.114 2.454 -1.582"/>
+<!--      <origin xyz="0.785 -0.839 0.426" rpy="-3.104 2.471 -1.613"/>-->
+      <origin xyz="0.800 -0.792 0.437" rpy="3.112 2.471 -1.558"/>
+
+
   </xacro:realsense2_camera>
 
 <!--  <xacro:realsense2_camera use_nominal_extrinsics="true">-->

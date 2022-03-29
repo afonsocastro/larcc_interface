@@ -16,7 +16,7 @@ arm_joints_goal = 0
 
 
 # GRIPPER global states------------------------
-gripper_open = 0
+gripper_closed = 0
 have_object = 0
 gripper_active = 0
 
@@ -24,17 +24,17 @@ gripper_active = 0
 def gripper_response_callback(data):
     global arm_initial_pose
     global have_object
-    global gripper_open
+    global gripper_closed
     global gripper_active
 
     if data.data == "No object detected.":
         have_object = 0
+        gripper_closed = not gripper_closed
     elif data.data == "Object detected.":
         have_object = 1
+        gripper_closed = not gripper_closed
     elif data.data == "Gripper is now active! Ready to receive commands.":
         gripper_active = 1
-
-    gripper_open = not gripper_open
 
 
 def arm_response_callback(data):
@@ -60,25 +60,20 @@ def arm_response_callback(data):
         arm_joints_goal = 1
 
 
-def wait_for_arm_move(state):
-    while state == 0:
-        time.sleep(0.1)
-
-
 def gripper_open_fast():
     # values = [position, speed, force]
     my_dict = {'action': 'move', 'values': [0, 255, 0]}
-    encoded_data_string = json.dumps(my_dict)
-    rospy.loginfo(encoded_data_string)
-    pub_gripper.publish(encoded_data_string)
+    __encoded_data_string = json.dumps(my_dict)
+    rospy.loginfo(__encoded_data_string)
+    pub_gripper.publish(__encoded_data_string)
 
 
 def gripper_close_fast():
     # values = [position, speed, force]
     my_dict = {'action': 'move', 'values': [255, 255, 0]}
-    encoded_data_string = json.dumps(my_dict)
-    rospy.loginfo(encoded_data_string)
-    pub_gripper.publish(encoded_data_string)
+    data_string = json.dumps(my_dict)
+    rospy.loginfo(data_string)
+    pub_gripper.publish(data_string)
 
 
 def move_arm_to_initial_pose():
@@ -113,47 +108,61 @@ def move_arm_to_joints_state(j1, j2, j3, j4, j5, j6):
 
 
 def pick_and_place(trans_goal, quat_goal):
-    global arm_pose_goal
+    # global arm_pose_goal
     # -----------------ARM MOVE DOWN TO WOOD-BLOCK------------------------------
     move_arm_to_pose_goal(trans_goal[0], trans_goal[1], trans_goal[2] - 0.1, quat_goal[0], quat_goal[1], quat_goal[2],
                           quat_goal[3])
     # ----------------------------------------------------------------------
 
-    sleep(1)
-
-    # while arm_pose_goal == 0:
-    #     sleep(0.1)
+    while arm_pose_goal == 0:
+        time.sleep(0.1)
 
     gripper_close_fast()
-    sleep(1)
+
+    while gripper_closed == 0:
+        time.sleep(0.1)
+
+    # sleep(1)
 
     # -----------------ARM MOVE UP------------------------------
     move_arm_to_pose_goal(trans_goal[0], trans_goal[1], trans_goal[2] + 0.2, quat_goal[0], quat_goal[1], quat_goal[2],
                           quat_goal[3])
     # ----------------------------------------------------------------------
 
-    sleep(1)
+    while arm_pose_goal == 0:
+        time.sleep(0.1)
+    # sleep(1)
 
     # -----------------ARM MOVE ABOVE THE FINAL BOX------------------------------
     move_arm_to_joints_state(0.33516550064086914, -1.163656548862793, 1.3741701284991663, -1.8040539226927699,
                              -1.5384181181537073, 0.3482170104980469)
     # ----------------------------------------------------------------------
 
-    sleep(2)
+    while arm_joints_goal == 0:
+        time.sleep(0.1)
+    # sleep(2)
 
     # -----------------ARM MOVE TO FINAL BOX (JUST DOWN)------------------------------
     move_arm_to_joints_state(0.34529924392700195, -1.0220564168742676, 1.5045183340655726, -2.004709859887594,
                              -1.5726912657367151, 0.3451671600341797)
     # ----------------------------------------------------------------------
 
-    sleep(3)
+    while arm_joints_goal == 0:
+        time.sleep(0.1)
+    # sleep(3)
     gripper_open_fast()
-    sleep(1)
+
+    while gripper_closed == 1:
+        time.sleep(0.1)
+    # sleep(1)
 
     # -----------------ARM MOVE ABOVE THE FINAL BOX------------------------------
     move_arm_to_joints_state(0.33516550064086914, -1.163656548862793, 1.3741701284991663, -1.8040539226927699,
                              -1.5384181181537073, 0.3482170104980469)
     # ----------------------------------------------------------------------
+
+    while arm_joints_goal == 0:
+        time.sleep(0.1)
 
 
 if __name__ == '__main__':
@@ -168,7 +177,11 @@ if __name__ == '__main__':
     rate = rospy.Rate(10.0)  # 10hz
 
     sleep(10)
+
     move_arm_to_initial_pose()
+
+    while arm_initial_pose == 0 or gripper_active == 0:
+        time.sleep(0.1)
 
     listener = tf.TransformListener()
 
@@ -193,13 +206,10 @@ if __name__ == '__main__':
 
     first_warning = 0
 
-    while arm_initial_pose == 0:
-        time.sleep(0.1)
-
     start_time = time.time()
+
     while not rospy.is_shutdown():
         sleep(0.5)
-
         try:
             listener.waitForTransform('/wood_block', '/base_link', rospy.Time(0), rospy.Duration(30.0))
             (trans, rot) = listener.lookupTransform('/wood_block', '/base_link', rospy.Time(0))
@@ -228,20 +238,35 @@ if __name__ == '__main__':
         encoded_data_string = json.dumps(arm_dict)
         pub_arm.publish(encoded_data_string)
         # ----------------------------------------------------------------------
-        #
+
+        while arm_pose_goal == 0:
+            time.sleep(0.1)
+
         now_time = time.time()
 
         time_elapsed = (now_time - start_time)
 
-        if time_elapsed > 20 and first_warning == 0:
+        if time_elapsed > 50 and first_warning == 0:
             first_warning = 1
-            gripper_close_fast()
-            gripper_open_fast()
 
-        if time_elapsed > 25 and first_warning == 1:
+            # ---------------CLOSING GRIPPER-------------
+            gripper_close_fast()
+            while gripper_closed == 0:
+                time.sleep(0.1)
+            # --------------------------------------------
+
+            # ---------------OPENING GRIPPER------------------
+            gripper_open_fast()
+            while gripper_closed == 1:
+                time.sleep(0.1)
+            # -------------------------------
+
+        if time_elapsed > 60 and first_warning == 1:
             first_warning = 0
             pick_and_place(goal_trans, goal_quat)
-            sleep(1)
+
+            # sleep(1)
+
             move_arm_to_initial_pose()
             while arm_initial_pose == 0:
                 time.sleep(0.1)
