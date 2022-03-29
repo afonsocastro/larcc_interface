@@ -8,7 +8,9 @@
     <include file="$(find ur10e_moveit_config)/launch/ur10e_moveit_planning_execution.launch">
     </include>
 
+    <node pkg="use_cases" type="test_sequence.py" name="test_sequence"/>
+
+
     <node pkg="gripper" type="gripper_controller.py" name="gripper_controller"/>
     <node pkg="arm" type="arm_controller.py" name="arm_controller"/>
-
 </launch>

@@ -16,7 +16,7 @@ arm_joints_goal = 0
 
 
 # GRIPPER global states------------------------
-gripper_open = 0
+gripper_closed = 0
 have_object = 0
 gripper_active = 0
 
@@ -24,15 +24,15 @@ gripper_active = 0
 def gripper_response_callback(data):
     global arm_initial_pose
     global have_object
-    global gripper_open
+    global gripper_closed
     global gripper_active
 
     if data.data == "No object detected.":
         have_object = 0
-        gripper_open = not gripper_open
+        gripper_closed = not gripper_closed
     elif data.data == "Object detected.":
         have_object = 1
-        gripper_open = not gripper_open
+        gripper_closed = not gripper_closed
     elif data.data == "Gripper is now active! Ready to receive commands.":
         gripper_active = 1
 
@@ -137,6 +137,13 @@ if __name__ == '__main__':
 
     print("Now the gripper is activated!")
 
+    gripper_close_fast()
+
+    while gripper_closed == 0:
+        time.sleep(0.1)
+
+    print("gripper is closed!")
+
     # -----------------ARM MOVE ABOVE THE FINAL BOX------------------------------
     # arm_joints_goal = 0
     move_arm_to_joints_state(0.33516550064086914, -1.163656548862793, 1.3741701284991663,
@@ -147,5 +154,7 @@ if __name__ == '__main__':
         time.sleep(0.1)
 
     print("Now I arrived!")
+
+
 
     rospy.spin()

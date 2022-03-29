@@ -16,14 +16,15 @@ if __name__ == '__main__':
     while not rospy.is_shutdown():
         sleep(0.5)
 
-        listener.waitForTransform('/wood_block', '/camera_color_optical_frame', rospy.Time(), rospy.Duration(4.0))
-        print("just passe the waitForTransform. Going now to lookupTransform")
+        listener.waitForTransform('/wood_block', '/camera_color_optical_frame', rospy.Time(), rospy.Duration(10.0))
+        print("just passed the waitForTransform. Going now to lookupTransform")
+
         try:
             (trans, rot) = listener.lookupTransform('/wood_block', '/camera_color_optical_frame', rospy.Time(0))
+            print("Yep, I have the TF.")
         except (tf.LookupException, tf.ConnectivityException, tf.ExtrapolationException):
             print("WAS NOT ABLE TO GET wood_block to base_link TF")
             continue
-
 
         rate.sleep()
 

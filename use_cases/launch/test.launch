@@ -2,7 +2,7 @@
 
 <launch>
     <node pkg="use_cases" type="client.py" name="client"/>
-    <node pkg="use_cases" type="test.py" name="test"/>
+<!--    <node pkg="use_cases" type="test.py" name="test"/>-->
 
     <node type="rviz" name="rviz" pkg="rviz" args="-d $(find use_cases)/rviz/demo1.rviz" />
 

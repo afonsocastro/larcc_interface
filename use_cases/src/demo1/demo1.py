@@ -8,12 +8,10 @@ import tf
 from transformation_t import *
 import time
 
-
 # ARM global states-------------------
 arm_initial_pose = 0
 arm_pose_goal = 0
 arm_joints_goal = 0
-
 
 # GRIPPER global states------------------------
 gripper_closed = 0
@@ -92,7 +90,7 @@ def move_arm_to_pose_goal(x, y, z, q1, q2, q3, q4):
     arm_pose_goal = 0
 
     _arm_dict = {'action': 'move_to_pose_goal', 'trans': [x, y, z],
-                'quat': [q1, q2, q3, q4]}
+                 'quat': [q1, q2, q3, q4]}
     _encoded_data_string = json.dumps(_arm_dict)
     pub_arm.publish(_encoded_data_string)
 
@@ -102,7 +100,7 @@ def move_arm_to_joints_state(j1, j2, j3, j4, j5, j6):
     arm_joints_goal = 0
 
     _arm_dict_ = {'action': 'move_to_joints_state',
-                'joints': [j1, j2, j3, j4, j5, j6]}
+                  'joints': [j1, j2, j3, j4, j5, j6]}
     _encoded_data_string_ = json.dumps(_arm_dict_)
     pub_arm.publish(_encoded_data_string_)
 
@@ -122,47 +120,63 @@ def pick_and_place(trans_goal, quat_goal):
     while gripper_closed == 0:
         time.sleep(0.1)
 
-    # sleep(1)
+    if have_object == 1:
+        # sleep(1)
 
-    # -----------------ARM MOVE UP------------------------------
-    move_arm_to_pose_goal(trans_goal[0], trans_goal[1], trans_goal[2] + 0.2, quat_goal[0], quat_goal[1], quat_goal[2],
-                          quat_goal[3])
-    # ----------------------------------------------------------------------
+        # -----------------ARM MOVE UP------------------------------
+        move_arm_to_pose_goal(trans_goal[0], trans_goal[1], trans_goal[2] + 0.2, quat_goal[0], quat_goal[1],
+                              quat_goal[2],
+                              quat_goal[3])
+        # ----------------------------------------------------------------------
 
-    while arm_pose_goal == 0:
-        time.sleep(0.1)
-    # sleep(1)
+        while arm_pose_goal == 0:
+            time.sleep(0.1)
+        # sleep(1)
 
-    # -----------------ARM MOVE ABOVE THE FINAL BOX------------------------------
-    move_arm_to_joints_state(0.33516550064086914, -1.163656548862793, 1.3741701284991663, -1.8040539226927699,
-                             -1.5384181181537073, 0.3482170104980469)
-    # ----------------------------------------------------------------------
+        # -----------------ARM MOVE ABOVE THE FINAL BOX------------------------------
+        move_arm_to_joints_state(0.33516550064086914, -1.163656548862793, 1.3741701284991663, -1.8040539226927699,
+                                 -1.5384181181537073, 0.3482170104980469)
+        # ----------------------------------------------------------------------
 
-    while arm_joints_goal == 0:
-        time.sleep(0.1)
-    # sleep(2)
+        while arm_joints_goal == 0:
+            time.sleep(0.1)
+        # sleep(2)
 
-    # -----------------ARM MOVE TO FINAL BOX (JUST DOWN)------------------------------
-    move_arm_to_joints_state(0.34529924392700195, -1.0220564168742676, 1.5045183340655726, -2.004709859887594,
-                             -1.5726912657367151, 0.3451671600341797)
-    # ----------------------------------------------------------------------
+        # ------------------------------------------------------------------------------------------------------
+        # TODO: Replace this two
 
-    while arm_joints_goal == 0:
-        time.sleep(0.1)
-    # sleep(3)
-    gripper_open_fast()
+        # -----------------ARM MOVE TO FINAL BOX (JUST DOWN)------------------------------
+        move_arm_to_joints_state(0.34529924392700195, -1.0220564168742676, 1.5045183340655726, -2.004709859887594,
+                                 -1.5726912657367151, 0.3451671600341797)
+        # ----------------------------------------------------------------------
 
-    while gripper_closed == 1:
-        time.sleep(0.1)
-    # sleep(1)
+        # New ones (better ones for not colliding with the table):
+        # 1.5308464209186, -1.1090014737895508, 0.32675647735595703, -1.9872170887389125, -1.5404332319842737, 0.3192453384399414
 
-    # -----------------ARM MOVE ABOVE THE FINAL BOX------------------------------
-    move_arm_to_joints_state(0.33516550064086914, -1.163656548862793, 1.3741701284991663, -1.8040539226927699,
-                             -1.5384181181537073, 0.3482170104980469)
-    # ----------------------------------------------------------------------
+        # ------------------------------------------------------------------------------------------------------------------------------------
 
-    while arm_joints_goal == 0:
-        time.sleep(0.1)
+        while arm_joints_goal == 0:
+            time.sleep(0.1)
+        # sleep(3)
+        gripper_open_fast()
+
+        while gripper_closed == 1:
+            time.sleep(0.1)
+        # sleep(1)
+
+        # -----------------ARM MOVE ABOVE THE FINAL BOX------------------------------
+        move_arm_to_joints_state(0.33516550064086914, -1.163656548862793, 1.3741701284991663, -1.8040539226927699,
+                                 -1.5384181181537073, 0.3482170104980469)
+        # ----------------------------------------------------------------------
+
+        while arm_joints_goal == 0:
+            time.sleep(0.1)
+
+    elif have_object == 0:
+
+        gripper_open_fast()
+        while gripper_closed == 1:
+            time.sleep(0.1)
 
 
 if __name__ == '__main__':
