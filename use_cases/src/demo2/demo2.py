@@ -5,15 +5,9 @@ from std_msgs.msg import String
 import json
 import sys
 
-import use_cases.src.utils.ArmGripperLib as ag
+from lib import ArmGripperComm as ag
 
-
-
-# import os
-#
-# print(os.environ.get('PYTHONPATH'))
-
-# sys.path.append('/home/joel/catkin_ws/src/larcc_interface/use_cases/')
+print("All imported")
 
 if __name__ == "__main__":
     rospy.init_node('test1', anonymous=True)
@@ -22,12 +16,9 @@ if __name__ == "__main__":
 
     rate = rospy.Rate(1.0)
     # values = [position, speed, force]
-
-    for path in sys.path:
-        print(path)
-
     # uf.gripper_open_fast(pub_gripper)
 
     while not rospy.is_shutdown():
+        print("In the loop!!!")
         ag.gripper_open_fast(pub_gripper)
         rate.sleep()
