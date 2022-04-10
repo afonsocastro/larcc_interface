@@ -15,6 +15,7 @@ def gripper_open_fast(pub_gripper):
     my_dict = {'action': 'move', 'values': [0, 255, 0]}
     encoded_data_string = json.dumps(my_dict)
     # rospy.loginfo(encoded_data_string)
+    print("I'm in the package!!")
     pub_gripper.publish(encoded_data_string)
 
 
@@ -55,3 +56,35 @@ def move_arm_to_joints_state(pub_arm, j1, j2, j3, j4, j5, j6):
                 'joints': [j1, j2, j3, j4, j5, j6]}
     _encoded_data_string_ = json.dumps(_arm_dict_)
     pub_arm.publish(_encoded_data_string_)
+
+
+def arm_response(data, pub_gripper, state_dic):
+    if data == "Arm is now at initial pose.":
+        state_dic["arm_initial_pose"] = 1
+
+        if state_dic["gripper_active"] == 0:
+            # -----------------GRIPPER ACTIVATION------------------------------
+            my_dict_ = {'action': 'init'}
+            encoded_data_string_ = json.dumps(my_dict_)
+            # rospy.loginfo(encoded_data_string_)
+            pub_gripper.publish(encoded_data_string_)
+            # ----------------------------------------------------------------------
+
+    elif data == "Arm is now at requested pose goal.":
+        state_dic["arm_pose_goal"] = 1
+    elif data == "Arm is now at requested joints state goal.":
+        state_dic["arm_joints_goal"] = 1
+
+    return state_dic
+
+
+def gripper_response(data, state_dic):
+    if data == "No object detected.":
+        state_dic["have_object"] = 0
+        state_dic["gripper_closed"] = not state_dic["gripper_closed"]
+    elif data == "Object detected.":
+        state_dic["have_object"] = 1
+        state_dic["gripper_closed"] = not state_dic["gripper_closed"]
+    elif data == "Gripper is now active! Ready to receive commands.":
+        state_dic["gripper_active"] = 1
+
