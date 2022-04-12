@@ -29,7 +29,6 @@ def arm_response_callback(data):
     state_dic = ag.arm_response(data.data, pub_gripper, state_dic)
 
 
-
 if __name__ == '__main__':
     rospy.init_node('demo2', anonymous=True)
 
@@ -73,5 +72,9 @@ if __name__ == '__main__':
         time.sleep(0.1)
 
     print("Now I arrived!")
+
+    ag.gripper_open_fast(pub_gripper)
+
+    print("gripper open")
 
     rospy.spin()
