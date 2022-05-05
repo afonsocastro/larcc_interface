@@ -8,12 +8,10 @@ import tf
 from transformation_t import *
 import time
 
-
 # ARM global states-------------------
 arm_initial_pose = 0
 arm_pose_goal = 0
 arm_joints_goal = 0
-
 
 # GRIPPER global states------------------------
 gripper_closed = 0
@@ -137,24 +135,52 @@ if __name__ == '__main__':
 
     print("Now the gripper is activated!")
 
+    # data: "{\"action\": \"move_to_pose_goal\", \"trans\": [0.6692778572599781, -0.44860797032168986,\
+    #   \ 0.49245419163280646], \"quat\": [-0.6795354166577906, 0.7324247360486474, -0.03131992696621351,\
+    #   \ 0.02836698268450892]}"
+
+    # -----------------ARM MOVE TO WOOD-BLOCK------------------------------
+    # sleep(5)
+    arm_dict = {'action': 'move_to_pose_goal', 'trans': [0.6692778572599781, -0.44860797032168986, 0.49245419163280646],
+                'quat': [-0.6795354166577906, 0.7324247360486474, -0.03131992696621351, 0.02836698268450892]}
+    encoded_data_string = json.dumps(arm_dict)
+    pub_arm.publish(encoded_data_string)
+    # ----------------------------------------------------------------------
+
+    while arm_pose_goal == 0:
+        time.sleep(0.1)
+
+    print ("Moved to Wood Block")
+
+    # -----------------ARM MOVE DOWN TO WOOD-BLOCK------------------------------
+    move_arm_to_pose_goal(0.6692778572599781, -0.44860797032168986, 0.49245419163280646 - 0.2, -0.6795354166577906, 0.7324247360486474,
+                          -0.03131992696621351,
+                          0.02836698268450892)
+    # ----------------------------------------------------------------------
+
+    while arm_pose_goal == 0:
+        time.sleep(0.1)
+
+    print("Moved DOWN to Wood Block")
+
     gripper_close_fast()
 
     while gripper_closed == 0:
         time.sleep(0.1)
 
     print("gripper is closed!")
-
-    # -----------------ARM MOVE ABOVE THE FINAL BOX------------------------------
-    # arm_joints_goal = 0
-    move_arm_to_joints_state(0.33516550064086914, -1.163656548862793, 1.3741701284991663,
-                                           -1.8040539226927699, -1.5384181181537073, 0.3482170104980469)
-    # ----------------------------------------------------------------------
-
-    while arm_joints_goal == 0:
-        time.sleep(0.1)
-
-    print("Now I arrived!")
-
-
+    #
+    # # -----------------ARM MOVE ABOVE THE FINAL BOX------------------------------
+    # # arm_joints_goal = 0
+    # move_arm_to_joints_state(0.33516550064086914, -1.163656548862793, 1.3741701284991663,
+    #                                        -1.8040539226927699, -1.5384181181537073, 0.3482170104980469)
+    # # ----------------------------------------------------------------------
+    #
+    # while arm_joints_goal == 0:
+    #     time.sleep(0.1)
+    #
+    # print("Now I arrived!")
+    #
+    #
 
     rospy.spin()
