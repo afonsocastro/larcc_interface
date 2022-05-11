@@ -19,6 +19,8 @@ class RobotiqHand:
         self._heartbeat_th = None
         self._max_position = 255
         self._min_position = 0
+        # self.fingers_size = 85.0
+        self.fingers_size = 140.0
 
     def _heartbeat_worker(self):
         while self._cont:
@@ -101,7 +103,7 @@ class RobotiqHand:
             position = self._max_position
         elif position < self._min_position:
             position = self._min_position
-        position_mm = 85.0 * (self._max_position - position) / (self._max_position - self._min_position)
+        position_mm = self.fingers_size * (self._max_position - position) / (self._max_position - self._min_position)
         # print 'max=%d, min=%d, pos=%d pos_mm=%.1f' % (self._max_position, self._min_position, position, position_mm)
         return position_mm
 
@@ -124,10 +126,15 @@ class RobotiqHand:
         while True:
             data = self.status()
             if data[5] != 0x00:
-                return (-1, data[7], data[8])
+                return -1, data[7], data[8]
             if data[3] == 0x79:
-                return (2, data[7], data[8])
+                return 2, data[7], data[8]
             if data[3] == 0xb9:
-                return (1, data[7], data[8])
+                return 1, data[7], data[8]
             if data[3] == 0xf9:
-                return (0, data[7], data[8])
+                return 0, data[7], data[8]
+
+    # result: (position, force)
+    def get_instant_status(self):
+        data = self.status()
+        return data[7], data[8]
