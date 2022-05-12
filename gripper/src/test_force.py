@@ -5,6 +5,9 @@ import time
 import signal
 from RobotiqHand import RobotiqHand
 
+import binascii
+
+
 #------------------------------------------------------------------------------
 # test_robotiq.py
 #------------------------------------------------------------------------------
@@ -19,6 +22,16 @@ def handler(signal, frame):
     global cont
     cont = False
 
+
+def splitting(char_array):
+    spaced_chars = ""
+    for i, c in enumerate(char_array):
+      if i % 2 == 1:
+        spaced_chars += c + " "
+      else:
+        spaced_chars += c
+
+    return spaced_chars
 
 def test_robotiq():
     print ('test_force start')
@@ -49,12 +62,19 @@ def test_robotiq():
         # (status, position, force) = hand.wait_move_complete()
 
         while cont:
-            time.sleep(0.1)
+            time.sleep(0.05)
             # (status, position, force) = hand.wait_move_complete()
-            (position, force) = hand.get_instant_status()
-            position_mm = hand.get_position_mm(position)
-            force_mA = hand.get_force_mA(force)
-            print('instant: position = {:.1f}mm, force = {:.1f}mA '.format(position_mm, force_mA))
+            # (position, force) = hand.get_instant_status()
+            data = hand.get_instant_raw_status()
+            # position_mm = hand.get_position_mm(position)
+            # force_mA = hand.get_force_mA(force)
+            # print('instant: position = {:.1f}mm, force = {:.1f}mA '.format(position_mm, force_mA))
+            # print('data')
+            # print(data)
+
+            data2 = splitting(data.hex())
+
+            print(data2)
 
             #
             # if status == 0:

@@ -138,3 +138,7 @@ class RobotiqHand:
     def get_instant_status(self):
         data = self.status()
         return data[7], data[8]
+
+    def get_instant_raw_status(self):
+        data = self.status()
+        return data
