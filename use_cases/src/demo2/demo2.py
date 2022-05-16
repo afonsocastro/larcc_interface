@@ -32,6 +32,8 @@ def arm_response_callback(data):
 if __name__ == '__main__':
     rospy.init_node('demo2', anonymous=True)
 
+    print("Node initiated")
+
     rospy.Subscriber("gripper_response", String, gripper_response_callback)
     pub_gripper = rospy.Publisher('gripper_request', String, queue_size=10)
 
@@ -42,6 +44,18 @@ if __name__ == '__main__':
 
     sleep(2)
 
+    # my_dict_ = {'action': 'init'}
+    # encoded_data_string_ = json.dumps(my_dict_)
+    # rospy.loginfo(encoded_data_string_)
+    # pub_gripper.publish(encoded_data_string_)
+    ag.gripper_init(pub_gripper)
+
+    state_dic["gripper_active"] = 0
+
+    while state_dic["gripper_active"] == 0:
+        time.sleep(0.1)
+
+    print("Move arm to initial position")
     ag.move_arm_to_initial_pose(pub_arm)
     state_dic["arm_initial_pose"] = 0
 
@@ -50,12 +64,8 @@ if __name__ == '__main__':
 
     print("Now Im at initial pose!")
 
-    while state_dic["gripper_active"] == 0:
-        time.sleep(0.1)
-
-    print("Now the gripper is activated!")
-
     ag.gripper_close_fast(pub_gripper)
+    state_dic["gripper_closed"] = 0
 
     while state_dic["gripper_closed"] == 0:
         time.sleep(0.1)
@@ -66,6 +76,8 @@ if __name__ == '__main__':
     # arm_joints_goal = 0
     ag.move_arm_to_joints_state(pub_arm, 0.33516550064086914, -1.163656548862793, 1.3741701284991663,
                                            -1.8040539226927699, -1.5384181181537073, 0.3482170104980469)
+
+    state_dic["arm_joints_goal"] = 0
     # ----------------------------------------------------------------------
 
     while state_dic["arm_joints_goal"] == 0:

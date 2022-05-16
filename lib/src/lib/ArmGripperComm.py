@@ -2,6 +2,7 @@
 
 import json
 import time
+import rospy
 
 
 # def wait_for_action_to_end(state, state1 = 1, state2 = 1, state3 = 1, state4 = 1):
@@ -14,16 +15,22 @@ def gripper_open_fast(pub_gripper):
     # values = [position, speed, force]
     my_dict = {'action': 'move', 'values': [0, 255, 0]}
     encoded_data_string = json.dumps(my_dict)
-    # rospy.loginfo(encoded_data_string)
-    print("I'm in the package!!")
+    rospy.loginfo(encoded_data_string)
     pub_gripper.publish(encoded_data_string)
+
+
+def gripper_init(pub_gripper):
+    my_dict_ = {'action': 'init'}
+    encoded_data_string_ = json.dumps(my_dict_)
+    rospy.loginfo(encoded_data_string_)
+    pub_gripper.publish(encoded_data_string_)
 
 
 def gripper_close_fast(pub_gripper):
     # values = [position, speed, force]
     my_dict = {'action': 'move', 'values': [255, 255, 0]}
     encoded_data_string = json.dumps(my_dict)
-    # rospy.loginfo(encoded_data_string)
+    rospy.loginfo(encoded_data_string)
     pub_gripper.publish(encoded_data_string)
 
 
@@ -87,4 +94,7 @@ def gripper_response(data, state_dic):
         state_dic["gripper_closed"] = not state_dic["gripper_closed"]
     elif data == "Gripper is now active! Ready to receive commands.":
         state_dic["gripper_active"] = 1
+
+    return state_dic
+
 
