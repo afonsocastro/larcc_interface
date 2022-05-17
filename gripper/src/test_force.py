@@ -4,9 +4,8 @@
 import time
 import signal
 from RobotiqHand import RobotiqHand
-
+from ast import literal_eval
 import binascii
-
 
 #------------------------------------------------------------------------------
 # test_robotiq.py
@@ -33,6 +32,21 @@ def splitting(char_array):
 
     return spaced_chars
 
+
+def hex2dec(hex_byte):
+    hex_string = str(hex(hex_byte))
+    dec = literal_eval(hex_string)
+    return dec
+
+
+def hexbytearray2decbytearray(hexbytearray):
+    decbytearray = []
+    for i in hexbytearray:
+        new_i = hex2dec(i)
+        decbytearray.append(new_i)
+    return decbytearray
+
+
 def test_robotiq():
     print ('test_force start')
     hand = RobotiqHand()
@@ -51,14 +65,14 @@ def test_robotiq():
         hand.adjust()
         print ('adjust: finish')
 
-        time.sleep(4)
-        print('open fast')
-        hand.move(0, 255, 0)
-        (status, position, force) = hand.wait_move_complete()
+        # time.sleep(2)
+        # print('open fast')
+        # hand.move(0, 255, 0)
+        # (status, position, force) = hand.wait_move_complete()
 
-        time.sleep(4)
+        time.sleep(2)
         print('close slow')
-        hand.move(255, 0, 1)
+        hand.move(0xff, 0x00, 0xff)
         # (status, position, force) = hand.wait_move_complete()
 
         while cont:
@@ -73,20 +87,30 @@ def test_robotiq():
             # print(data)
 
             data2 = splitting(data.hex())
+            data_decimal = hexbytearray2decbytearray(data)
 
+
+            print("data2")
             print(data2)
 
-            #
-            # if status == 0:
-            #     print( 'no object detected: position = {:.1f}mm, force = {:.1f}mA '.format(position_mm, force_mA))
-            # elif status == 1:
-            #     print('object detected closing: position = {:.1f}mm, force = {:.1f}mA '.format(position_mm, force_mA))
-            #     print('keeping')
-            #     # time.sleep(5)
-            # elif status == 2:
-            #     print('object detected opening: position = {:.1f}mm, force = {:.1f}mA '.format(position_mm, force_mA))
-            # else:
-            #     print('failed')
+            print("data_decimal")
+            print(data_decimal)
+            print("data")
+            print(data)
+
+            # TODO create a function "printing bytearray in hexadecimal"
+            # TODO create a function "printing bytearray in decimal"
+            # for this use all the funcitons already created on the top of this script
+            # cause this is only useful for printing
+            # for working, you should use this:
+
+            print("data[6] == 255")
+            print(data[6] == 255)
+
+            print("data[6] == 0xff")
+            print(data[6] == 0xff)
+
+
 
     except:
         print('Ctrl-c pressed')
