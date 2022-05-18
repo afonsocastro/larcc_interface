@@ -7,9 +7,9 @@ from RobotiqHand import RobotiqHand
 from ast import literal_eval
 import binascii
 
-#------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 # test_robotiq.py
-#------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 # HOST = "192.168.102.216"
 HOST = "192.168.56.2"
 PORT = 54321
@@ -25,10 +25,10 @@ def handler(signal, frame):
 def splitting(char_array):
     spaced_chars = ""
     for i, c in enumerate(char_array):
-      if i % 2 == 1:
-        spaced_chars += c + " "
-      else:
-        spaced_chars += c
+        if i % 2 == 1:
+            spaced_chars += c + " "
+        else:
+            spaced_chars += c
 
     return spaced_chars
 
@@ -39,38 +39,44 @@ def hex2dec(hex_byte):
     return dec
 
 
-def hexbytearray2decbytearray(hexbytearray):
-    decbytearray = []
-    for i in hexbytearray:
-        new_i = hex2dec(i)
-        decbytearray.append(new_i)
-    return decbytearray
+def hex_bytearray2dec_list(hex_bytearray):
+    dec_list = []
+    for i in hex_bytearray:
+        dec_i = hex2dec(i)
+        dec_list.append(dec_i)
+    return dec_list
+
+
+def byte2bits(byte):
+    new_format = "{0:08b}".format(byte)
+    bits_list = [int(i) for i in new_format]
+    return bits_list
 
 
 def test_robotiq():
-    print ('test_force start')
+    print('test_force start')
     hand = RobotiqHand()
     hand.connect(HOST, PORT)
 
     try:
-        print ('activate: start')
+        print('activate: start')
         hand.reset()
         hand.activate()
         result = hand.wait_activate_complete()
-        print ('activate: result = 0x{:02x}'.format(result))
+        print('activate: result = 0x{:02x}'.format(result))
         if result != 0x31:
             hand.disconnect()
             return
-        print ('adjust: start')
+        print('adjust: start')
         hand.adjust()
-        print ('adjust: finish')
+        print('adjust: finish')
 
         # time.sleep(2)
         # print('open fast')
         # hand.move(0, 255, 0)
         # (status, position, force) = hand.wait_move_complete()
 
-        time.sleep(2)
+        time.sleep(1)
         print('close slow')
         hand.move(0xff, 0x00, 0xff)
         # (status, position, force) = hand.wait_move_complete()
@@ -86,17 +92,16 @@ def test_robotiq():
             # print('data')
             # print(data)
 
-            data2 = splitting(data.hex())
-            data_decimal = hexbytearray2decbytearray(data)
+            # data2 = splitting(data.hex())
+            # data_decimal = hex_bytearray2dec_list(data)
 
-
-            print("data2")
-            print(data2)
-
-            print("data_decimal")
-            print(data_decimal)
-            print("data")
-            print(data)
+            # print("data2")
+            # print(data2)
+            #
+            # print("data_decimal")
+            # print(data_decimal)
+            # print("data")
+            # print(data)
 
             # TODO create a function "printing bytearray in hexadecimal"
             # TODO create a function "printing bytearray in decimal"
@@ -104,17 +109,26 @@ def test_robotiq():
             # cause this is only useful for printing
             # for working, you should use this:
 
-            print("data[6] == 255")
-            print(data[6] == 255)
+            print("data[7]")
+            print(data[7])
 
-            print("data[6] == 0xff")
-            print(data[6] == 0xff)
+            bits = byte2bits(data[7])
+            print("bits of data[7] byte")
+            print(bits)
+            print("bits[0]")
+            print(bits[0])
+            print("bits[7]")
+            print(bits[7])
+
+
+            # print("data[6] == 0xff")
+            # print(data[6] == 0xff)
 
 
 
     except:
         print('Ctrl-c pressed')
-        #TODO create handler to close the door
+        # TODO create handler to close the door
 
     hand.disconnect()
 

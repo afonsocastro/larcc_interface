@@ -5,6 +5,7 @@ import time
 import sys
 import struct
 import threading
+from GripperStatusDTO import GripperStatusDTO
 
 
 # ------------------------------------------------------------------------------
@@ -78,9 +79,9 @@ class RobotiqHand:
         command = bytearray(b'\x09\x10\x03\xE8\x00\x03\x06\x01\x00\x00\x00\x00\x00')
         return self.send_command(command)
 
-    def close(self):
-        command = bytearray(b'\x09\x10\x03\xE8\x00\x03\x06\x09\x00\x00\xFF\xFF\xFF\x42\x29')
-        return self.send_command(command)
+    # def close(self):
+    #     command = bytearray(b'\x09\x10\x03\xE8\x00\x03\x06\x09\x00\x00\xFF\xFF\xFF\x42\x29')
+    #     return self.send_command(command)
 
     def wait_activate_complete(self):
         while True:
@@ -142,3 +143,74 @@ class RobotiqHand:
     def get_instant_raw_status(self):
         data = self.status()
         return data
+
+    def byte2bits(self, byte):
+        new_format = "{0:08b}".format(byte)
+        bits_list = [int(i) for i in new_format]
+        return bits_list
+
+    def get_instant_test_status(self):
+        data = self.status()
+
+        bits1 = self.byte2bits(data[3])
+        bits2 = self.byte2bits(data[4])
+        bits3 = self.byte2bits(data[5])
+        bits4 = self.byte2bits(data[6])
+        bits5 = self.byte2bits(data[7])
+        bits6 = self.byte2bits(data[8])
+
+
+
+        is_activated = False
+
+        going_to_position_request = False
+
+        activation_in_progress = False
+        activation_completed = False
+        is_in_automatic_release = False
+
+        object_detected = False
+        fingers_in_motion_towards_requested_position = False
+        fingers_stopped_opening = False
+        fingers_stopped_closing = False
+        fingers_are_at_requested_position = False
+
+        fault_action_delayed = False
+        fault_missing_activation_bit = False
+        fault_max_temperature_exceeded = False
+        fault_no_communication_1_second = False
+        fault_under_minimum_voltage = False
+        fault_internal = False
+        fault_activation = False
+        fault_overcurrent_triggered = False
+        fault_automatic_release_completed = False
+
+        requested_position = 0
+        actual_position = 0
+        actual_force_motor_current = 0
+
+        gripper_status = GripperStatusDTO(
+            is_activated=is_activated,
+            going_to_position_request=going_to_position_request,
+            activation_in_progress=activation_in_progress,
+            activation_completed=activation_completed,
+            is_in_automatic_release=is_in_automatic_release,
+            object_detected=object_detected,
+            fingers_in_motion_towards_requested_position=fingers_in_motion_towards_requested_position,
+            fingers_stopped_opening=fingers_stopped_opening,
+            fingers_stopped_closing=fingers_stopped_closing,
+            fingers_are_at_requested_position=fingers_are_at_requested_position,
+            fault_action_delayed=fault_action_delayed,
+            fault_missing_activation_bit=fault_missing_activation_bit,
+            fault_max_temperature_exceeded=fault_max_temperature_exceeded,
+            fault_no_communication_1_second=fault_no_communication_1_second,
+            fault_under_minimum_voltage=fault_under_minimum_voltage,
+            fault_internal=fault_internal,
+            fault_activation=fault_activation,
+            fault_overcurrent_triggered=fault_overcurrent_triggered,
+            fault_automatic_release_completed=fault_automatic_release_completed,
+            requested_position=requested_position,
+            actual_position=actual_position,
+            actual_force_motor_current=actual_force_motor_current
+        )
+        return gripper_status
