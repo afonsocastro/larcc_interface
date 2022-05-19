@@ -12,6 +12,12 @@ from GripperStatusDTO import GripperStatusDTO
 # RobotiqHand class for python 2.7
 # ------------------------------------------------------------------------------
 
+def byte2bits(byte):
+    new_format = "{0:08b}".format(byte)
+    bits_list = [int(i) for i in new_format]
+    return bits_list
+
+
 class RobotiqHand:
     def __init__(self):
         self.so = None
@@ -144,57 +150,124 @@ class RobotiqHand:
         data = self.status()
         return data
 
-    def byte2bits(self, byte):
-        new_format = "{0:08b}".format(byte)
-        bits_list = [int(i) for i in new_format]
-        return bits_list
-
-    def get_instant_test_status(self):
+    def get_instant_gripper_status(self):
         data = self.status()
 
-        bits1 = self.byte2bits(data[3])
-        bits2 = self.byte2bits(data[4])
-        bits3 = self.byte2bits(data[5])
-        bits4 = self.byte2bits(data[6])
-        bits5 = self.byte2bits(data[7])
-        bits6 = self.byte2bits(data[8])
+        bits0 = byte2bits(data[3])
+        bits1 = byte2bits(data[4])
+        bits2 = byte2bits(data[5])
+        bits3 = byte2bits(data[6])
+        bits4 = byte2bits(data[7])
+        bits5 = byte2bits(data[8])
 
-
-
+        # BYTE 0 | GRIPPER STATUS ----------------------------------------------------------------------------------
+        # gACT
         is_activated = False
+        if bits0[7] == 1:
+            is_activated = True
+        elif bits0[7] == 0:
+            is_activated = False
 
+        # gGTO
         going_to_position_request = False
+        if bits0[4] == 1:
+            going_to_position_request = True
+        elif bits0[4] == 0:
+            going_to_position_request = False
 
-        activation_in_progress = False
-        activation_completed = False
-        is_in_automatic_release = False
+        # gSTA
+        is_in_automatic_release_or_reset, activation_in_progress, activation_completed = False, False, False
+        if bits0[2] == 0 and bits0[3] == 0:
+            is_in_automatic_release_or_reset = True
+        elif bits0[2] == 0 and bits0[3] == 1:
+            activation_in_progress = True
+        elif bits0[2] == 1 and bits0[3] == 1:
+            activation_completed = True
 
-        object_detected = False
-        fingers_in_motion_towards_requested_position = False
-        fingers_stopped_opening = False
-        fingers_stopped_closing = False
-        fingers_are_at_requested_position = False
+        # gOBJ
+        object_detected, fingers_in_motion_towards_requested_position, fingers_stopped_opening, fingers_stopped_closing,\
+            fingers_are_at_requested_position = False, False, False, False, False
+        if bits0[0] == 0 and bits0[1] == 0:
+            fingers_in_motion_towards_requested_position = True
+        elif bits0[0] == 0 and bits0[1] == 1:
+            fingers_stopped_opening = True
+            object_detected = True
+        elif bits0[0] == 1 and bits0[1] == 0:
+            fingers_stopped_closing = True
+            object_detected = True
+        elif bits0[0] == 1 and bits0[1] == 1:
+            fingers_are_at_requested_position = True
+        # ---------------------------------------------------------------------------------------------------
 
+        # BYTE 1 ---------------------------------------------------------------------------------------------------
+        # RESERVED
+        # ---------------------------------------------------------------------------------------------------
+
+        # BYTE 2 | FAULT STATUS ---------------------------------------------------------------------------------------
+        # gFLT
+
+        # Prior faults
         fault_action_delayed = False
         fault_missing_activation_bit = False
+
+        # Minor faults
         fault_max_temperature_exceeded = False
         fault_no_communication_1_second = False
+
+        # Major faults
         fault_under_minimum_voltage = False
+        fault_automatic_release_in_progress = False
         fault_internal = False
         fault_activation = False
         fault_overcurrent_triggered = False
         fault_automatic_release_completed = False
 
-        requested_position = 0
-        actual_position = 0
-        actual_force_motor_current = 0
+        if data[5] == 5:
+            fault_action_delayed = True
+        elif data[5] == 7:
+            fault_missing_activation_bit = True
+        elif data[5] == 8:
+            fault_max_temperature_exceeded = True
+        elif data[5] == 9:
+            fault_no_communication_1_second = True
+        elif data[5] == 10:
+            fault_under_minimum_voltage = True
+        elif data[5] == 11:
+            fault_automatic_release_in_progress = True
+        elif data[5] == 12:
+            fault_internal = True
+        elif data[5] == 13:
+            fault_activation =True
+        elif data[5] == 14:
+            fault_overcurrent_triggered = True
+        elif data[5] == 15:
+            fault_automatic_release_completed = True
+
+        # ---------------------------------------------------------------------------------------------------
+
+        # BYTE 3 | POSITION REQUEST ECHO -----------------------------------------------------------------------------
+        # gPR
+        requested_position = self.get_position_mm(data[6])
+        # requested_position = data[6]
+        # ---------------------------------------------------------------------------------------------------
+
+        # BYTE 4 | POSITION ------------------------------------------------------------------------------------------
+        # gPO
+        actual_position = self.get_position_mm(data[7])
+        # actual_position = data[7]
+        # ---------------------------------------------------------------------------------------------------
+
+        # BYTE 5 | CURRENT ----------------------------------------------------------------------------------------
+        actual_force_motor_current = self.get_force_mA(data[8])
+        # actual_force_motor_current = data[8]
+        # ---------------------------------------------------------------------------------------------------
 
         gripper_status = GripperStatusDTO(
             is_activated=is_activated,
             going_to_position_request=going_to_position_request,
             activation_in_progress=activation_in_progress,
             activation_completed=activation_completed,
-            is_in_automatic_release=is_in_automatic_release,
+            is_in_automatic_release_or_reset=is_in_automatic_release_or_reset,
             object_detected=object_detected,
             fingers_in_motion_towards_requested_position=fingers_in_motion_towards_requested_position,
             fingers_stopped_opening=fingers_stopped_opening,
@@ -209,6 +282,7 @@ class RobotiqHand:
             fault_activation=fault_activation,
             fault_overcurrent_triggered=fault_overcurrent_triggered,
             fault_automatic_release_completed=fault_automatic_release_completed,
+            fault_automatic_release_in_progress=fault_automatic_release_in_progress,
             requested_position=requested_position,
             actual_position=actual_position,
             actual_force_motor_current=actual_force_motor_current
