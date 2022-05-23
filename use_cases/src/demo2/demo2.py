@@ -44,10 +44,6 @@ if __name__ == '__main__':
 
     sleep(2)
 
-    # my_dict_ = {'action': 'init'}
-    # encoded_data_string_ = json.dumps(my_dict_)
-    # rospy.loginfo(encoded_data_string_)
-    # pub_gripper.publish(encoded_data_string_)
     ag.gripper_init(pub_gripper)
 
     state_dic["gripper_active"] = 0

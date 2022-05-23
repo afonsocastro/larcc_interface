@@ -5,12 +5,7 @@ import time
 import rospy
 
 
-# def wait_for_action_to_end(state, state1 = 1, state2 = 1, state3 = 1, state4 = 1):
-def wait_for_action_to_end(state):
-    while state == 0:
-        time.sleep(0.1)
-
-
+# Sends a message to the gripper controller to open the gripper
 def gripper_open_fast(pub_gripper):
     # values = [position, speed, force]
     my_dict = {'action': 'move', 'values': [0, 255, 0]}
@@ -19,6 +14,7 @@ def gripper_open_fast(pub_gripper):
     pub_gripper.publish(encoded_data_string)
 
 
+# Sends a message to the gripper controller to initiate the gripper
 def gripper_init(pub_gripper):
     my_dict_ = {'action': 'init'}
     encoded_data_string_ = json.dumps(my_dict_)
@@ -26,6 +22,7 @@ def gripper_init(pub_gripper):
     pub_gripper.publish(encoded_data_string_)
 
 
+# Sends a message to the gripper controller to close the gripper
 def gripper_close_fast(pub_gripper):
     # values = [position, speed, force]
     my_dict = {'action': 'move', 'values': [255, 255, 0]}
@@ -34,6 +31,7 @@ def gripper_close_fast(pub_gripper):
     pub_gripper.publish(encoded_data_string)
 
 
+# Sends a message to the arm controller to move the arm to a preconfigured intial postion
 def move_arm_to_initial_pose(pub_arm):
     # global arm_initial_pose
     # arm_initial_pose = 0
@@ -45,6 +43,7 @@ def move_arm_to_initial_pose(pub_arm):
     # -------------------------------------------------------------------
 
 
+# Sends a message to the arm controller to move the arm to a postion based on the global frame
 def move_arm_to_pose_goal(pub_arm, x, y, z, q1, q2, q3, q4):
     # global arm_pose_goal
     # arm_pose_goal = 0
@@ -55,6 +54,7 @@ def move_arm_to_pose_goal(pub_arm, x, y, z, q1, q2, q3, q4):
     pub_arm.publish(_encoded_data_string)
 
 
+# Sends a message to the arm controller to move the arm to a postion based on the arm's joints
 def move_arm_to_joints_state(pub_arm, j1, j2, j3, j4, j5, j6):
     # global arm_joints_goal
     # arm_joints_goal = 0
@@ -65,6 +65,7 @@ def move_arm_to_joints_state(pub_arm, j1, j2, j3, j4, j5, j6):
     pub_arm.publish(_encoded_data_string_)
 
 
+# Decodes the message sent from the arm controller to update the arm's state
 def arm_response(data, pub_gripper, state_dic):
     if data == "Arm is now at initial pose.":
         state_dic["arm_initial_pose"] = 1
@@ -85,6 +86,7 @@ def arm_response(data, pub_gripper, state_dic):
     return state_dic
 
 
+# Decodes the message sent from the gripper controller to update the gripper's state
 def gripper_response(data, state_dic):
     if data == "No object detected.":
         state_dic["have_object"] = 0
