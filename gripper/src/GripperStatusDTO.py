@@ -46,6 +46,7 @@ class GripperStatusDTO:
               Fore.LIGHTBLUE_EX + 'activation_completed: ' + Fore.YELLOW + str(self.activation_completed) + '\n' + \
               Fore.LIGHTBLUE_EX + 'is_in_automatic_release_or_reset: ' + Fore.YELLOW + str(self.is_in_automatic_release_or_reset) + '\n' + \
               '\n' + \
+              Fore.LIGHTBLUE_EX + 'object_detected: ' + Fore.YELLOW + str(self.object_detected) + '\n' + \
               Fore.LIGHTBLUE_EX + 'fingers_in_motion_towards_requested_position: ' + Fore.YELLOW + str(self.fingers_in_motion_towards_requested_position) + '\n' + \
               Fore.LIGHTBLUE_EX + 'fingers_stopped_opening: ' + Fore.YELLOW + str(self.fingers_stopped_opening) + '\n' + \
               Fore.LIGHTBLUE_EX + 'fingers_stopped_closing: ' + Fore.YELLOW + str(self.fingers_stopped_closing) + '\n' + \
