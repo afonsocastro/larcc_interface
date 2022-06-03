@@ -22,23 +22,12 @@ def test_robotiq():
     hand.connect(HOST, PORT)
 
     try:
-        print('activate: start')
-        hand.reset()
-        hand.activate()
-        result = hand.wait_activate_complete()
-        print('activate: result = 0x{:02x}'.format(result))
-        if result != 0x31:
-            hand.disconnect()
-            return
-        print('adjust: start')
-        hand.adjust()
-        print('adjust: finish')
-
-        time.sleep(1)
+        # time.sleep(5)
 
         while cont:
-            time.sleep(0.05)
-            status = hand.get_instant_gripper_status()
+            print('close slow')
+            hand.move(255, 0, 1)
+            (status, position, force) = hand.wait_move_complete()
 
     except:
         print('Ctrl-c pressed')

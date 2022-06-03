@@ -10,5 +10,7 @@
 
     <node pkg="gripper" type="force_torque_node.py" name="force_torque_node"/>
 
+<!--    <node pkg="force_torque" type="graphs.py" name="graphs"/>-->
+
 
 </launch>
