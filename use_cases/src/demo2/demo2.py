@@ -4,6 +4,7 @@ import rospy
 from std_msgs.msg import String
 import json
 from lib import ArmGripperComm as ag
+from gripper import RobotiqHand
 from time import sleep
 import time
 

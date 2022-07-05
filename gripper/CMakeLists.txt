@@ -48,10 +48,10 @@ find_package(catkin REQUIRED COMPONENTS
 ##   * add every package in MSG_DEP_SET to generate_messages(DEPENDENCIES ...)
 
 ## Generate messages in the 'msg' folder
- add_message_files(
-   FILES
-   ForceTorque.msg
- )
+# add_message_files(
+#   FILES
+#   ForceTorque.msg
+# )
 
 ## Generate services in the 'srv' folder
 # add_service_files(
@@ -122,7 +122,7 @@ catkin_package(
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
 include_directories(
-include
+# include
   ${catkin_INCLUDE_DIRS}
 )
 
