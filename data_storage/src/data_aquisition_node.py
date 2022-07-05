@@ -163,6 +163,7 @@ if __name__ == '__main__':
     parser.add_argument("-a", "--action", type=str, default="push", help="Classify the action performed in the "
                                                                          "experiment (ex: push, pull, twist).")
     parser.add_argument("-p", "--position", type=int, default=1, help="Index that identifies the experiments' positon.")
+    parser.add_argument("-n", "--number_reps", type=int, default=1, help="Number of repetitions in the same execution")
 
     args = vars(parser.parse_args())
 
@@ -194,11 +195,11 @@ if __name__ == '__main__':
 
         print("Initiate the gripper")
         hand = gripper_init(hand)
-        time.sleep(7)
+        time.sleep(2)
 
         hand.move(255, 0, 1)
         print("Closing gripper")
-        time.sleep(7)
+        time.sleep(5)
     else:
         print("Object detected")
         time.sleep(2)
@@ -213,76 +214,83 @@ if __name__ == '__main__':
 
     rest_state_mean = np.mean(np.array(list_calibration))
 
-    print("Waiting for action...")
-
-    while not rospy.is_shutdown():
-        data_mean = calc_data_mean(data_for_learning)
-        variance = data_mean - rest_state_mean
-
-        if abs(variance) > 0.2:
-            break
-
-        time.sleep(0.1)
-
-    i = 0
-
     limit = float(args["time"]) * float(args["rate"])
 
-    while (not rospy.is_shutdown()) and i < limit:
+    for j in range(0, args["number_reps"]):
 
-        # The aquisition of the gripper status is done before checking the timestamp so the difference between the
-        # timestamp and the actual time of measurement be residual
-        # With this script order, there is a measurement error of about 10^-7 seconds
+        print(f"Waiting for action to initiate experiment {j + 1}...")
 
-        st = time.time()
-
-        status = hand.get_instant_gripper_status()
-        data_for_learning.gripper_current = status.actual_force_motor_current
-
-        if status.object_detected:
-            data_for_learning.object_detection = 1
-        else:
-            data_for_learning.object_detection = 0
-
-        data_for_learning.timestamp = time_stamps_comparison(joint_states_time, tf_time, wrench_time)
-
-        if data_for_learning.timestamp >= 0:
-
-            try:
-                add_to_array(data_for_learning)
-                i += 1
-                print(data_for_learning)
-            except:
-                pass
-
+        while not rospy.is_shutdown():
             data_mean = calc_data_mean(data_for_learning)
             variance = data_mean - rest_state_mean
 
-            print(variance)
-            if abs(variance) < 0.1:
+            if abs(variance) > 0.2:
                 break
 
-            et = time.time()
-            # print(et - st)
+            time.sleep(0.1)
 
-        rate.sleep()
+        i = 0
+
+        while (not rospy.is_shutdown()) and i < limit:
+
+            # The aquisition of the gripper status is done before checking the timestamp so the difference between the
+            # timestamp and the actual time of measurement be residual
+            # With this script order, there is a measurement error of about 10^-7 seconds
+
+            st = time.time()
+
+            status = hand.get_instant_gripper_status()
+            data_for_learning.gripper_current = status.actual_force_motor_current
+
+            if status.object_detected:
+                data_for_learning.object_detection = 1
+            else:
+                data_for_learning.object_detection = 0
+
+            data_for_learning.timestamp = time_stamps_comparison(joint_states_time, tf_time, wrench_time)
+
+            if data_for_learning.timestamp >= 0:
+
+                try:
+                    add_to_array(data_for_learning)
+                    i += 1
+                    print(data_for_learning)
+                except:
+                    pass
+
+                data_mean = calc_data_mean(data_for_learning)
+                variance = data_mean - rest_state_mean
+
+                print(variance)
+                if abs(variance) < 0.1:
+                    break
+
+                et = time.time()
+                # print(et - st)
+
+            rate.sleep()
+
+        first_read_exist = False
+        action = args["action"]
+        position = str(args["position"])
+
+        path = f"./../data/{action}"
+
+        files = os.listdir(path)
+
+        count = 0
+
+        for file in files:
+            if file.find(f"pos{position}") != -1:
+                count += 1
+
+        np.save(f"../data/{action}/pos{position}_sample{count + 1}.npy", array)
+        print(f"Experiment {j + 1} data saved in " + Fore.GREEN + f"pos{position}_sample{count + 1}.npy " + Fore.RESET + "file")
 
     hand.disconnect()
 
-    action = args["action"]
-    position = str(args["position"])
-
-    path = f"./../data/{action}"
-
-    files = os.listdir(path)
-
-    count = 0
-
-    for file in files:
-        if file.find(f"pos{position}") != -1:
-            count += 1
-
-    np.save(f"../data/{action}/pos{position}_sample{count + 1}.npy", array)
-    print(f"Data saved in pos{position}_sample{count + 1}.npy file")
+    print(Fore.GREEN + "-----------------------------------------------------")
+    print("             EXPERIMENT FINALIZED                              ")
+    print("-----------------------------------------------------" + Fore.RESET)
 
     rospy.spin()
