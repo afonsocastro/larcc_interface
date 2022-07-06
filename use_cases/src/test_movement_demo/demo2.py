@@ -31,7 +31,7 @@ def arm_response_callback(data):
 
 
 if __name__ == '__main__':
-    rospy.init_node('demo2', anonymous=True)
+    rospy.init_node('test_movement_demo', anonymous=True)
 
     print("Node initiated")
 

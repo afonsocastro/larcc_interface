@@ -192,7 +192,7 @@ def pick_and_place(trans_goal, quat_goal):
 
 
 if __name__ == '__main__':
-    rospy.init_node('demo1', anonymous=True)
+    rospy.init_node('objetct_picking', anonymous=True)
 
     rospy.Subscriber("gripper_response", String, gripper_response_callback)
     pub_gripper = rospy.Publisher('gripper_request', String, queue_size=10)

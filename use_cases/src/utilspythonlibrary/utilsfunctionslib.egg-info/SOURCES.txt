@@ -1,7 +1,0 @@
-setup.py
-utilsfunctionslib.egg-info/PKG-INFO
-utilsfunctionslib.egg-info/SOURCES.txt
-utilsfunctionslib.egg-info/dependency_links.txt
-utilsfunctionslib.egg-info/top_level.txt
-utilspythonlib/__init__.py
-utilspythonlib/utilsfunctions.py
