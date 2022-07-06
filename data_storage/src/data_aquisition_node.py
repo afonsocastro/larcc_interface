@@ -13,9 +13,9 @@ from RobotiqHand import RobotiqHand
 
 cont = True
 
-joint_states_time = (0,0)
-tf_time = (0,0)
-wrench_time = (0,0)
+joint_states_time = (0, 0)
+tf_time = (0, 0)
+wrench_time = (0, 0)
 
 array = np.empty((1, 28), dtype=float)
 
