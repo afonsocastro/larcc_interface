@@ -3,8 +3,7 @@
 import rospy
 from std_msgs.msg import String
 import json
-from lib import ArmGripperComm as ag
-from gripper import RobotiqHand
+from lib.src import ArmGripperComm as ag
 from time import sleep
 import time
 
@@ -45,12 +44,12 @@ if __name__ == '__main__':
 
     sleep(2)
 
-    ag.gripper_init(pub_gripper)
+    # ag.gripper_init(pub_gripper)
 
     state_dic["gripper_active"] = 0
 
-    while state_dic["gripper_active"] == 0:
-        time.sleep(0.1)
+    # while state_dic["gripper_active"] == 0:
+    #     time.sleep(0.1)
 
     print("Move arm to initial position")
     ag.move_arm_to_initial_pose(pub_arm)

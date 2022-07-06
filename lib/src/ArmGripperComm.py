@@ -36,6 +36,8 @@ def move_arm_to_initial_pose(pub_arm):
     # global arm_initial_pose
     # arm_initial_pose = 0
 
+    print("Sending message")
+
     # -----------------ARM INITIAL POSE------------------------------
     arm_initial_pose_dict = {'action': 'move_to_initial_pose'}
     encoded_data_string_initial_pose = json.dumps(arm_initial_pose_dict)

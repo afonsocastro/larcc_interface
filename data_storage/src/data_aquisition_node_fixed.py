@@ -21,7 +21,9 @@ joint_states_time = (0, 0)
 tf_time = (0, 0)
 wrench_time = (0, 0)
 
-array = np.empty((1, 28), dtype=float)
+array = None
+
+vector = None
 
 first_read_exist = False
 first_timestamp = (0, 0)
@@ -120,6 +122,7 @@ def time_stamps_comparison(joint_states_t, tf_t, wrench_t):
 def add_to_array(data):
     global array
     global first_read_exist
+    global vector
     first_read_exist = True
 
     row = np.array([data.timestamp, data.joints_position[0], data.joints_position[1], data.joints_position[2],
@@ -132,7 +135,7 @@ def add_to_array(data):
                     data.wrench_force_torque.torque.y, data.wrench_force_torque.torque.z, data.gripper_current,
                     data.object_detection])
 
-    array = np.append(array, [row], axis=0)
+    vector = np.append(vector, [row])
 
 
 def gripper_init(hand_robot):
@@ -150,19 +153,11 @@ def gripper_init(hand_robot):
     return hand_robot
 
 
-def calc_data_mean(data):
-    values = np.array([data.joints_effort[0], data.joints_effort[1], data.joints_effort[2], data.joints_effort[3],
-                       data.joints_effort[4], data.joints_effort[5], data.wrench_force_torque.force.x,
-                       data.wrench_force_torque.force.y, data.wrench_force_torque.force.z, data.wrench_force_torque.torque.x,
-                       data.wrench_force_torque.torque.y, data.wrench_force_torque.torque.z])
-
-    return np.mean(values)
-
-
 if __name__ == '__main__':
 
     parser = argparse.ArgumentParser(description="Just an example")
-    parser.add_argument("-t", "--time", type=float, default=5, help="Desired duration of data collection in seconds.")
+    parser.add_argument("-m", "--measurements", type=int, default=30,
+                        help="Corresponds to the number of rows in the sample array.")
     parser.add_argument("-r", "--rate", type=float, default=10, help="How many collections per second will be performed.")
     parser.add_argument("-a", "--action", type=str, default="push", help="Classify the action performed in the "
                                                                          "experiment (ex: push, pull, twist).")
@@ -171,13 +166,16 @@ if __name__ == '__main__':
 
     args = vars(parser.parse_args())
 
+    vector = np.empty((0, args["measurements"] * 28), dtype=float)
+    array = vector
+
     rospy.init_node('data_aquisition_node', anonymous=True)
 
     rate = rospy.Rate(args["rate"])  # 10hz
 
     data_for_learning = DataForLearning()
 
-    rospy.Subscriber("jint_states", JointState, data_for_learning.joint_states_callback)
+    rospy.Subscriber("joint_states", JointState, data_for_learning.joint_states_callback)
     rospy.Subscriber("tf", TFMessage, data_for_learning.tf_callback)
     rospy.Subscriber("wrench", WrenchStamped, data_for_learning.wrench_callback)
 
@@ -217,30 +215,16 @@ if __name__ == '__main__':
         print("Object detected")
         time.sleep(2)
 
-    list_calibration = []
-
-    print("Calculating rest state variables...")
-
-    for i in range(0, 99):
-        list_calibration.append(calc_data_mean(data_for_learning))
-        time.sleep(0.01)
-
-    rest_state_mean = np.mean(np.array(list_calibration))
-
-    limit = float(args["time"]) * float(args["rate"])
+    limit = args["measurements"]
 
     for j in range(0, args["number_reps"]):
 
-        print(f"Waiting for action to initiate experiment {j + 1}...")
+        input(f"Press Enter to beggin experiment {j + 1} ...")
 
-        while not rospy.is_shutdown():
-            data_mean = calc_data_mean(data_for_learning)
-            variance = data_mean - rest_state_mean
-
-            if abs(variance) > 0.3:
-                break
-
-            time.sleep(0.1)
+        print("Experiment starting in")
+        for i in range(0, 3):
+            print(i + 1)
+            time.sleep(1)
 
         i = 0
 
@@ -271,38 +255,38 @@ if __name__ == '__main__':
                 except:
                     pass
 
-                data_mean = calc_data_mean(data_for_learning)
-                variance = data_mean - rest_state_mean
-
-                print(variance)
-                if abs(variance) < 0.1:
-                    break
-
                 et = time.time()
                 # print(et - st)
 
             rate.sleep()
 
         first_read_exist = False
-        action = args["action"]
-        position = str(args["position"])
 
-        path = f"./../data/{action}"
+        array = np.append(array, [vector], axis=0)
+        vector = np.empty((0, 0), dtype=float)
 
-        files = os.listdir(path)
+        print(f"Experiment {j + 1} data saved")
 
-        count = 0
+    action = args["action"]
+    position = str(args["position"])
 
-        for file in files:
-            if file.find(f"pos{position}") != -1:
-                count += 1
+    path = f"./../data/{action}"
 
-        np.save(f"../data/{action}/pos{position}_sample{count + 1}.npy", array)
-        print(f"Experiment {j + 1} data saved in " + Fore.GREEN + f"pos{position}_sample{count + 1}.npy " + Fore.RESET + "file")
+    files = os.listdir(path)
+
+    count = 0
+
+    for file in files:
+        if file.find(f"pos{position}") != -1:
+            count += 1
 
     hand.disconnect()
+
+    print(array.shape)
+    np.save(f"../data/{action}/pos{position}.npy", array)
+
+
 
     print(Fore.GREEN + "-----------------------------------------------------")
     print("             EXPERIMENT FINALIZED                              ")
     print("-----------------------------------------------------" + Fore.RESET)
-
