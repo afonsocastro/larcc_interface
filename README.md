@@ -87,6 +87,9 @@ git clone https://github.com/afonsocastro/larcc_interface.git
 git clone https://github.com/ros-industrial/ur_msgs.git
 ```
 
+[//]: # (TODO Afonso incluir instrução de adicionar export PYTHONPATH=/home/"user"/catkin_ws/src/larcc_interface:$PYTHONPATH to .bashrc)
+
+
 Now compile your catkin workspace:
 ```
 cd ~/catkin_ws

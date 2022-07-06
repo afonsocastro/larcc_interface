@@ -9,7 +9,7 @@ from geometry_msgs.msg import Wrench, Pose, WrenchStamped
 from tf2_msgs.msg import TFMessage
 from colorama import Fore
 import argparse
-from RobotiqHand import RobotiqHand
+from gripper.src.RobotiqHand import RobotiqHand
 
 cont = True
 
