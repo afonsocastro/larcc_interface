@@ -20,7 +20,7 @@ wrench_time = (0, 0)
 array = np.empty((1, 28), dtype=float)
 
 first_read_exist = False
-first_timestamp = (0,0)
+first_timestamp = (0, 0)
 
 
 class DataForLearning:
@@ -224,7 +224,7 @@ if __name__ == '__main__':
             data_mean = calc_data_mean(data_for_learning)
             variance = data_mean - rest_state_mean
 
-            if abs(variance) > 0.2:
+            if abs(variance) > 0.3:
                 break
 
             time.sleep(0.1)
