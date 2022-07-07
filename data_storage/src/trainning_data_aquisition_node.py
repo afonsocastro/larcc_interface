@@ -99,9 +99,10 @@ def time_stamps_comparison(joint_states_t, tf_t, wrench_t):
     global first_read_exist
     global first_timestamp
 
-    nsecs = int((joint_states_t[1] + tf_t[1] + wrench_t[1]) / 3) # mean
+    # nsecs = int((joint_states_t[1] + tf_t[1] + wrench_t[1]) / 3) # mean
 
-    secs = max(joint_states_t[0], tf_t[0], wrench_t[0])
+    nsecs = max(joint_states_t[1], tf_t[1], wrench_t[1])
+    secs = min(joint_states_t[0], tf_t[0], wrench_t[0])
 
     if first_read_exist:
 
