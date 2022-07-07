@@ -378,8 +378,7 @@ if __name__ == '__main__':
 
     if out == "s":
         print("Trainning saved!")
-        # save_trainnning_data(trainning_array, test_array, args["is_trainning"])
-        np.save("./../data/trainning/test1.npy")
+        save_trainnning_data(trainning_array, test_array, args["is_trainning"])
     else:
         print("Trainning not saved!")
 
