@@ -132,7 +132,7 @@ def add_to_array(data):
                     data.wrench_force_torque.torque.y, data.wrench_force_torque.torque.z, data.gripper_current,
                     data.object_detection])
 
-    array = np.append(array, [row], axis=0)
+    array = np.append(array, [row])
 
 
 def gripper_init(hand_robot):
@@ -161,15 +161,21 @@ def calc_data_mean(data):
 
 if __name__ == '__main__':
 
+    # ---------------------------------------------------------------------------------------------
+    # -------------------------------------GET USER INPUTS-----------------------------------------
+    # ---------------------------------------------------------------------------------------------
+
     parser = argparse.ArgumentParser(description="Just an example")
-    parser.add_argument("-t", "--time", type=float, default=5, help="Desired duration of data collection in seconds.")
+    parser.add_argument("-m", "--measurements", type=float, default=30, help="Desired duration of data collection in seconds.")
     parser.add_argument("-r", "--rate", type=float, default=10, help="How many collections per second will be performed.")
-    parser.add_argument("-a", "--action", type=str, default="push", help="Classify the action performed in the "
-                                                                         "experiment (ex: push, pull, twist).")
-    parser.add_argument("-p", "--position", type=int, default=1, help="Index that identifies the experiments' positon.")
-    parser.add_argument("-n", "--number_reps", type=int, default=1, help="Number of repetitions in the same execution")
 
     args = vars(parser.parse_args())
+
+    #TODO Train neural network here
+
+    # ---------------------------------------------------------------------------------------------
+    # ---------------------------------INITIATE COMMUNICATIONS-------------------------------------
+    # ---------------------------------------------------------------------------------------------
 
     rospy.init_node('data_aquisition_node', anonymous=True)
 
@@ -182,6 +188,10 @@ if __name__ == '__main__':
     rospy.Subscriber("wrench", WrenchStamped, data_for_learning.wrench_callback)
 
     pub_arm = rospy.Publisher('arm_request', String, queue_size=10)
+
+    # ---------------------------------------------------------------------------------------------
+    # ------------------------------PREPARE ROBOT FOR EXPERIMENT-----------------------------------
+    # ---------------------------------------------------------------------------------------------
 
     time.sleep(0.2)
 
@@ -217,21 +227,23 @@ if __name__ == '__main__':
         print("Object detected")
         time.sleep(2)
 
-    list_calibration = []
+    # ---------------------------------------------------------------------------------------------
+    # -------------------------------------GET DATA------------------------------------------------
+    # ---------------------------------------------------------------------------------------------
 
-    print("Calculating rest state variables...")
+    while not rospy.is_shutdown():
 
-    for i in range(0, 49):
-        list_calibration.append(calc_data_mean(data_for_learning))
-        time.sleep(0.01)
+        list_calibration = []
 
-    rest_state_mean = np.mean(np.array(list_calibration))
+        print("Calculating rest state variables...")
 
-    limit = float(args["time"]) * float(args["rate"])
+        for i in range(0, 99):
+            list_calibration.append(calc_data_mean(data_for_learning))
+            time.sleep(0.01)
 
-    for j in range(0, args["number_reps"]):
+        rest_state_mean = np.mean(np.array(list_calibration))
 
-        print(f"Waiting for action to initiate experiment {j + 1}...")
+        print(f"Waiting for action...")
 
         while not rospy.is_shutdown():
             data_mean = calc_data_mean(data_for_learning)
@@ -244,13 +256,9 @@ if __name__ == '__main__':
 
         i = 0
 
+        limit = args["measurements"]
+
         while (not rospy.is_shutdown()) and i < limit:
-
-            # The aquisition of the gripper status is done before checking the timestamp so the difference between the
-            # timestamp and the actual time of measurement be residual
-            # With this script order, there is a measurement error of about 10^-7 seconds
-
-            st = time.time()
 
             status = hand.get_instant_gripper_status()
             data_for_learning.gripper_current = status.actual_force_motor_current
@@ -271,38 +279,15 @@ if __name__ == '__main__':
                 except:
                     pass
 
-                data_mean = calc_data_mean(data_for_learning)
-                variance = data_mean - rest_state_mean
-
-                print(variance)
-                if abs(variance) < 0.1:
-                    break
-
                 et = time.time()
                 # print(et - st)
 
             rate.sleep()
 
         first_read_exist = False
-        action = args["action"]
-        position = str(args["position"])
 
-        path = f"./../data/{action}"
-
-        files = os.listdir(path)
-
-        count = 0
-
-        for file in files:
-            if file.find(f"pos{position}") != -1:
-                count += 1
-
-        np.save(f"../data/{action}/pos{position}_sample{count + 1}.npy", array)
-        print(f"Experiment {j + 1} data saved in " + Fore.GREEN + f"pos{position}_sample{count + 1}.npy " + Fore.RESET + "file")
+        #TODO put trainned neural network here
 
     hand.disconnect()
 
-    print(Fore.GREEN + "-----------------------------------------------------")
-    print("             EXPERIMENT FINALIZED                              ")
-    print("-----------------------------------------------------" + Fore.RESET)
 
