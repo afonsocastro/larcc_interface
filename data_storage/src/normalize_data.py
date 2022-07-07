@@ -4,7 +4,7 @@ from sklearn.preprocessing import normalize
 
 path = "./../data/trainning/"
 
-data = np.load(path + "test_data.npy")
+data = np.load(path + "trainning_data.npy")
 
 num_values = 28
 
@@ -17,8 +17,8 @@ for experiment in data:
 
     row_norm = np.reshape(experiment_array_norm, (1, 840))
 
-    data_norm = np.append(data_norm, [row_norm])
+    data_norm = np.append(data_norm, row_norm, axis=0)
 
 
-np.save(path + "test_data_norm.npy", data_norm)
+np.save(path + "trainning_data_norm.npy", data_norm)
 

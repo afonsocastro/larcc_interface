@@ -28,7 +28,7 @@ test_array = None
 vector = None
 
 first_read_exist = False
-first_timestamp = (0, 0)
+first_timestamp = None
 
 
 class DataForLearning:
@@ -99,26 +99,21 @@ def time_stamps_comparison(joint_states_t, tf_t, wrench_t):
     global first_read_exist
     global first_timestamp
 
-    # nsecs = int((joint_states_t[1] + tf_t[1] + wrench_t[1]) / 3) # mean
+    j_times = float(str(joint_states_t[0]) + "." + str(joint_states_t[1]))
+    t_times = float(str(tf_t[0]) + "." + str(tf_t[1]))
+    w_times = float(str(wrench_t[0]) + "." + str(wrench_t[1]))
 
-    nsecs = max(joint_states_t[1], tf_t[1], wrench_t[1])
-    secs = min(joint_states_t[0], tf_t[0], wrench_t[0])
+    max_time = max([t_times, j_times, w_times])
 
     if first_read_exist:
-
-        secs = secs - first_timestamp[0]
-
-    elif not first_read_exist and secs > 0:
-
-        first_timestamp = (secs, nsecs)
-
-        nsecs = 0
-        secs = 0
-
+        time_sample = max_time - first_timestamp
+    elif not first_read_exist and max_time > 0:
+        first_timestamp = max_time
+        time_sample = 0.0
     else:
-        secs = -1
+        time_sample = -1
 
-    return float(str(secs) + "." + str(nsecs))
+    return time_sample
 
 
 def add_to_test_array(test, category):
@@ -383,7 +378,8 @@ if __name__ == '__main__':
 
     if out == "s":
         print("Trainning saved!")
-        save_trainnning_data(trainning_array, test_array, args["is_trainning"])
+        # save_trainnning_data(trainning_array, test_array, args["is_trainning"])
+        np.save("./../data/trainning/test1.npy")
     else:
         print("Trainning not saved!")
 
