@@ -21,8 +21,11 @@ joint_states_time = (0, 0)
 tf_time = (0, 0)
 wrench_time = (0, 0)
 
+
+trainning_array = None
+test_array = None
+
 vector = None
-array = None
 
 first_read_exist = False
 first_timestamp = (0, 0)
@@ -117,6 +120,21 @@ def time_stamps_comparison(joint_states_t, tf_t, wrench_t):
     return float(str(secs) + "." + str(nsecs))
 
 
+def add_to_test_array(test, category):
+    row = [0, 0, 0]
+
+    if category.find("pull") != -1:
+        row = [1, 0, 0]
+    elif category.find("push") != -1:
+        row = [0, 1, 0]
+    elif category.find("twist") != -1:
+        row = [0, 0, 1]
+
+    test = np.append(test, [row], axis=0)
+
+    return test
+
+
 # Adds a new line to the Nx28 array. This new line corresponds to a new variable state in a fixed time
 def add_to_array(data):
     global array
@@ -152,7 +170,81 @@ def gripper_init(hand_robot):
     return hand_robot
 
 
+def calc_data_mean(data):
+    values = np.array([data.joints_effort[0], data.joints_effort[1], data.joints_effort[2], data.joints_effort[3],
+                       data.joints_effort[4], data.joints_effort[5], data.wrench_force_torque.force.x,
+                       data.wrench_force_torque.force.y, data.wrench_force_torque.force.z, data.wrench_force_torque.torque.x,
+                       data.wrench_force_torque.torque.y, data.wrench_force_torque.torque.z])
+
+    return np.mean(values)
+
+
+def save_trainnning_data(trainning, test, is_trainning):
+
+    path = "./../data/trainning"
+
+    files = os.listdir(path)
+
+    if is_trainning == 1:
+        result = ""
+    else:
+        result = "_results"
+
+    trainning_file_exist = False
+    test_file_exist = False
+
+    trainning_results_file_exist = False
+    test_results_file_exist = False
+
+    for file in files:
+        if file.find("trainning") != -1 and file.find("results") == -1:
+            trainning_file_exist = True
+
+        if file.find("trainning") != -1 and file.find("results") != -1:
+            trainning_results_file_exist = True
+
+        if file.find("test") != -1 and file.find("results") == -1:
+            test_file_exist = True
+
+        if file.find("test") != -1 and file.find("results") != -1:
+            test_results_file_exist = True
+
+    if trainning_file_exist and is_trainning == 1:
+        print("Found trainning data")
+        prev_trainning_array = np.load(f"../data/trainning/trainning_data.npy")
+        trainning = np.append(prev_trainning_array, trainning, axis=0)
+
+    if test_file_exist and is_trainning == 1:
+        prev_test_array = np.load(f"../data/trainning/test_data.npy")
+        test = np.append(prev_test_array, test, axis=0)
+
+    if test_results_file_exist and is_trainning != 1:
+        prev_trainning_array = np.load(f"../data/trainning/test_data_results.npy")
+        trainning = np.append(prev_trainning_array, test, axis=0)
+
+    if test_results_file_exist and is_trainning != 1:
+        prev_test_array = np.load(f"../data/trainning/test_data_results.npy")
+        test = np.append(prev_test_array, test, axis=0)
+
+    if is_trainning == 0:
+        rng_state = np.random.get_state()
+        np.random.shuffle(trainning)
+        np.random.set_state(rng_state)
+        np.random.shuffle(test)
+
+    np.save(f"../data/trainning/trainning_data{result}.npy", trainning.astype('float32'))
+    np.save(f"../data/trainning/test_data{result}.npy", test.astype('float32'))
+
+    print("Trainning: " + str(trainning.shape))
+
+    print("Test: " + str(test.shape))
+
+
 if __name__ == '__main__':
+
+    # ---------------------------------------------------------------------------------------------
+    # -------------------------------------GET USER INPUTS-----------------------------------------
+    # ---------------------------------------------------------------------------------------------
 
     parser = argparse.ArgumentParser(description="Just an example")
     parser.add_argument("-m", "--measurements", type=int, default=30,
@@ -162,11 +254,17 @@ if __name__ == '__main__':
                                                                          "experiment (ex: push, pull, twist).")
     parser.add_argument("-p", "--position", type=int, default=1, help="Index that identifies the experiments' positon.")
     parser.add_argument("-n", "--number_reps", type=int, default=1, help="Number of repetitions in the same execution")
+    parser.add_argument("-it", "--is_trainning", type=int, default=1, help="1 - Perform trainning; 0 - Perform test")
 
     args = vars(parser.parse_args())
 
     vector = np.empty((0, args["measurements"] * 28), dtype=float)
-    array = vector
+    trainning_array = vector
+    test_array = np.empty((0, 3), dtype=float)
+
+    # ---------------------------------------------------------------------------------------------
+    # ---------------------------------INITIATE COMMUNICATIONS-------------------------------------
+    # ---------------------------------------------------------------------------------------------
 
     rospy.init_node('data_aquisition_node', anonymous=True)
 
@@ -181,6 +279,10 @@ if __name__ == '__main__':
     pub_arm = rospy.Publisher('arm_request', String, queue_size=10)
 
     time.sleep(0.2)
+
+    # ---------------------------------------------------------------------------------------------
+    # ------------------------------PREPARE ROBOT FOR EXPERIMENT-----------------------------------
+    # ---------------------------------------------------------------------------------------------
 
     ag.move_arm_to_initial_pose(pub_arm)
     print("Moving to testing position")
@@ -214,16 +316,34 @@ if __name__ == '__main__':
         print("Object detected")
         time.sleep(2)
 
+    list_calibration = []
+
+    print("Calculating rest state variables...")
+
+    for i in range(0, 99):
+        list_calibration.append(calc_data_mean(data_for_learning))
+        time.sleep(0.01)
+
+    rest_state_mean = np.mean(np.array(list_calibration))
+
     limit = args["measurements"]
+
+    # ---------------------------------------------------------------------------------------------
+    # -------------------------------------GET DATA------------------------------------------------
+    # ---------------------------------------------------------------------------------------------
 
     for j in range(0, args["number_reps"]):
 
-        input(f"Press Enter to beggin experiment {j + 1} ...")
+        print(f"Waiting for action to initiate experiment {j + 1}...")
 
-        print("Experiment starting in")
-        for i in range(0, 3):
-            print(i + 1)
-            time.sleep(1)
+        while not rospy.is_shutdown():
+            data_mean = calc_data_mean(data_for_learning)
+            variance = data_mean - rest_state_mean
+
+            if abs(variance) > 0.3:
+                break
+
+            time.sleep(0.1)
 
         i = 0
 
@@ -261,31 +381,31 @@ if __name__ == '__main__':
 
         first_read_exist = False
 
-        array = np.append(array, [vector], axis=0)
+        trainning_array = np.append(trainning_array, [vector], axis=0)
+        test_array = add_to_test_array(test_array, args["action"])
         vector = np.empty((0, 0), dtype=float)
 
         print(f"Experiment {j + 1} data saved")
 
+    hand.disconnect()
+
+
+    #---------------------------------------------------------------------------------------------
+    #-------------------------------------STORING DATA--------------------------------------------
+    #---------------------------------------------------------------------------------------------
+
     action = args["action"]
     position = str(args["position"])
 
-    path = f"./../data/{action}"
+    out = input("Save experiment? (s/n)")
 
-    files = os.listdir(path)
-
-    count = 0
-
-    for file in files:
-        if file.find(f"pos{position}") != -1:
-            count += 1
-
-    hand.disconnect()
-
-    print(array.shape)
-    np.save(f"../data/{action}/pos{position}.npy", array)
-
-
+    if out == "s":
+        print("Trainning saved!")
+        save_trainnning_data(trainning_array, test_array, args["is_trainning"])
+    else:
+        print("Trainning not saved!")
 
     print(Fore.GREEN + "-----------------------------------------------------")
     print("             EXPERIMENT FINALIZED                              ")
     print("-----------------------------------------------------" + Fore.RESET)
+
