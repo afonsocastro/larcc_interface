@@ -179,65 +179,46 @@ def calc_data_mean(data):
     return np.mean(values)
 
 
-def save_trainnning_data(trainning, test, is_trainning):
+def save_trainnning_data(data, result, is_trainning):
 
-    path = "./../data/trainning"
+    path = "./../data/trainning/"
 
     files = os.listdir(path)
 
     if is_trainning == 1:
-        result = ""
+        for file in files:
+            if file.find("trainning_data.") != -1:
+                prev_data_array = np.load(f"../data/trainning/trainning_data.npy")
+                data = np.append(prev_data_array, data, axis=0)
+
+            if file.find("trainning_data_results.") != -1:
+                prev_result_array = np.load(f"../data/trainning/trainning_data_results.npy")
+                result = np.append(prev_result_array, result, axis=0)
+
+        np.save(f"../data/trainning/trainning_data.npy", data.astype('float32'))
+        np.save(f"../data/trainning/trainning_data_results.npy", result.astype('float32'))
+
     else:
-        result = "_results"
+        for file in files:
+            if file.find("test_data.") != -1:
+                prev_data_array = np.load(f"../data/trainning/test_data.npy")
+                data = np.append(prev_data_array, data, axis=0)
 
-    trainning_file_exist = False
-    test_file_exist = False
+            if file.find("test_data_results.") != -1:
+                prev_result_array = np.load(f"../data/trainning/test_data_results.npy")
+                result = np.append(prev_result_array, result, axis=0)
 
-    trainning_results_file_exist = False
-    test_results_file_exist = False
-
-    for file in files:
-        if file.find("trainning") != -1 and file.find("results") == -1:
-            trainning_file_exist = True
-
-        if file.find("trainning") != -1 and file.find("results") != -1:
-            trainning_results_file_exist = True
-
-        if file.find("test") != -1 and file.find("results") == -1:
-            test_file_exist = True
-
-        if file.find("test") != -1 and file.find("results") != -1:
-            test_results_file_exist = True
-
-    if trainning_file_exist and is_trainning == 1:
-        print("Found trainning data")
-        prev_trainning_array = np.load(f"../data/trainning/trainning_data.npy")
-        trainning = np.append(prev_trainning_array, trainning, axis=0)
-
-    if test_file_exist and is_trainning == 1:
-        prev_test_array = np.load(f"../data/trainning/test_data.npy")
-        test = np.append(prev_test_array, test, axis=0)
-
-    if test_results_file_exist and is_trainning != 1:
-        prev_trainning_array = np.load(f"../data/trainning/test_data_results.npy")
-        trainning = np.append(prev_trainning_array, test, axis=0)
-
-    if test_results_file_exist and is_trainning != 1:
-        prev_test_array = np.load(f"../data/trainning/test_data_results.npy")
-        test = np.append(prev_test_array, test, axis=0)
-
-    if is_trainning == 0:
         rng_state = np.random.get_state()
-        np.random.shuffle(trainning)
+        np.random.shuffle(data)
         np.random.set_state(rng_state)
-        np.random.shuffle(test)
+        np.random.shuffle(result)
 
-    np.save(f"../data/trainning/trainning_data{result}.npy", trainning.astype('float32'))
-    np.save(f"../data/trainning/test_data{result}.npy", test.astype('float32'))
+        np.save(f"../data/trainning/test_data.npy", data.astype('float32'))
+        np.save(f"../data/trainning/test_data_results.npy", result.astype('float32'))
 
-    print("Trainning: " + str(trainning.shape))
+    print("Trainning: " + str(data.shape))
 
-    print("Test: " + str(test.shape))
+    print("Test: " + str(result.shape))
 
 
 if __name__ == '__main__':
