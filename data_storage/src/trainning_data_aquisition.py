@@ -26,7 +26,6 @@ def add_to_vector(data, vector, first_timestamp):
     else:
         timestamp = data.timestamp() - first_timestamp
 
-    # print(timestamp)
     new_data = np.array([timestamp, data.joints_effort[0], data.joints_effort[1], data.joints_effort[2],
                          data.joints_effort[3], data.joints_effort[4], data.joints_effort[5],
                          data.wrench_force_torque.force.x, data.wrench_force_torque.force.y,
@@ -56,11 +55,28 @@ def save_trainnning_data(data, categ):
     data = np.append(data, vector_categ, axis=1)
 
     for file in files:
-        if file.find("trainning_data_fixed_pos.") != -1:
-            prev_data_array = np.load(path + "/trainning_data_fixed_pos.npy")
+        if file.find("learning_data.") != -1:
+            prev_data_array = np.load(path + "/learning_data.npy")
             data = np.append(prev_data_array, data, axis=0)
 
-    np.save(path + "/trainning_data_fixed_pos.npy", data.astype('float32'))
+    np.save(path + "/learning_data.npy", data.astype('float32'))
+
+    idx_dic = {}
+    idx_list = []
+    for line in data:
+        key = str(int(line[-1]))
+        if not str(key) in idx_dic:
+            idx_dic[key] = 1
+            idx_list.append(key)
+        else:
+            idx_dic[key] += 1
+
+    idx_list.sort()
+
+    print(f"There are now {data.shape[0]} experiments in total")
+
+    for idx in idx_list:
+        print(f"category {idx}: {idx_dic[idx]} experiments")
 
 
 if __name__ == '__main__':
@@ -69,13 +85,16 @@ if __name__ == '__main__':
     parser.add_argument("-ag", "--activate_gripper", type=int, default=0,
                         help="1 - activates gripper; 0 - doesn't activate gripper (default)")
     parser.add_argument("-r", "--rate", type=float, default=100,
-                        help="Defines how many measurements are performed per second")
+                        help="Defines how many measurements are performed per second. (default 100 Hz)")
     parser.add_argument("-t", "--time", type=int, default=0.5,
-                        help="Corresponds to the time in seconds of each experiment.")
+                        help="Corresponds to the time in seconds of each experiment. (default 0.5 seconds)")
     parser.add_argument("-n", "--number_reps", type=int, default=1,
-                        help="Corresponds to the number of times the experiment will be performed")
+                        help="Corresponds to the number of times the experiment will be performed (default 1)")
     parser.add_argument("-c", "--category", type=int, default=-1,
-                        help="Classifies the category")
+                        help="Classifies the category (default no classification)")
+    parser.add_argument("-ft", "--force_treshold", type=float, default=0.1,
+                        help="Defines the force treshold to stop the experiment (default 0.1). The threshold to start"
+                             "is 0.2")
 
     args = vars(parser.parse_args())
 
@@ -99,6 +118,8 @@ if __name__ == '__main__':
     arm_gripper_comm.move_arm_to_initial_pose()
 
     if args["activate_gripper"] == 1:
+        input("Press ENTER to activate gripper in 3 secs")
+        time.sleep(3)
         arm_gripper_comm.gripper_init()
         time.sleep(1.5)
 
@@ -125,8 +146,8 @@ if __name__ == '__main__':
         while not rospy.is_shutdown():
             data_mean = calc_data_mean(data_for_learning)
             variance = data_mean - rest_state_mean
-
-            if abs(variance) > 0.3:
+            print(variance)
+            if abs(variance) > 0.15:
                 break
 
             time.sleep(0.1)
@@ -142,23 +163,31 @@ if __name__ == '__main__':
         vector_data = np.empty((0, 0))
 
         i = 0
+        treshold_counter = 0
+
         rate.sleep()  # The first time rate sleep was used it was giving problems (would not wait the right amout of time)
         while not rospy.is_shutdown() and i < limit:
 
             i += 1
-            print(i)
+            # print(data_for_learning)
             vector_data, first_time_stamp = add_to_vector(data_for_learning, vector_data, first_time_stamp)
 
             data_mean = calc_data_mean(data_for_learning)
             variance = data_mean - rest_state_mean
 
-            if abs(variance) < 0.1:
-                end_experiment = True
-                break
+            print(variance)
+            if abs(variance) < args["force_treshold"]:
+                treshold_counter += 1
+                if treshold_counter >= 3:
+                    end_experiment = True
+                    break
+            else:
+                treshold_counter = 0
 
             rate.sleep()
 
         if end_experiment:
+            print(f"Data collection interrupted in experiment {j + 1}")
             trainning_data_array = trainning_data_array[:-1, :]
             break
 
@@ -170,16 +199,16 @@ if __name__ == '__main__':
     # ---------------------------------------------------------------------------------------------
     # -------------------------------SAVE TRAINNING DATA-------------------------------------------
     # ---------------------------------------------------------------------------------------------
-    print(trainning_data_array.shape)
+
     if args["category"] == -1:
         category = input("Input the number that corresponds to the category trainned: ")
     else:
         category = args["category"]
 
-    out = input("Save experiment? (s/n)\n")
+    out = input(f"You wish to save the {trainning_data_array.shape[0]} experiment? (s/n)\n")
 
     if out == "s":
-        print("Trainning saved!")
+        print(f"Trainning saved!\nIt was saved {trainning_data_array.shape[0]} experiments")
         save_trainnning_data(trainning_data_array, category)
     else:
         print("Trainning not saved!")
