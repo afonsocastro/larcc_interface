@@ -1,0 +1,8 @@
+{
+  "force_threshold_start": 0.05,
+  "force_threshold_end": 0.05,
+  "rate": 100.0,
+  "time": 0.5,
+  "n_variables": 13,
+  "threshold_counter_limit": 3
+}
