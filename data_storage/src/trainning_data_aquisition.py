@@ -10,6 +10,7 @@ from sklearn.preprocessing import normalize
 from lib.src.ArmGripperComm import ArmGripperComm
 
 
+
 def normalize_data(vector, measurements):
 
     data_array = np.reshape(vector, (measurements, int(len(vector) / measurements)))
@@ -43,7 +44,7 @@ def calc_data_mean(data):
     return np.mean(values)
 
 
-def save_trainnning_data(data, categ):
+def save_trainnning_data(data, categ, action_list):
 
     path = "./../data/trainning2"
 
@@ -75,7 +76,7 @@ def save_trainnning_data(data, categ):
     print(f"There are now {data.shape[0]} experiments in total")
 
     for idx in idx_list:
-        print(f"category {idx}: {idx_dic[idx]} experiments")
+        print(f"category {action_list[int(idx)]}: {idx_dic[idx]} experiments")
 
 
 if __name__ == '__main__':
@@ -99,6 +100,11 @@ if __name__ == '__main__':
     config = json.load(f)
 
     f.close()
+
+    if args["category"] >= 0:
+        action = config["action_classes"][args["category"]]
+        print(f"The action chosen was {action}")
+
     # ---------------------------------------------------------------------------------------------
     # -------------------------------INITIATE COMMUNICATION----------------------------------------
     # ---------------------------------------------------------------------------------------------
@@ -154,7 +160,7 @@ if __name__ == '__main__':
         while not rospy.is_shutdown():
             data_mean = calc_data_mean(data_for_learning)
             variance = data_mean - rest_state_mean
-            print(variance)
+            # print(variance)
             if abs(variance) > config["force_threshold_start"]:
                 break
 
@@ -179,13 +185,13 @@ if __name__ == '__main__':
             while not rospy.is_shutdown() and i < limit:
 
                 i += 1
-                # print(data_for_learning)
+                print(data_for_learning)
                 vector_data, first_time_stamp = add_to_vector(data_for_learning, vector_data, first_time_stamp)
 
                 data_mean = calc_data_mean(data_for_learning)
                 variance = data_mean - rest_state_mean
 
-                print(variance)
+                # print(variance)
                 if abs(variance) < config["force_threshold_end"]:
                     treshold_counter += 1
                     if treshold_counter >= config["threshold_counter_limit"]:
@@ -217,11 +223,12 @@ if __name__ == '__main__':
     else:
         category = args["category"]
 
-    out = input(f"You wish to save the {trainning_data_array.shape[0]} experiment? (s/n)\n")
+    classification = config["action_classes"][category]
+    out = input(f"You wish to save the {trainning_data_array.shape[0]} {classification} experiment? (s/n)\n")
 
     if out == "s":
         print(f"Trainning saved!\nIt was saved {trainning_data_array.shape[0]} experiments")
-        save_trainnning_data(trainning_data_array, category)
+        save_trainnning_data(trainning_data_array, category, config["action_classes"])
     else:
         print("Trainning not saved!")
 
