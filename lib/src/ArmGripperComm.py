@@ -62,6 +62,13 @@ class ArmGripperComm:
         while self.state_dic["gripper_closed"]:
             time.sleep(0.1)
 
+    def gripper_disconnect(self):
+        # values = [position, speed, force]
+        my_dict = {'action': 'disconnect'}
+        encoded_data_string = json.dumps(my_dict)
+        rospy.loginfo(encoded_data_string)
+        self.pub_gripper.publish(encoded_data_string)
+
     # Sends a message to the gripper controller to initiate the gripper
     def gripper_init(self):
         my_dict_ = {'action': 'init'}

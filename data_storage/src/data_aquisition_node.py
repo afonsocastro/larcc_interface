@@ -10,17 +10,6 @@ from sensor_msgs.msg import JointState
 from geometry_msgs.msg import Wrench, Pose, WrenchStamped
 from tf2_msgs.msg import TFMessage
 from colorama import Fore
-import argparse
-from gripper.src.RobotiqHand import RobotiqHand
-from lib.src import ArmGripperComm as ag
-
-
-cont = True
-
-array = np.empty((1, 28), dtype=float)
-
-first_read_exist = False
-first_timestamp = (0, 0)
 
 
 class DataForLearning:

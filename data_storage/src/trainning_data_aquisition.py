@@ -10,7 +10,6 @@ from sklearn.preprocessing import normalize
 from lib.src.ArmGripperComm import ArmGripperComm
 
 
-
 def normalize_data(vector, measurements):
 
     data_array = np.reshape(vector, (measurements, int(len(vector) / measurements)))
@@ -212,6 +211,7 @@ if __name__ == '__main__':
         vector_norm = normalize_data(vector_data, limit)
         trainning_data_array = np.append(trainning_data_array, vector_norm, axis=0)
 
+    arm_gripper_comm.gripper_disconnect()
     del data_for_learning, arm_gripper_comm
 
     # ---------------------------------------------------------------------------------------------
@@ -223,7 +223,7 @@ if __name__ == '__main__':
     else:
         category = args["category"]
 
-    classification = config["action_classes"][category]
+    classification = config["action_classes"][int(category)]
     out = input(f"You wish to save the {trainning_data_array.shape[0]} {classification} experiment? (s/n)\n")
 
     if out == "s":
