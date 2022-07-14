@@ -124,13 +124,13 @@ if __name__ == '__main__':
         while not rospy.is_shutdown():
             data_mean = calc_data_mean(data_for_learning)
             variance = data_mean - rest_state_mean
-            print(variance)
+
             if abs(variance) > config["force_threshold_start"]:
                 break
 
             time.sleep(0.1)
 
-        time.sleep(0.2) # time waiting to initiate the experiment
+        time.sleep(config["waiting_offset"]) # time waiting to initiate the experiment
 
         # ---------------------------------------------------------------------------------------------
         # -------------------------------------GET DATA------------------------------------------------
@@ -154,7 +154,7 @@ if __name__ == '__main__':
 
                 data_mean = calc_data_mean(data_for_learning)
                 variance = data_mean - rest_state_mean
-                print(variance)
+
                 if abs(variance) < config["force_threshold_end"]:
                     treshold_counter += 1
                     if treshold_counter >= config["threshold_counter_limit"]:
@@ -172,7 +172,6 @@ if __name__ == '__main__':
         else:
             print("Let's predict")
             vector_norm = normalize_data(vector_data, limit)
-
 
     del data_for_learning, arm_gripper_comm
 

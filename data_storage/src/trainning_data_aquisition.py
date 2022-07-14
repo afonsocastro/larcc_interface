@@ -41,7 +41,7 @@ def calc_data_mean(data):
     values = np.array([data.wrench_force_torque.force.z/10, data.wrench_force_torque.torque.x,
                        data.wrench_force_torque.torque.y, data.wrench_force_torque.torque.z])
 
-    return np.mean(values)
+    return np.mean(abs(values))
 
 
 def save_trainnning_data(data, categ, action_list):
@@ -166,7 +166,7 @@ if __name__ == '__main__':
 
             time.sleep(0.1)
 
-        time.sleep(0.2) # time waiting to initiate the experiment
+        time.sleep(config["waiting_offset"]) # time waiting to initiate the experiment
 
         # ---------------------------------------------------------------------------------------------
         # -------------------------------------GET DATA------------------------------------------------
