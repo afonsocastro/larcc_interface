@@ -89,6 +89,10 @@ git clone https://github.com/ros-industrial/ur_msgs.git
 
 [//]: # (TODO Afonso incluir instrução de adicionar export PYTHONPATH=/home/"user"/catkin_ws/src/larcc_interface:$PYTHONPATH to .bashrc)
 
+TENSOR FLOW install
+```
+pip install tensorflow==2.9.0
+```
 
 Now compile your catkin workspace:
 ```
