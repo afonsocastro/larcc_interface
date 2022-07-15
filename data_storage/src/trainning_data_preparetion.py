@@ -2,10 +2,13 @@
 import argparse
 import os
 import numpy as np
+from sklearn.preprocessing import normalize
 
 
 class SortedDataForLearning:
-    def __init__(self, path="./../data/trainning2/", data_file="learning_data.npy", div1=0.7, div2=0.7):
+    def __init__(self, path="./../data/learning/", data_file="learning_data.npy", div1=0.7, div2=0.7):
+
+        self.data_norm = np.empty((0, 0))
 
         self.trainning_data = np.empty((0, 0))
         self.validation_data = np.empty((0, 0))
@@ -23,12 +26,14 @@ class SortedDataForLearning:
         if file_exist:
             experiment_data = np.load(path + data_file)
 
-            np.random.shuffle(experiment_data)
+            self.normalize_data(experiment_data, 50)
 
-            div1_idx = int(div1 * experiment_data.shape[0])
+            np.random.shuffle(self.data_norm)
 
-            set1 = experiment_data[:div1_idx]
-            self.test_data = experiment_data[div1_idx:]
+            div1_idx = int(div1 * self.data_norm.shape[0])
+
+            set1 = self.data_norm[:div1_idx]
+            self.test_data = self.data_norm[div1_idx:]
 
             div2_idx = int(div2 * set1.shape[0])
 
@@ -49,6 +54,25 @@ class SortedDataForLearning:
     def get_learning_data(self):
         return self.trainning_data, self.validation_data, self.test_data
 
+    def normalize_data(self, array, measurements):
+
+        learning_array = array[:, :-1]
+        array_norm = np.empty((0, learning_array.shape[1]))
+
+        for vector in learning_array:
+
+            data_array = np.reshape(vector, (measurements, int(len(vector) / measurements)))
+            experiment_array_norm = normalize(data_array, axis=0, norm='max')
+
+            vector_data_norm = np.reshape(experiment_array_norm, (1, vector.shape[0]))
+
+            array_norm = np.append(array_norm, vector_data_norm, axis=0)
+
+        array_norm = np.append(array_norm, np.reshape([array[:, -1]], (-1, 1)), axis=1)
+        print(array_norm.shape)
+
+        self.data_norm = array_norm
+
 
 if __name__ == '__main__':
 
@@ -68,3 +92,4 @@ if __name__ == '__main__':
 
     sort_data_for_learing = SortedDataForLearning(path=args["path"], data_file=args["file"],
                                                   div1=args["div1"], div2=args["div2"])
+

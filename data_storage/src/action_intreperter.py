@@ -98,8 +98,10 @@ if __name__ == '__main__':
             arm_gripper_comm.gripper_init()
             time.sleep(1.5)
 
-        arm_gripper_comm.gripper_close_fast()
-        time.sleep(0.5)
+            arm_gripper_comm.gripper_close_fast()
+            time.sleep(0.5)
+
+            arm_gripper_comm.gripper_disconnect()
     except:
         print("ctrl+C pressed")
 
@@ -117,9 +119,12 @@ if __name__ == '__main__':
 
     trainning_data_array = np.empty((0, limit * config["n_variables"]))
 
+    sequential_actions = False
+
     while not rospy.is_shutdown():
 
-        print(f"Waiting for action to initiate prediction ...")
+        if not sequential_actions:
+            print(f"Waiting for action to initiate prediction ...")
 
         while not rospy.is_shutdown():
             data_mean = calc_data_mean(data_for_learning)
@@ -168,8 +173,10 @@ if __name__ == '__main__':
             print("ctrl+C pressed")
 
         if end_experiment:
+            sequential_actions = False
             print("Not enough for prediction")
         else:
+            sequential_actions = True
             print("Let's predict")
             vector_norm = normalize_data(vector_data, limit)
 

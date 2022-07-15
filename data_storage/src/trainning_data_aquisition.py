@@ -45,7 +45,7 @@ def calc_data_mean(data):
 
 def save_trainnning_data(data, categ, action_list):
 
-    path = "./../data/trainning2"
+    path = "./../data/learning"
 
     files = os.listdir(path)
 
@@ -133,8 +133,9 @@ if __name__ == '__main__':
             arm_gripper_comm.gripper_init()
             time.sleep(1.5)
 
-        arm_gripper_comm.gripper_close_fast()
-        time.sleep(0.5)
+            arm_gripper_comm.gripper_close_fast()
+            time.sleep(0.5)
+            arm_gripper_comm.gripper_disconnect()
     except:
         print("ctrl+C pressed")
 
@@ -208,10 +209,10 @@ if __name__ == '__main__':
             trainning_data_array = trainning_data_array[:-1, :]
             break
 
-        vector_norm = normalize_data(vector_data, limit)
-        trainning_data_array = np.append(trainning_data_array, vector_norm, axis=0)
+        print(vector_data.shape)
+        # vector_norm = normalize_data(vector_data, limit)
+        trainning_data_array = np.append(trainning_data_array, [vector_data], axis=0)
 
-    arm_gripper_comm.gripper_disconnect()
     del data_for_learning, arm_gripper_comm
 
     # ---------------------------------------------------------------------------------------------
