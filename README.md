@@ -94,6 +94,14 @@ TENSOR FLOW install
 pip install tensorflow==2.9.0
 ```
 
+troubleshooting: in case protobuf version >=3.20:
+
+```
+pip install protobuf==3.19.*
+```
+
+
+
 Now compile your catkin workspace:
 ```
 cd ~/catkin_ws
