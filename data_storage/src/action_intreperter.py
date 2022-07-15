@@ -3,11 +3,32 @@ import argparse
 import json
 import os
 import time
+
+from colorama import Fore
+from tensorflow import keras
+
 from data_storage.src.data_aquisition_node import DataForLearning
 import numpy as np
 import rospy
 from sklearn.preprocessing import normalize
 from lib.src.ArmGripperComm import ArmGripperComm
+from tabulate import tabulate
+import pyfiglet
+
+
+def print_tabulate(real_time_predictions, config):
+
+    labels = config["action_classes"]
+    max_idx = np.argmax(real_time_predictions)
+
+    result = pyfiglet.figlet_format(labels[max_idx], font="space_op", width=500)
+
+    print(Fore.LIGHTBLUE_EX + result + Fore.RESET)
+
+    for pred in list(real_time_predictions):
+        data = [['Output', pred[0], pred[1], pred[2], pred[3]]]
+        print(tabulate(list(data), headers=[" ", "PULL", "PUSH", "SHAKE", "TWIST"], tablefmt="fancy_grid"))
+        print("\n")
 
 
 def normalize_data(vector, measurements):
@@ -69,6 +90,11 @@ if __name__ == '__main__':
     config = json.load(f)
 
     f.close()
+
+    model_path = "../../neural_networks/keras"
+
+    model = keras.models.load_model(model_path + "/myModel")
+
     # ---------------------------------------------------------------------------------------------
     # -------------------------------INITIATE COMMUNICATION----------------------------------------
     # ---------------------------------------------------------------------------------------------
@@ -174,11 +200,14 @@ if __name__ == '__main__':
 
         if end_experiment:
             sequential_actions = False
-            print("Not enough for prediction")
+            print("\nNot enough for prediction\n")
         else:
             sequential_actions = True
-            print("Let's predict")
             vector_norm = normalize_data(vector_data, limit)
+            print("-----------------------------------------------------------")
+            predictions = model.predict(x=vector_norm, verbose=2)
+            print_tabulate(list(predictions), config)
+            print("-----------------------------------------------------------")
 
     del data_for_learning, arm_gripper_comm
 
