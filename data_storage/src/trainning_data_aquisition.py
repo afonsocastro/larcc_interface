@@ -94,7 +94,7 @@ if __name__ == '__main__':
 
     args = vars(parser.parse_args())
 
-    f = open('../config/config.json')
+    f = open('../config/data_storage_config.json')
 
     config = json.load(f)
 

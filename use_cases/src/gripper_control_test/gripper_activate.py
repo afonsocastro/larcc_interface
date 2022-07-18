@@ -9,9 +9,8 @@ hand = RobotiqHand()
 hand.connect(HOST, PORT)
 print("Connected")
 
-hand.move(255, 255, 0)
-
-hand.wait_move_complete()
+hand.reset()
+hand.activate()
 
 hand.disconnect()
 print("Disconnected")
