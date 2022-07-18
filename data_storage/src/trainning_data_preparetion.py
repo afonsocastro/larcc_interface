@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import argparse
+import json
 import os
 import numpy as np
 from sklearn.preprocessing import normalize
@@ -9,9 +10,18 @@ class SortedDataForLearning:
     def __init__(self, path="./../data/raw_learning_data/", data_file="raw_learning_data.npy", div=0.7):
 
         self.data_norm = np.empty((0, 0))
+        self.data_filtered = np.empty((0, 0))
 
         self.trainning_data = np.empty((0, 0))
         self.test_data = np.empty((0, 0))
+
+        f = open('../config/data_storage_config.json')
+
+        config = json.load(f)
+
+        f.close()
+
+        measurements = int(config["rate"] * config["time"])
 
         files = os.listdir(path)
         file_exist = False
@@ -25,7 +35,9 @@ class SortedDataForLearning:
         if file_exist:
             experiment_data = np.load(path + data_file)
 
-            self.normalize_data(experiment_data, 50)
+            self.filter_data(experiment_data, measurements, config)
+
+            self.normalize_data(self.data_filtered, measurements)
 
             np.random.shuffle(self.data_norm)
 
@@ -45,9 +57,6 @@ class SortedDataForLearning:
         else:
             print("Could not find learning data file")
 
-    def get_learning_data(self):
-        return self.trainning_data, self.test_data
-
     def normalize_data(self, array, measurements):
 
         learning_array = array[:, :-1]
@@ -65,6 +74,30 @@ class SortedDataForLearning:
         array_norm = np.append(array_norm, np.reshape([array[:, -1]], (-1, 1)), axis=1)
 
         self.data_norm = array_norm
+
+    def filter_data(self, array, measurements, config):
+
+        list_idx = []
+        for filtered in config["data_filtered"]:
+            list_idx.append(config["data"].index(filtered))
+
+        learning_array = array[:, :-1]
+        array_filtered = np.empty((0, int(len(list_idx) * measurements)))
+
+        for vector in learning_array:
+            data_array = np.reshape(vector, (measurements, int(len(vector) / measurements)))
+            data_array_filtered = np.empty((data_array.shape[0], 0))
+
+            for idx in list_idx:
+                data_array_filtered = np.append(data_array_filtered, np.reshape([data_array[:, idx]], (-1, 1)), axis=1)
+
+            vector_data_filtered = np.reshape(data_array_filtered, (1, int(len(list_idx) * measurements)))
+
+            array_filtered = np.append(array_filtered, vector_data_filtered, axis=0)
+
+        array_filtered = np.append(array_filtered, np.reshape([array[:, -1]], (-1, 1)), axis=1)
+
+        self.data_filtered = array_filtered
 
 
 if __name__ == '__main__':

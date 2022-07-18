@@ -6,5 +6,11 @@
   "time": 0.5,
   "n_variables": 13,
   "threshold_counter_limit": 3,
-  "waiting_offset": 0.2
+  "waiting_offset": 0.2,
+  "data" : ["timestamp", "joint_ef0", "jointef1", "joint_ef2", "jointef3",
+    "joint_ef4", "jointef5", "gripper_fx", "gripper_fy", "gripper_fz", "gripper_mx",
+    "gripper_my", "gripper_mz"],
+  "data_filtered" : ["timestamp", "joint_ef0", "jointef1", "joint_ef2", "jointef3",
+    "joint_ef4", "jointef5", "gripper_fx", "gripper_fy", "gripper_fz", "gripper_mx",
+    "gripper_my", "gripper_mz"]
 }
