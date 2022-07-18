@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import argparse
+from datetime import datetime
 import json
 import os
 import time
@@ -8,15 +9,6 @@ import numpy as np
 import rospy
 from sklearn.preprocessing import normalize
 from lib.src.ArmGripperComm import ArmGripperComm
-
-
-def normalize_data(vector, measurements):
-
-    data_array = np.reshape(vector, (measurements, int(len(vector) / measurements)))
-    experiment_array_norm = normalize(data_array, axis=0, norm='max')
-
-    vector_data_norm = np.reshape(experiment_array_norm, (1, vector.shape[0]))
-    return vector_data_norm
 
 
 def add_to_vector(data, vector, first_timestamp):
@@ -45,7 +37,7 @@ def calc_data_mean(data):
 
 def save_trainnning_data(data, categ, action_list):
 
-    path = "./../data/learning"
+    path = "./../data/raw_learning_data"
 
     files = os.listdir(path)
 
@@ -54,11 +46,11 @@ def save_trainnning_data(data, categ, action_list):
     data = np.append(data, vector_categ, axis=1)
 
     for file in files:
-        if file.find("learning_data.") != -1:
-            prev_data_array = np.load(path + "/learning_data.npy")
+        if file.find("raw_learning_data.") != -1:
+            prev_data_array = np.load(path + "/raw_learning_data.npy")
             data = np.append(prev_data_array, data, axis=0)
 
-    np.save(path + "/learning_data.npy", data.astype('float32'))
+    np.save(path + "/raw_learning_data.npy", data)
 
     idx_dic = {}
     idx_list = []
@@ -213,16 +205,28 @@ if __name__ == '__main__':
         # vector_norm = normalize_data(vector_data, limit)
         trainning_data_array = np.append(trainning_data_array, [vector_data], axis=0)
 
-    del data_for_learning, arm_gripper_comm
-
-    # ---------------------------------------------------------------------------------------------
-    # -------------------------------SAVE TRAINNING DATA-------------------------------------------
-    # ---------------------------------------------------------------------------------------------
 
     if args["category"] == -1:
         category = input("Input the number that corresponds to the category trainned: ")
     else:
         category = args["category"]
+
+    pos = f'time: {datetime.now().strftime("%d/%m/%Y %H:%M:%S")}, action: {category}, ' \
+          f'number_experiments: {trainning_data_array.shape[0]} ' \
+          f'joints_pos: {data_for_learning.joints_position}, gripper_pos: ' \
+          f'({data_for_learning.wrench_pose.position.x}, ' \
+          f'{data_for_learning.wrench_pose.position.y}, {data_for_learning.wrench_pose.position.z}, ' \
+          f'{data_for_learning.wrench_pose.orientation.x}, {data_for_learning.wrench_pose.orientation.y}, ' \
+          f'{data_for_learning.wrench_pose.orientation.z}, {data_for_learning.wrench_pose.orientation.w})'
+
+    with open('../data/raw_learning_data/position_historic.txt', 'w') as f:
+        f.write(pos)
+
+    del data_for_learning, arm_gripper_comm
+
+    # ---------------------------------------------------------------------------------------------
+    # -------------------------------SAVE TRAINNING DATA-------------------------------------------
+    # ---------------------------------------------------------------------------------------------
 
     classification = config["action_classes"][int(category)]
     out = input(f"You wish to save the {trainning_data_array.shape[0]} {classification} experiment? (s/n)\n")

@@ -28,12 +28,21 @@ def normalize_data(vector, measurements):
 #
 # print(array)
 
+# print("Original matrix:")
+# print(A)
+# print("-------------------------------\nNormalized matrix (by columns):")
+# B = normalize(A, axis=0, norm="max")
+# print(B)
 
-A = np.array([[20, 0, -10],
-             [0, 1, 0],
-             [-3, 1, 4]])
-print("Original matrix:")
-print(A)
-print("-------------------------------\nNormalized matrix (by columns):")
-B = normalize(A, axis=0, norm="max")
-print(B)
+# dt = np.dtype('float32', metadata={"key": "value"})
+#
+# print(dt.metadata["key"])
+#
+# arr = np.array([1, 2, 3], dtype=dt)
+#
+# print(arr.dtype.metadata)
+# print(arr.dtype)
+# A = np.load("../data/raw_learning_data/raw_learning_data.npy", allow_pickle=True)
+# print(A)
+# print(type(A))
+# print(A.items())

@@ -58,17 +58,8 @@ def add_to_vector(data, vector, first_timestamp):
 
 
 def calc_data_mean(data):
-    # values = np.array([data.wrench_force_torque.force.x,
-    #                    data.wrench_force_torque.force.y, data.wrench_force_torque.force.z])
-    # values = np.array([data.wrench_force_torque.force.x,
-    #                    data.wrench_force_torque.force.y, data.wrench_force_torque.force.z, data.wrench_force_torque.torque.x,
-    #                    data.wrench_force_torque.torque.y, data.wrench_force_torque.torque.z])
     values = np.array([data.wrench_force_torque.force.z/10, data.wrench_force_torque.torque.x,
                        data.wrench_force_torque.torque.y, data.wrench_force_torque.torque.z])
-    # # values = np.array([data.joints_effort[0], data.joints_effort[1], data.joints_effort[2], data.joints_effort[3],
-    #                    data.joints_effort[4], data.joints_effort[5], data.wrench_force_torque.force.x,
-    #                    data.wrench_force_torque.force.y, data.wrench_force_torque.force.z, data.wrench_force_torque.torque.x,
-    #                    data.wrench_force_torque.torque.y, data.wrench_force_torque.torque.z])
 
     return np.mean(values)
 
