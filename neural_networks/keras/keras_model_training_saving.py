@@ -8,13 +8,19 @@ from tensorflow.keras.optimizers import Adam, SGD
 from tensorflow.keras.metrics import categorical_crossentropy
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Activation, Dense, Dropout
+from data_storage.src.trainning_data_preparetion import SortedDataForLearning
 
 if __name__ == '__main__':
     validation_split = 0.3
 
-    all_data = np.load('../data/learning_data.npy', mmap_mode=None, allow_pickle=False, fix_imports=True,
-                       encoding='ASCII')
+    # all_data = np.load('../data/learning_data.npy', mmap_mode=None, allow_pickle=False, fix_imports=True,
+    #                    encoding='ASCII')
 
+    sorted_data_for_learning = SortedDataForLearning(path="../../data_storage/data/trainning2/",
+                                                     data_file="learning_data.npy", div=0.7)
+
+    all_data = sorted_data_for_learning.trainning_data
+    print(all_data.shape[0])
     print("type(all_data)")
     print(type(all_data))
 
@@ -23,13 +29,12 @@ if __name__ == '__main__':
 
     validation_n = len(all_data) * validation_split
 
-
     all_data = np.array(all_data)
     # all_data = all_data.reshape(-1, 1)
     #
 
     model = Sequential([
-        Dense(units=16, input_shape=(650,), activation='relu'),
+        Dense(units=16, input_shape=(all_data.shape[1]-1,), activation='relu'),
         Dense(units=32, activation='relu'),
         Dropout(0.5),
         Dense(units=4, activation='softmax')
@@ -41,7 +46,7 @@ if __name__ == '__main__':
     model.summary()
 
     model.compile(optimizer=Adam(learning_rate=0.0001), loss='sparse_categorical_crossentropy', metrics=['accuracy'])
-    model.fit(x=all_data[:, :-1], y=all_data[:, -1], validation_split=validation_split, batch_size=5, shuffle=True, epochs=50,
+    model.fit(x=all_data[:, :-1], y=all_data[:, -1], validation_split=validation_split, batch_size=5, shuffle=True, epochs=200,
               verbose=2)
 
     print("\n")

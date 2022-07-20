@@ -40,7 +40,7 @@ def normalize_data(vector, measurements):
     return vector_data_norm
 
 
-def add_to_vector(data, vector, first_timestamp):
+def add_to_vector(data, vector, first_timestamp, list_idx):
 
     if first_time_stamp is None:
         first_timestamp = data.timestamp()
@@ -48,13 +48,22 @@ def add_to_vector(data, vector, first_timestamp):
     else:
         timestamp = data.timestamp() - first_timestamp
 
-    new_data = np.array([timestamp, data.joints_effort[0], data.joints_effort[1], data.joints_effort[2],
-                         data.joints_effort[3], data.joints_effort[4], data.joints_effort[5],
-                         data.wrench_force_torque.force.x, data.wrench_force_torque.force.y,
-                         data.wrench_force_torque.force.z, data.wrench_force_torque.torque.x,
-                         data.wrench_force_torque.torque.y, data.wrench_force_torque.torque.z])
+    # new_data = np.array([timestamp, data.joints_effort[0], data.joints_effort[1], data.joints_effort[2],
+    #                      data.joints_effort[3], data.joints_effort[4], data.joints_effort[5],
+    #                      data.wrench_force_torque.force.x, data.wrench_force_torque.force.y,
+    #                      data.wrench_force_torque.force.z, data.wrench_force_torque.torque.x,
+    #                      data.wrench_force_torque.torque.y, data.wrench_force_torque.torque.z])
+    new_data = [timestamp, data.joints_effort[0], data.joints_effort[1], data.joints_effort[2],
+                data.joints_effort[3], data.joints_effort[4], data.joints_effort[5],
+                data.wrench_force_torque.force.x, data.wrench_force_torque.force.y,
+                data.wrench_force_torque.force.z, data.wrench_force_torque.torque.x,
+                data.wrench_force_torque.torque.y, data.wrench_force_torque.torque.z]
 
-    return np.append(vector, new_data), first_timestamp
+    new_data_filtered = []
+    for idx in list_idx:
+        new_data_filtered.append(new_data[idx])
+
+    return np.append(vector, new_data_filtered), first_timestamp
 
 
 def calc_data_mean(data):
@@ -71,8 +80,10 @@ if __name__ == '__main__':
     # ---------------------------------------------------------------------------------------------
 
     parser = argparse.ArgumentParser(description="Arguments for trainning script")
-    parser.add_argument("-ag", "--activate_gripper", type=int, default=0,
-                        help="1 - activates gripper; 0 - doesn't activate gripper (default)")
+    parser.add_argument("-ag", "--activate_gripper", action="store_true",
+                        help="If argmument is present, activates gripper")
+    parser.add_argument("-maip", "--move_arm_to_inicial_position", action="store_true",
+                        help="If argmument is present, activates gripper")
 
     args = vars(parser.parse_args())
 
@@ -82,9 +93,13 @@ if __name__ == '__main__':
 
     f.close()
 
+    list_filter_idx = []
+    for filtered in config["data_filtered"]:
+        list_filter_idx.append(config["data"].index(filtered))
+
     model_path = "../../neural_networks/keras"
 
-    model = keras.models.load_model(model_path + "/myModel")
+    model = keras.models.load_model(model_path + "/myModel2")
 
     # ---------------------------------------------------------------------------------------------
     # -------------------------------INITIATE COMMUNICATION----------------------------------------
@@ -104,9 +119,10 @@ if __name__ == '__main__':
     # ---------------------------------------------------------------------------------------------
 
     try:
-        # arm_gripper_comm.move_arm_to_initial_pose()
+        if args["move_arm_to_inicial_position"]:
+            arm_gripper_comm.move_arm_to_initial_pose()
 
-        if args["activate_gripper"] == 1:
+        if args["activate_gripper"]:
             input("Press ENTER to activate gripper in 3 secs")
             for i in range(0, 3):
                 print(i + 1)
@@ -172,7 +188,8 @@ if __name__ == '__main__':
 
                 i += 1
                 # print(data_for_learning)
-                vector_data, first_time_stamp = add_to_vector(data_for_learning, vector_data, first_time_stamp)
+                vector_data, first_time_stamp = add_to_vector(data_for_learning, vector_data, first_time_stamp,
+                                                              list_filter_idx)
 
                 data_mean = calc_data_mean(data_for_learning)
                 variance = data_mean - rest_state_mean

@@ -15,7 +15,7 @@ class SortedDataForLearning:
         self.trainning_data = np.empty((0, 0))
         self.test_data = np.empty((0, 0))
 
-        f = open('../config/data_storage_config.json')
+        f = open(path + '../../config/data_storage_config.json')
 
         config = json.load(f)
 
@@ -26,8 +26,6 @@ class SortedDataForLearning:
         files = os.listdir(path)
         file_exist = False
 
-        print(path + data_file)
-        print(files)
         for file in files:
             if file.find(data_file) != -1:
                 file_exist = True
