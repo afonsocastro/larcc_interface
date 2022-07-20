@@ -1,0 +1,316 @@
+<?xml version="1.0"?>
+<robot name="gantry_macro" xmlns:xacro="http://ros.org/wiki/xacro">
+
+    <!-- A leg macro, to be used bellow by the table macro.-->
+    <xacro:macro name="gantry_leg_macro" params="name parent *origin height leg_radius gantry_thickness">
+        <link name="${name}_${parent}">
+            <visual>
+                <origin xyz="0.0 0.0 0.0" rpy="0 0 0" />
+                <geometry>
+                    <mesh filename="package://larcc_cell_description/meshes/minitec_90x90_2200.STL" scale="0.001 0.001 0.001" />
+<!--                    <cylinder radius="${leg_radius}" length="${height-gantry_thickness}" />-->
+                </geometry>
+                <material name="grey"/>
+            </visual>
+            <collision>
+                <origin xyz="${0.09/2} ${0.09/2} ${2.2/2}" rpy="0 0 0" />
+                <geometry>
+                    <box size="0.09 0.09 2.2"/>
+                </geometry>
+            </collision>
+            <inertial>
+                <mass value="1.0" />
+                <origin xyz="0.0 0.0 ${height/2-gantry_thickness-0.001}" rpy="0 0 0" />
+                <inertia ixx="0.1" ixy="0"  ixz="0"
+                         iyy="0.1" iyz="0"
+                         izz="0.01" />
+            </inertial>
+        </link>
+        <gazebo reference="${name}_${parent}">
+            <material>Gazebo/Grey</material>
+            <mu1>1000.0</mu1>
+            <mu2>1000.0</mu2>
+            <kp>10000000.0</kp>
+            <kd>1.0</kd>
+            <selfCollide>true</selfCollide>
+        </gazebo>
+
+        <joint name="${parent}_to_${name}" type="fixed">
+            <parent link="${parent}" />
+            <child link="${name}_${parent}" />
+            <xacro:insert_block name="origin"/>
+        </joint>
+    </xacro:macro>
+
+    <!-- A top big beam, to be used bellow by the table macro.-->
+    <xacro:macro name="gantry_big_beam_macro" params="name parent *origin height leg_radius gantry_thickness">
+        <link name="${name}_gantry">
+            <visual>
+                <origin xyz="0.0 0.0 0.0" rpy="0 ${M_PI/2} 0" />
+                <geometry>
+                    <mesh filename="package://larcc_cell_description/meshes/minitec_90x90_5000.STL" scale="0.001 0.001 0.001" />
+<!--                    <cylinder radius="${leg_radius}" length="${height-gantry_thickness}" />-->
+                </geometry>
+                <material name="grey"/>
+            </visual>
+            <collision>
+                <origin xyz="${5/2} ${0.09/2} ${-0.09/2}" rpy="0 ${M_PI/2} 0" />
+                <geometry>
+                    <box size="0.09 0.09 5"/>
+                </geometry>
+            </collision>
+            <inertial>
+                <mass value="1.0" />
+                <origin xyz="0.0 0.0 ${height/2-gantry_thickness-0.001}" rpy="0 0 0" />
+                <inertia ixx="0.1" ixy="0"  ixz="0"
+                         iyy="0.1" iyz="0"
+                         izz="0.01" />
+            </inertial>
+        </link>
+        <gazebo reference="${name}_${parent}">
+            <material>Gazebo/Grey</material>
+            <mu1>1000.0</mu1>
+            <mu2>1000.0</mu2>
+            <kp>10000000.0</kp>
+            <kd>1.0</kd>
+            <selfCollide>true</selfCollide>
+        </gazebo>
+
+        <joint name="${parent}_to_${name}" type="fixed">
+            <parent link="${parent}" />
+            <child link="${name}_gantry" />
+            <xacro:insert_block name="origin"/>
+        </joint>
+    </xacro:macro>
+
+        <!-- A top small beam, to be used bellow by the table macro.-->
+    <xacro:macro name="gantry_small_beam_macro" params="name parent *origin height leg_radius gantry_thickness">
+        <link name="${name}_${parent}">
+            <visual>
+                <origin xyz="0.0 0.0 0.0" rpy="0 ${M_PI/2} ${M_PI/2}" />
+                <geometry>
+                    <mesh filename="package://larcc_cell_description/meshes/minitec_90x90_3800.STL" scale="0.001 0.001 0.001" />
+<!--                    <cylinder radius="${leg_radius}" length="${height-gantry_thickness}" />-->
+                </geometry>
+                <material name="grey"/>
+            </visual>
+            <collision>
+                <origin xyz="${-0.09/2} ${3.8/2} ${-0.09/2}" rpy="0 ${M_PI/2} ${M_PI/2}" />
+                <geometry>
+                    <box size="0.09 0.09 3.8"/>
+                </geometry>
+            </collision>
+            <inertial>
+                <mass value="1.0" />
+                <origin xyz="0.0 0.0 ${height/2-gantry_thickness-0.001}" rpy="0 0 0" />
+                <inertia ixx="0.1" ixy="0"  ixz="0"
+                         iyy="0.1" iyz="0"
+                         izz="0.01" />
+            </inertial>
+        </link>
+        <gazebo reference="${name}_${parent}">
+            <material>Gazebo/Grey</material>
+            <mu1>1000.0</mu1>
+            <mu2>1000.0</mu2>
+            <kp>10000000.0</kp>
+            <kd>1.0</kd>
+            <selfCollide>true</selfCollide>
+        </gazebo>
+
+        <joint name="${parent}_to_${name}" type="fixed">
+            <parent link="${parent}" />
+            <child link="${name}_${parent}" />
+            <xacro:insert_block name="origin"/>
+        </joint>
+    </xacro:macro>
+
+
+            <!-- A top small beam, to be used bellow by the table macro.-->
+    <xacro:macro name="gantry_retangular_beam_macro" params="name parent *origin height leg_radius gantry_thickness">
+        <link name="${name}_gantry">
+            <visual>
+                <origin xyz="0.0 0.0 0.0" rpy="0 ${M_PI/2} ${M_PI/2}" />
+                <geometry>
+                    <mesh filename="package://larcc_cell_description/meshes/minitec_45x90_3000.STL" scale="0.001 0.001 0.001" />
+<!--                    <cylinder radius="${leg_radius}" length="${height-gantry_thickness}" />-->
+                </geometry>
+                <material name="grey"/>
+            </visual>
+            <collision>
+                <origin xyz="${-0.045} ${1.5} ${-0.045/2}" rpy="0 ${M_PI/2} ${M_PI/2}" />
+                <geometry>
+                    <box size="0.045 0.09 3"/>
+                </geometry>
+            </collision>
+            <inertial>
+                <mass value="1.0" />
+                <origin xyz="0.0 0.0 ${height/2-gantry_thickness-0.001}" rpy="0 0 0" />
+                <inertia ixx="0.1" ixy="0"  ixz="0"
+                         iyy="0.1" iyz="0"
+                         izz="0.01" />
+            </inertial>
+        </link>
+        <gazebo reference="${name}_${parent}">
+            <material>Gazebo/Grey</material>
+            <mu1>1000.0</mu1>
+            <mu2>1000.0</mu2>
+            <kp>10000000.0</kp>
+            <kd>1.0</kd>
+            <selfCollide>true</selfCollide>
+        </gazebo>
+
+        <joint name="${parent}_to_${name}" type="fixed">
+            <parent link="${parent}" />
+            <child link="${name}_gantry" />
+            <xacro:insert_block name="origin"/>
+        </joint>
+    </xacro:macro>
+
+
+
+    <!-- Table macro, the one that is called from another file.-->
+    <xacro:macro name="gantry_macro" params="name parent *origin width length height
+                                            gantry_thickness leg_radius">
+
+        <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%-->
+        <!-- table link-->
+        <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%-->
+        <link name="${name}"/>
+
+        <joint name="world_to_${name}" type="fixed">
+            <parent link="${parent}"/>
+            <child link="${name}" />
+            <xacro:insert_block name="origin"/>
+        </joint>
+
+<!--         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%-->
+<!--         top big beam link-->
+<!--         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%-->
+        <link name="gantry_${name}">
+<!--            <visual>-->
+<!--                <origin xyz="0 0 ${-gantry_thickness}" rpy="0 0 0"/>-->
+<!--                <geometry>-->
+<!--                    <box size="${width} ${length} 0"/>-->
+<!--                </geometry>-->
+<!--                <material name="grey"/>-->
+<!--            </visual>-->
+<!--            <collision name="base_link_collision">-->
+<!--                <origin xyz="0 0 ${-gantry_thickness}" rpy="0 0 0"/>-->
+<!--                <geometry>-->
+<!--                    <box size="${width} ${length} ${gantry_thickness}"/>-->
+<!--                </geometry>-->
+<!--            </collision>-->
+            <inertial>
+                <mass value="1.0" />
+                <origin xyz="0 0 ${-gantry_thickness}" rpy="0 0 0"/>
+                <inertia ixx="1" ixy="0"  ixz="0" iyy="1" iyz="0" izz="1" />
+            </inertial>
+        </link>
+
+        <gazebo reference="gantry_${name}">
+            <material>Gazebo/Grey</material>
+            <mu1>50.0</mu1>
+            <mu2>50.0</mu2>
+            <kp>1000000.0</kp>
+            <kd>1.0</kd>
+            <selfCollide>false</selfCollide>
+        </gazebo>
+
+         <joint name="${name}_to_gantry_${name}" type="fixed">
+            <parent link="${name}"/>
+            <child link="gantry_${name}" />
+            <origin xyz="0 0 ${height}" rpy="0 0 0"/>
+        </joint>
+
+        <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%-->
+        <!-- Define the four legs -->
+        <!-- %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%-->
+        <xacro:gantry_leg_macro name="leg1" parent="${name}" height="${height}" leg_radius="${leg_radius}" gantry_thickness="${gantry_thickness}">
+            <origin xyz="${-width/2+leg_radius} ${length/2} 0" rpy="0 0 0"/>
+        </xacro:gantry_leg_macro>
+
+        <xacro:gantry_leg_macro name="leg2" parent="${name}" height="${height}" leg_radius="${leg_radius}" gantry_thickness="${gantry_thickness}">
+            <origin xyz="${width/2} ${length/2} 0" rpy="0 0 0"/>
+        </xacro:gantry_leg_macro>
+
+        <xacro:gantry_leg_macro name="leg3" parent="${name}" height="${height}" leg_radius="${leg_radius}" gantry_thickness="${gantry_thickness}">
+            <origin xyz="${width/2} ${-length/2-leg_radius} 0" rpy="0 0 0"/>
+        </xacro:gantry_leg_macro>
+
+        <xacro:gantry_leg_macro name="leg4" parent="${name}" height="${height}" leg_radius="${leg_radius}" gantry_thickness="${gantry_thickness}">
+            <origin xyz="${-width/2+leg_radius} ${-length/2-leg_radius} 0" rpy="0 0 0"/>
+        </xacro:gantry_leg_macro>
+
+
+<!--        <xacro:gantry_big_beam_macro name="bigbeam1" parent="${name}" height="${height}" leg_radius="${leg_radius}" gantry_thickness="${gantry_thickness}">-->
+<!--            <origin xyz="${-width/2+leg_radius-1.1/2} ${length/2-0.09} ${height}" rpy="0 0 0"/>-->
+<!--        </xacro:gantry_big_beam_macro>-->
+<!--&lt;!&ndash;&ndash;&gt;-->
+<!--        <xacro:gantry_big_beam_macro name="bigbeam2" parent="${name}" height="${height}" leg_radius="${leg_radius}" gantry_thickness="${gantry_thickness}">-->
+<!--            <origin xyz="${-width/2+leg_radius-1.1/2} ${-length/2+0.09} ${height}" rpy="0 0 0"/>-->
+<!--        </xacro:gantry_big_beam_macro>-->
+
+        <xacro:gantry_big_beam_macro name="bigbeam1" parent="leg1_gantry" height="${height}" leg_radius="${leg_radius}" gantry_thickness="${gantry_thickness}">
+            <origin xyz="${-(5-width)/2} 0 ${height}" rpy="0 0 0"/>
+        </xacro:gantry_big_beam_macro>
+
+        <xacro:gantry_big_beam_macro name="bigbeam2" parent="leg4_gantry" height="${height}" leg_radius="${leg_radius}" gantry_thickness="${gantry_thickness}">
+            <origin xyz="${-(5-width)/2} 0 ${height}" rpy="0 0 0"/>
+        </xacro:gantry_big_beam_macro>
+
+
+<!--        <xacro:gantry_small_beam_macro name="smallbeam1" parent="${name}" height="${height}" leg_radius="${leg_radius}" gantry_thickness="${gantry_thickness}">-->
+<!--            <origin xyz="${-width/2+leg_radius+0.09} ${-length/2-0.5} ${height+0.09}" rpy="0 0 0"/>-->
+<!--        </xacro:gantry_small_beam_macro>-->
+<!--&lt;!&ndash;&ndash;&gt;-->
+<!--        <xacro:gantry_small_beam_macro name="smallbeam2" parent="${name}" height="${height}" leg_radius="${leg_radius}" gantry_thickness="${gantry_thickness}">-->
+<!--            <origin xyz="${width/2-leg_radius+0.09} ${-length/2-0.5} ${height+0.09}" rpy="0 0 0"/>-->
+<!--        </xacro:gantry_small_beam_macro>-->
+
+
+<!--        <xacro:gantry_small_beam_macro name="smallbeam1" parent="bigbeam1_gantry" height="${height}" leg_radius="${leg_radius}" gantry_thickness="${gantry_thickness}">-->
+<!--            <origin xyz="${-width/2+leg_radius+0.09} ${-length/2-0.5} ${height+0.09}" rpy="0 0 0"/>-->
+<!--        </xacro:gantry_small_beam_macro>-->
+<!--&lt;!&ndash;&ndash;&gt;-->
+<!--        <xacro:gantry_small_beam_macro name="smallbeam2" parent="bigbeam1_gantry" height="${height}" leg_radius="${leg_radius}" gantry_thickness="${gantry_thickness}">-->
+<!--            <origin xyz="${width/2-leg_radius+0.09} ${-length/2-0.5} ${height+0.09}" rpy="0 0 0"/>-->
+<!--        </xacro:gantry_small_beam_macro>-->
+
+
+        <xacro:gantry_small_beam_macro name="smallbeam1" parent="bigbeam1_gantry" height="${height}" leg_radius="${leg_radius}" gantry_thickness="${gantry_thickness}">
+            <origin xyz="${(5-width)/2+0.09} ${-((-3.8+length+0.09)/2+3.8)} 0.09" rpy="0 0 0"/>
+        </xacro:gantry_small_beam_macro>
+
+        <xacro:gantry_small_beam_macro name="smallbeam2" parent="bigbeam1_gantry" height="${height}" leg_radius="${leg_radius}" gantry_thickness="${gantry_thickness}">
+            <origin xyz="${5-(5-width)/2} ${-((-3.8+length+0.09)/2+3.8)} 0.09" rpy="0 0 0"/>
+        </xacro:gantry_small_beam_macro>
+
+
+<!--        <xacro:gantry_retangular_beam_macro name="rectangularbeam1" parent="${name}" height="${height}" leg_radius="${leg_radius}" gantry_thickness="${gantry_thickness}">-->
+<!--            <origin xyz="${1+0.045} ${-length/2-0.15} ${height}" rpy="0 ${M_PI/2} 0"/>-->
+<!--        </xacro:gantry_retangular_beam_macro>-->
+
+<!--        <xacro:gantry_retangular_beam_macro name="rectangularbeam2" parent="${name}" height="${height}" leg_radius="${leg_radius}" gantry_thickness="${gantry_thickness}">-->
+<!--            <origin xyz="${0+0.045} ${-length/2-0.15} ${height}" rpy="0 ${M_PI/2} 0"/>-->
+<!--        </xacro:gantry_retangular_beam_macro>-->
+
+<!--        <xacro:gantry_retangular_beam_macro name="rectangularbeam3" parent="${name}" height="${height}" leg_radius="${leg_radius}" gantry_thickness="${gantry_thickness}">-->
+<!--            <origin xyz="${-1+0.045} ${-length/2-0.15} ${height}" rpy="0 ${M_PI/2} 0"/>-->
+<!--        </xacro:gantry_retangular_beam_macro>-->
+
+
+
+        <xacro:gantry_retangular_beam_macro name="rectangularbeam1" parent="bigbeam1_gantry" height="${height}" leg_radius="${leg_radius}" gantry_thickness="${gantry_thickness}">
+            <origin xyz="${(5-width)/2+width/4-0.045} -2.8 0" rpy="0 ${M_PI/2} 0"/>
+        </xacro:gantry_retangular_beam_macro>
+
+        <xacro:gantry_retangular_beam_macro name="rectangularbeam2" parent="bigbeam1_gantry" height="${height}" leg_radius="${leg_radius}" gantry_thickness="${gantry_thickness}">
+            <origin xyz="${(5-width)/2+width/2-0.045} -2.8 0" rpy="0 ${M_PI/2} 0"/>
+        </xacro:gantry_retangular_beam_macro>
+
+        <xacro:gantry_retangular_beam_macro name="rectangularbeam3" parent="bigbeam1_gantry" height="${height}" leg_radius="${leg_radius}" gantry_thickness="${gantry_thickness}">
+            <origin xyz="${(5-width)/2+3*width/4-0.045} -2.8 0" rpy="0 ${M_PI/2} 0"/>
+        </xacro:gantry_retangular_beam_macro>
+
+    </xacro:macro>
+</robot>

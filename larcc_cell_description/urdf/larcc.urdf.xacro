@@ -1,0 +1,127 @@
+<?xml version="1.0" ?>
+<robot name="larcc" xmlns:xacro="http://ros.org/wiki/xacro">
+    <!--  Miguel Riem Oliveira-->
+    <!--  February 2021-->
+    <!--Args are local, properties are global, so we copy the values of the arguments to the properties-->
+    <!--Properties are global so they can be viewed from inside the included xacros-->
+    <!--  args are used with $(arg arg_name), properties are used as ${property_name}-->
+    <xacro:property name="table_height" value="0.795"/>
+    <xacro:property name="table_width" value=".9"/>
+    <xacro:property name="table_length" value="1.25"/>
+    <xacro:property name="table_tabletop_thickness" value="0.015"/>
+    <xacro:property name="table_leg_radius" value="0.02"/>
+    <xacro:property name="M_PI" value="3.1415926535897931"/>
+    <xacro:property name="gantry_height" value="2.29"/>
+    <xacro:property name="gantry_width" value="4"/>
+    <xacro:property name="gantry_length" value="2.8"/>
+    <xacro:property name="gantry_thickness" value="0"/>
+    <xacro:property name="gantry_leg_radius" value="0.09"/>
+    <!-- Include other files-->
+    <xacro:include filename="$(find larcc_description)/urdf/properties.xacro"/>
+    <xacro:include filename="$(find larcc_description)/urdf/table.macro.xacro"/>
+    <xacro:include filename="$(find larcc_description)/urdf/gantry.macro.xacro"/>
+    <xacro:include filename="$(find larcc_description)/urdf/tripod.macro.xacro"/>
+    <xacro:include filename="$(find larcc_description)/urdf/astra.urdf.xacro"/>
+    <xacro:include filename="$(find hector_xacro_tools)/urdf/inertia_tensors.urdf.xacro"/>
+    <xacro:include filename="$(find hector_xacro_tools)/urdf/joint_macros.urdf.xacro"/>
+    <xacro:include filename="$(find larcc_description)/urdf/kinect_larcc.urdf.xacro"/>
+    <!--    <xacro:include filename="$(find ur_description)/urdf/common.gazebo.xacro" />-->
+    <!--    <xacro:include filename="$(find ur_e_description)/urdf/ur10e.urdf.xacro" />-->
+    <!--    <xacro:include filename="$(find ur_description)/urdf/inc/ur10e_macro.xacro"/>-->
+    <xacro:include filename="$(find velodyne_description)/urdf/VLP-16.urdf.xacro"/>
+
+    <!--   UR10e properties -->
+    <!-- parameters -->
+    <xacro:arg name="joint_limit_params" default=""/>
+    <xacro:arg name="kinematics_params" default=""/>
+    <xacro:arg name="physical_params" default=""/>
+    <xacro:arg name="visual_params" default=""/>
+    <!-- legal values:
+          - hardware_interface/PositionJointInterface
+          - hardware_interface/VelocityJointInterface
+          - hardware_interface/EffortJointInterface
+    -->
+    <xacro:arg name="transmission_hw_interface" default="hardware_interface/PositionJointInterface"/>
+    <xacro:arg name="safety_limits" default="false"/>
+    <xacro:arg name="safety_pos_margin" default="0.15"/>
+    <xacro:arg name="safety_k_position" default="20"/>
+
+    <xacro:include filename="$(find ur_description)/urdf/inc/ur10e_macro.xacro"/>
+    <xacro:ur10e_robot prefix=""
+                       joint_limits_parameters_file="$(arg joint_limit_params)"
+                       kinematics_parameters_file="$(arg kinematics_params)"
+                       physical_parameters_file="$(arg physical_params)"
+                       visual_parameters_file="$(arg visual_params)"
+                       transmission_hw_interface="$(arg transmission_hw_interface)"
+                       safety_limits="$(arg safety_limits)"
+                       safety_pos_margin="$(arg safety_pos_margin)"
+                       safety_k_position="$(arg safety_k_position)"
+    />
+
+
+    <!-- Links and joints-->
+    <!--    <link name="world"/>-->
+
+    <!-- Place table 1 in the scene-->
+    <!--    <xacro:table_macro name="table" parent="world" width="${table_width}"-->
+    <!--                       length="${table_length}" height="${table_height}"-->
+    <!--                       tabletop_thickness="${table_tabletop_thickness}" leg_radius="${table_leg_radius}">-->
+    <!--        <origin xyz="0.1 0.4 0" rpy="0 0 ${M_PI/2}" />-->
+    <!--    </xacro:table_macro>-->
+
+    <!--    <xacro:gantry_macro name="gantry" parent="world" width="${gantry_width}"-->
+    <!--                       length="${gantry_length}" height="${gantry_height}"-->
+    <!--                       gantry_thickness="${gantry_thickness}" leg_radius="${gantry_leg_radius}">-->
+    <!--        <origin xyz="0 0 0" rpy="0 0 0" />-->
+    <!--    </xacro:gantry_macro>-->
+
+    <!--  Manipulator-->
+    <!--    <xacro:ur10e_robot prefix="" />-->
+    <!--    <xacro:ur10e_robot prefix="" joint_limited="false"/>-->
+    <!--  Place robot on top of the table1-->
+    <!--    <joint name="tabletop_table_to_ur10e" type="fixed">-->
+    <!--        <parent link="tabletop_table" />-->
+    <!--        <child link = "base_link"/>-->
+    <!--        <origin xyz="0.0 0.0 0.001" rpy="0.0 0.0 0.0" />-->
+    <!--    </joint>-->
+    <!--    <joint name="world_base_link" type="fixed">-->
+    <!--        <parent link="world" />-->
+    <!--        <child link = "base_link"/>-->
+    <!--        <origin xyz="0.0 0.0 0.001" rpy="0.0 0.0 0.0" />-->
+    <!--    </joint>-->
+
+    <!--  this is the scale for the astra mini but i'm not being able to apply it  scale="0.48 0.66 0.5"-->
+    <!--    <xacro:sensor_astra prefix="hand_camera" parent="ee_link" scale="0.48 0.66 0.5">-->
+    <!--        <origin xyz="-0.02 0.05 0.07" rpy="0 0.0 0"/>-->
+    <!--    </xacro:sensor_astra>-->
+    <!--&lt;!&ndash;    &lt;!&ndash; Place tripod in the scene&ndash;&gt;&ndash;&gt;-->
+    <!--&lt;!&ndash;    <xacro:tripod_macro name="tripod" parent="world">&ndash;&gt;-->
+    <!--&lt;!&ndash;        <origin xyz="1 0 0" rpy="0 0 ${2/3*M_PI}" />&ndash;&gt;-->
+    <!--&lt;!&ndash;    </xacro:tripod_macro>&ndash;&gt;-->
+
+    <!--    &lt;!&ndash; Put 3d lidar in the scene&ndash;&gt;-->
+    <!--        <xacro:VLP-16 name="3dlidar_1" parent="world" topic="/3dlidar/points">-->
+    <!--        <xacro:VLP-16 name="3dlidar_1" parent="world" topic="/3dlidar_1/points">-->
+    <!--            <origin xyz="1 0 ${gantry_height}" rpy="${M_PI} 0 0" />-->
+    <!--        </xacro:VLP-16>-->
+
+    <!--        <xacro:VLP-16 name="3dlidar_2" parent="world" topic="/3dlidar/points">-->
+    <!--        <xacro:VLP-16 name="3dlidar_2" parent="world" topic="/3dlidar_2/points">-->
+    <!--            <origin xyz="-1 0 ${gantry_height}" rpy="${M_PI} 0 0" />-->
+    <!--        </xacro:VLP-16>-->
+
+    <!--&lt;!&ndash;    ASTRAS IN SCENE&ndash;&gt;-->
+    <!--    <xacro:sensor_astra prefix="camera_1_link" parent="world" scale="1 1 1">-->
+    <!--        <origin xyz="${gantry_width/2-0.1} ${gantry_length/2-0.15} ${gantry_height-0.5}" rpy="0 0.2 3.92" />-->
+    <!--    </xacro:sensor_astra>-->
+    <!--    <xacro:sensor_astra prefix="camera_2_link" parent="world" scale="1 1 1">-->
+    <!--        <origin xyz="${gantry_width/2-0.1} ${-gantry_length/2+0.3} ${gantry_height-0.5}" rpy="0 0.2 -3.92" />-->
+    <!--    </xacro:sensor_astra>-->
+    <!--    <xacro:sensor_astra prefix="camera_3_link" parent="world" scale="1 1 1">-->
+    <!--        <origin xyz="${-gantry_width/2+0.25} ${gantry_length/2-0.09} ${gantry_height-0.5}" rpy="0 0.2 -0.78" />-->
+    <!--    </xacro:sensor_astra>-->
+    <!--    <xacro:sensor_astra prefix="camera_4_link" parent="world" scale="1 1 1">-->
+    <!--        <origin xyz="${-gantry_width/2+0.15} ${-gantry_length/2+0.3} ${gantry_height-0.5}" rpy="0 0.2 0.78" />-->
+    <!--    </xacro:sensor_astra>-->
+
+</robot>

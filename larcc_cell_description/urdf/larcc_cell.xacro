@@ -1,0 +1,81 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://wiki.ros.org/xacro" name="larcc_model">
+
+    <xacro:property name="M_PI" value="3.1415926535897931"/>
+
+        <!-- Tables properties-->
+    <xacro:property name="table_height" value="0.795"/>
+    <xacro:property name="table_width" value=".9"/>
+    <xacro:property name="table_length" value="1.25"/>
+    <xacro:property name="table_tabletop_thickness" value="0.015"/>
+    <xacro:property name="table_leg_radius" value="0.02"/>
+
+    <!-- Gantry properties-->
+    <xacro:property name="gantry_height" value="2.29"/>
+    <xacro:property name="gantry_width" value="4"/>
+    <xacro:property name="gantry_length" value="2.8"/>
+    <xacro:property name="gantry_thickness" value="0"/>
+    <xacro:property name="gantry_leg_radius" value="0.09"/>
+
+   <link name="world"/>
+
+<!--    Load all macros-->
+
+    <xacro:include filename="$(find larcc_cell_description)/urdf/properties.xacro"/>
+
+    <xacro:include filename="$(find ur_description)/urdf/inc/ur10e_macro.xacro"/>
+    <xacro:include filename="$(find realsense2_description)/urdf/test_d435i_camera.urdf.xacro" />
+    <xacro:include filename="$(find gripper)/urdf/robotiq_arg2f_140_model_macro.xacro" />
+    <xacro:include filename="$(find larcc_cell_description)/urdf/table.macro.xacro"/>
+    <xacro:include filename="$(find larcc_cell_description)/urdf/gantry.macro.xacro"/>
+
+<!--    Place gantry-->
+
+    <xacro:gantry_macro name="gantry" parent="world" width="${gantry_width}"
+                        length="${gantry_length}" height="${gantry_height}"
+                        gantry_thickness="${gantry_thickness}" leg_radius="${gantry_leg_radius}">
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+    </xacro:gantry_macro>
+
+
+<!--    Place ur10e robot-->
+    <xacro:ur10e_robot prefix="" />
+
+    <joint name="world_to_robot_joint" type="fixed">
+        <parent link="tabletop_table_base"/>
+        <child link="base_link"/>
+        <origin xyz="0 0 -0.015" rpy="0 0 0"/>
+    </joint>
+
+<!--    Place d45i camera-->
+
+    <xacro:realsense2_camera parent="base_link" use_nominal_extrinsics="true">
+        <origin xyz="0.797 -0.803 0.432" rpy="3.135 2.462 -1.577"/>
+    </xacro:realsense2_camera>
+
+<!--    Place gripper-->
+    <xacro:robotiq_arg2f_140 prefix=""/>
+
+    <joint name="new_gripper_joint" type="fixed">
+        <parent link="tool0"/>
+        <child link="robotiq_arg2f_base_link"/>
+        <origin xyz="0 0 0" rpy="0 0 1.5708"/>
+    </joint>
+
+<!--    Place base table-->
+
+    <xacro:table_macro name="table_base" parent="world" width="${table_width}"
+                       length="${table_length}" height="${table_height}"
+                       tabletop_thickness="${table_tabletop_thickness}" leg_radius="${table_leg_radius}">
+        <origin xyz="0.1 ${gantry_length/2-table_width/2} 0" rpy="0 0 ${-M_PI/2}"/>
+    </xacro:table_macro>
+
+<!--    Place front table-->
+
+    <xacro:table_macro name="table_front" parent="table_base" width="0.7"
+                       length="1.20" height="0.75"
+                       tabletop_thickness="0.015" leg_radius="0.02">
+        <origin xyz="${(0.9+0.7)/2} 0 0" rpy="0 0 0"/>
+    </xacro:table_macro>
+
+</robot>

@@ -1,0 +1,1192 @@
+<?xml version="1.0" ?>
+<robot name="larcc" version="1.0">
+  <material name="Yellow">
+    <color rgba="1.0 1.0 0.0 1.0"/>
+  </material>
+  <material name="Orange">
+    <color rgba="1.0 0.4 0.0 1.0"/>
+  </material>
+  <material name="grey">
+    <color rgba="0.7 0.7 0.7 1.0"/>
+  </material>
+  <link name="world"/>
+  <link name="table"/>
+  <joint name="world_to_table" type="fixed">
+    <origin xyz="0.1 0.4 0.0" rpy="0.0 0.0 -1.5707963267948966"/>
+    <parent link="world"/>
+    <child link="table"/>
+  </joint>
+  <link name="tabletop_table">
+    <inertial>
+      <origin xyz="0.0 0.0 -0.015" rpy="0.0 0.0 0.0"/>
+      <mass value="1.0"/>
+      <inertia ixx="1.0" ixy="0.0" ixz="0.0" iyy="1.0" iyz="0.0" izz="1.0"/>
+    </inertial>
+    <visual>
+      <origin xyz="0.0 0.0 -0.015" rpy="0.0 0.0 0.0"/>
+      <geometry>
+        <box size="0.9 1.25 0.015"/>
+      </geometry>
+      <material name="grey"/>
+    </visual>
+    <collision name="base_link_collision">
+      <origin xyz="0.0 0.0 -0.015" rpy="0.0 0.0 0.0"/>
+      <geometry>
+        <box size="0.9 1.25 0.015"/>
+      </geometry>
+    </collision>
+  </link>
+  <gazebo reference="tabletop_table">
+    <material>Gazebo/Grey</material>
+    <mu1>50.0</mu1>
+    <mu2>50.0</mu2>
+    <kp>1000000.0</kp>
+    <kd>1.0</kd>
+    <selfCollide>false</selfCollide>
+  </gazebo>
+  <joint name="table_to_tabletop_table" type="fixed">
+    <origin xyz="0.0 0.0 0.795" rpy="0.0 0.0 0.0"/>
+    <parent link="table"/>
+    <child link="tabletop_table"/>
+  </joint>
+  <link name="leg1_table">
+    <inertial>
+      <origin xyz="0.0 0.0 0.3815" rpy="0.0 0.0 0.0"/>
+      <mass value="1.0"/>
+      <inertia ixx="0.1" ixy="0.0" ixz="0.0" iyy="0.1" iyz="0.0" izz="0.01"/>
+    </inertial>
+    <visual>
+      <origin xyz="0.0 0.0 0.3815" rpy="0.0 0.0 0.0"/>
+      <geometry>
+        <cylinder radius="0.02" length="0.78"/>
+      </geometry>
+      <material name="grey"/>
+    </visual>
+    <collision>
+      <origin xyz="0.0 0.0 0.3975" rpy="0.0 0.0 0.0"/>
+      <geometry>
+        <cylinder radius="0.02" length="0.779"/>
+      </geometry>
+    </collision>
+  </link>
+  <gazebo reference="leg1_table">
+    <material>Gazebo/Grey</material>
+    <mu1>1000.0</mu1>
+    <mu2>1000.0</mu2>
+    <kp>10000000.0</kp>
+    <kd>1.0</kd>
+    <selfCollide>true</selfCollide>
+  </gazebo>
+  <joint name="table_to_leg1" type="fixed">
+    <origin xyz="-0.43 0.605 0.0" rpy="0.0 0.0 0.0"/>
+    <parent link="table"/>
+    <child link="leg1_table"/>
+  </joint>
+  <link name="leg2_table">
+    <inertial>
+      <origin xyz="0.0 0.0 0.3815" rpy="0.0 0.0 0.0"/>
+      <mass value="1.0"/>
+      <inertia ixx="0.1" ixy="0.0" ixz="0.0" iyy="0.1" iyz="0.0" izz="0.01"/>
+    </inertial>
+    <visual>
+      <origin xyz="0.0 0.0 0.3815" rpy="0.0 0.0 0.0"/>
+      <geometry>
+        <cylinder radius="0.02" length="0.78"/>
+      </geometry>
+      <material name="grey"/>
+    </visual>
+    <collision>
+      <origin xyz="0.0 0.0 0.3975" rpy="0.0 0.0 0.0"/>
+      <geometry>
+        <cylinder radius="0.02" length="0.779"/>
+      </geometry>
+    </collision>
+  </link>
+  <gazebo reference="leg2_table">
+    <material>Gazebo/Grey</material>
+    <mu1>1000.0</mu1>
+    <mu2>1000.0</mu2>
+    <kp>10000000.0</kp>
+    <kd>1.0</kd>
+    <selfCollide>true</selfCollide>
+  </gazebo>
+  <joint name="table_to_leg2" type="fixed">
+    <origin xyz="0.43 0.605 0.0" rpy="0.0 0.0 0.0"/>
+    <parent link="table"/>
+    <child link="leg2_table"/>
+  </joint>
+  <link name="leg3_table">
+    <inertial>
+      <origin xyz="0.0 0.0 0.3815" rpy="0.0 0.0 0.0"/>
+      <mass value="1.0"/>
+      <inertia ixx="0.1" ixy="0.0" ixz="0.0" iyy="0.1" iyz="0.0" izz="0.01"/>
+    </inertial>
+    <visual>
+      <origin xyz="0.0 0.0 0.3815" rpy="0.0 0.0 0.0"/>
+      <geometry>
+        <cylinder radius="0.02" length="0.78"/>
+      </geometry>
+      <material name="grey"/>
+    </visual>
+    <collision>
+      <origin xyz="0.0 0.0 0.3975" rpy="0.0 0.0 0.0"/>
+      <geometry>
+        <cylinder radius="0.02" length="0.779"/>
+      </geometry>
+    </collision>
+  </link>
+  <gazebo reference="leg3_table">
+    <material>Gazebo/Grey</material>
+    <mu1>1000.0</mu1>
+    <mu2>1000.0</mu2>
+    <kp>10000000.0</kp>
+    <kd>1.0</kd>
+    <selfCollide>true</selfCollide>
+  </gazebo>
+  <joint name="table_to_leg3" type="fixed">
+    <origin xyz="0.43 -0.605 0.0" rpy="0.0 0.0 0.0"/>
+    <parent link="table"/>
+    <child link="leg3_table"/>
+  </joint>
+  <link name="leg4_table">
+    <inertial>
+      <origin xyz="0.0 0.0 0.3815" rpy="0.0 0.0 0.0"/>
+      <mass value="1.0"/>
+      <inertia ixx="0.1" ixy="0.0" ixz="0.0" iyy="0.1" iyz="0.0" izz="0.01"/>
+    </inertial>
+    <visual>
+      <origin xyz="0.0 0.0 0.3815" rpy="0.0 0.0 0.0"/>
+      <geometry>
+        <cylinder radius="0.02" length="0.78"/>
+      </geometry>
+      <material name="grey"/>
+    </visual>
+    <collision>
+      <origin xyz="0.0 0.0 0.3975" rpy="0.0 0.0 0.0"/>
+      <geometry>
+        <cylinder radius="0.02" length="0.779"/>
+      </geometry>
+    </collision>
+  </link>
+  <gazebo reference="leg4_table">
+    <material>Gazebo/Grey</material>
+    <mu1>1000.0</mu1>
+    <mu2>1000.0</mu2>
+    <kp>10000000.0</kp>
+    <kd>1.0</kd>
+    <selfCollide>true</selfCollide>
+  </gazebo>
+  <joint name="table_to_leg4" type="fixed">
+    <origin xyz="-0.43 -0.605 0.0" rpy="0.0 0.0 0.0"/>
+    <parent link="table"/>
+    <child link="leg4_table"/>
+  </joint>
+  <link name="gantry"/>
+  <joint name="world_to_gantry" type="fixed">
+    <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+    <parent link="world"/>
+    <child link="gantry"/>
+  </joint>
+  <link name="gantry_gantry">
+    <inertial>
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+      <mass value="1.0"/>
+      <inertia ixx="1.0" ixy="0.0" ixz="0.0" iyy="1.0" iyz="0.0" izz="1.0"/>
+    </inertial>
+  </link>
+  <gazebo reference="gantry_gantry">
+    <material>Gazebo/Grey</material>
+    <mu1>50.0</mu1>
+    <mu2>50.0</mu2>
+    <kp>1000000.0</kp>
+    <kd>1.0</kd>
+    <selfCollide>false</selfCollide>
+  </gazebo>
+  <joint name="gantry_to_gantry_gantry" type="fixed">
+    <origin xyz="0.0 0.0 2.29" rpy="0.0 0.0 0.0"/>
+    <parent link="gantry"/>
+    <child link="gantry_gantry"/>
+  </joint>
+  <link name="leg1_gantry">
+    <inertial>
+      <origin xyz="0.0 0.0 1.1440000000000001" rpy="0.0 0.0 0.0"/>
+      <mass value="1.0"/>
+      <inertia ixx="0.1" ixy="0.0" ixz="0.0" iyy="0.1" iyz="0.0" izz="0.01"/>
+    </inertial>
+    <visual>
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+      <geometry>
+        <mesh filename="package://larcc_description/meshes/minitec_90x90_2200.STL" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="grey"/>
+    </visual>
+    <collision>
+      <origin xyz="0.045 0.045 1.1" rpy="0.0 0.0 0.0"/>
+      <geometry>
+        <box size="0.09 0.09 2.2"/>
+      </geometry>
+    </collision>
+  </link>
+  <gazebo reference="leg1_gantry">
+    <material>Gazebo/Grey</material>
+    <mu1>1000.0</mu1>
+    <mu2>1000.0</mu2>
+    <kp>10000000.0</kp>
+    <kd>1.0</kd>
+    <selfCollide>true</selfCollide>
+  </gazebo>
+  <joint name="gantry_to_leg1" type="fixed">
+    <origin xyz="-1.91 1.3099999999999998 0.0" rpy="0.0 0.0 0.0"/>
+    <parent link="gantry"/>
+    <child link="leg1_gantry"/>
+  </joint>
+  <link name="leg2_gantry">
+    <inertial>
+      <origin xyz="0.0 0.0 1.1440000000000001" rpy="0.0 0.0 0.0"/>
+      <mass value="1.0"/>
+      <inertia ixx="0.1" ixy="0.0" ixz="0.0" iyy="0.1" iyz="0.0" izz="0.01"/>
+    </inertial>
+    <visual>
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+      <geometry>
+        <mesh filename="package://larcc_description/meshes/minitec_90x90_2200.STL" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="grey"/>
+    </visual>
+    <collision>
+      <origin xyz="0.045 0.045 1.1" rpy="0.0 0.0 0.0"/>
+      <geometry>
+        <box size="0.09 0.09 2.2"/>
+      </geometry>
+    </collision>
+  </link>
+  <gazebo reference="leg2_gantry">
+    <material>Gazebo/Grey</material>
+    <mu1>1000.0</mu1>
+    <mu2>1000.0</mu2>
+    <kp>10000000.0</kp>
+    <kd>1.0</kd>
+    <selfCollide>true</selfCollide>
+  </gazebo>
+  <joint name="gantry_to_leg2" type="fixed">
+    <origin xyz="1.91 1.3099999999999998 0.0" rpy="0.0 0.0 0.0"/>
+    <parent link="gantry"/>
+    <child link="leg2_gantry"/>
+  </joint>
+  <link name="leg3_gantry">
+    <inertial>
+      <origin xyz="0.0 0.0 1.1440000000000001" rpy="0.0 0.0 0.0"/>
+      <mass value="1.0"/>
+      <inertia ixx="0.1" ixy="0.0" ixz="0.0" iyy="0.1" iyz="0.0" izz="0.01"/>
+    </inertial>
+    <visual>
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+      <geometry>
+        <mesh filename="package://larcc_description/meshes/minitec_90x90_2200.STL" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="grey"/>
+    </visual>
+    <collision>
+      <origin xyz="0.045 0.045 1.1" rpy="0.0 0.0 0.0"/>
+      <geometry>
+        <box size="0.09 0.09 2.2"/>
+      </geometry>
+    </collision>
+  </link>
+  <gazebo reference="leg3_gantry">
+    <material>Gazebo/Grey</material>
+    <mu1>1000.0</mu1>
+    <mu2>1000.0</mu2>
+    <kp>10000000.0</kp>
+    <kd>1.0</kd>
+    <selfCollide>true</selfCollide>
+  </gazebo>
+  <joint name="gantry_to_leg3" type="fixed">
+    <origin xyz="1.91 -1.3099999999999998 0.0" rpy="0.0 0.0 0.0"/>
+    <parent link="gantry"/>
+    <child link="leg3_gantry"/>
+  </joint>
+  <link name="leg4_gantry">
+    <inertial>
+      <origin xyz="0.0 0.0 1.1440000000000001" rpy="0.0 0.0 0.0"/>
+      <mass value="1.0"/>
+      <inertia ixx="0.1" ixy="0.0" ixz="0.0" iyy="0.1" iyz="0.0" izz="0.01"/>
+    </inertial>
+    <visual>
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+      <geometry>
+        <mesh filename="package://larcc_description/meshes/minitec_90x90_2200.STL" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="grey"/>
+    </visual>
+    <collision>
+      <origin xyz="0.045 0.045 1.1" rpy="0.0 0.0 0.0"/>
+      <geometry>
+        <box size="0.09 0.09 2.2"/>
+      </geometry>
+    </collision>
+  </link>
+  <gazebo reference="leg4_gantry">
+    <material>Gazebo/Grey</material>
+    <mu1>1000.0</mu1>
+    <mu2>1000.0</mu2>
+    <kp>10000000.0</kp>
+    <kd>1.0</kd>
+    <selfCollide>true</selfCollide>
+  </gazebo>
+  <joint name="gantry_to_leg4" type="fixed">
+    <origin xyz="-1.91 -1.3099999999999998 0.0" rpy="0.0 0.0 0.0"/>
+    <parent link="gantry"/>
+    <child link="leg4_gantry"/>
+  </joint>
+  <link name="bigbeam1_gantry">
+    <inertial>
+      <origin xyz="0.0 0.0 1.1440000000000001" rpy="0.0 0.0 0.0"/>
+      <mass value="1.0"/>
+      <inertia ixx="0.1" ixy="0.0" ixz="0.0" iyy="0.1" iyz="0.0" izz="0.01"/>
+    </inertial>
+    <visual>
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 1.5707963267948966 0.0"/>
+      <geometry>
+        <mesh filename="package://larcc_description/meshes/minitec_90x90_5000.STL" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="grey"/>
+    </visual>
+    <collision>
+      <origin xyz="2.5 0.045 -0.045" rpy="0.0 1.5707963267948966 0.0"/>
+      <geometry>
+        <box size="0.09 0.09 5.0"/>
+      </geometry>
+    </collision>
+  </link>
+  <gazebo reference="bigbeam1_leg1_gantry">
+    <material>Gazebo/Grey</material>
+    <mu1>1000.0</mu1>
+    <mu2>1000.0</mu2>
+    <kp>10000000.0</kp>
+    <kd>1.0</kd>
+    <selfCollide>true</selfCollide>
+  </gazebo>
+  <joint name="leg1_gantry_to_bigbeam1" type="fixed">
+    <origin xyz="-0.5 0.0 2.29" rpy="0.0 0.0 0.0"/>
+    <parent link="leg1_gantry"/>
+    <child link="bigbeam1_gantry"/>
+  </joint>
+  <link name="bigbeam2_gantry">
+    <inertial>
+      <origin xyz="0.0 0.0 1.1440000000000001" rpy="0.0 0.0 0.0"/>
+      <mass value="1.0"/>
+      <inertia ixx="0.1" ixy="0.0" ixz="0.0" iyy="0.1" iyz="0.0" izz="0.01"/>
+    </inertial>
+    <visual>
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 1.5707963267948966 0.0"/>
+      <geometry>
+        <mesh filename="package://larcc_description/meshes/minitec_90x90_5000.STL" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="grey"/>
+    </visual>
+    <collision>
+      <origin xyz="2.5 0.045 -0.045" rpy="0.0 1.5707963267948966 0.0"/>
+      <geometry>
+        <box size="0.09 0.09 5.0"/>
+      </geometry>
+    </collision>
+  </link>
+  <gazebo reference="bigbeam2_leg4_gantry">
+    <material>Gazebo/Grey</material>
+    <mu1>1000.0</mu1>
+    <mu2>1000.0</mu2>
+    <kp>10000000.0</kp>
+    <kd>1.0</kd>
+    <selfCollide>true</selfCollide>
+  </gazebo>
+  <joint name="leg4_gantry_to_bigbeam2" type="fixed">
+    <origin xyz="-0.5 0.0 2.29" rpy="0.0 0.0 0.0"/>
+    <parent link="leg4_gantry"/>
+    <child link="bigbeam2_gantry"/>
+  </joint>
+  <link name="smallbeam1_bigbeam1_gantry">
+    <inertial>
+      <origin xyz="0.0 0.0 1.1440000000000001" rpy="0.0 0.0 0.0"/>
+      <mass value="1.0"/>
+      <inertia ixx="0.1" ixy="0.0" ixz="0.0" iyy="0.1" iyz="0.0" izz="0.01"/>
+    </inertial>
+    <visual>
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 1.5707963267948966 1.5707963267948966"/>
+      <geometry>
+        <mesh filename="package://larcc_description/meshes/minitec_90x90_3800.STL" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="grey"/>
+    </visual>
+    <collision>
+      <origin xyz="-0.045 1.9 -0.045" rpy="0.0 1.5707963267948966 1.5707963267948966"/>
+      <geometry>
+        <box size="0.09 0.09 3.8"/>
+      </geometry>
+    </collision>
+  </link>
+  <gazebo reference="smallbeam1_bigbeam1_gantry">
+    <material>Gazebo/Grey</material>
+    <mu1>1000.0</mu1>
+    <mu2>1000.0</mu2>
+    <kp>10000000.0</kp>
+    <kd>1.0</kd>
+    <selfCollide>true</selfCollide>
+  </gazebo>
+  <joint name="bigbeam1_gantry_to_smallbeam1" type="fixed">
+    <origin xyz="0.59 -3.2 0.09" rpy="0.0 0.0 0.0"/>
+    <parent link="bigbeam1_gantry"/>
+    <child link="smallbeam1_bigbeam1_gantry"/>
+  </joint>
+  <link name="smallbeam2_bigbeam1_gantry">
+    <inertial>
+      <origin xyz="0.0 0.0 1.1440000000000001" rpy="0.0 0.0 0.0"/>
+      <mass value="1.0"/>
+      <inertia ixx="0.1" ixy="0.0" ixz="0.0" iyy="0.1" iyz="0.0" izz="0.01"/>
+    </inertial>
+    <visual>
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 1.5707963267948966 1.5707963267948966"/>
+      <geometry>
+        <mesh filename="package://larcc_description/meshes/minitec_90x90_3800.STL" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="grey"/>
+    </visual>
+    <collision>
+      <origin xyz="-0.045 1.9 -0.045" rpy="0.0 1.5707963267948966 1.5707963267948966"/>
+      <geometry>
+        <box size="0.09 0.09 3.8"/>
+      </geometry>
+    </collision>
+  </link>
+  <gazebo reference="smallbeam2_bigbeam1_gantry">
+    <material>Gazebo/Grey</material>
+    <mu1>1000.0</mu1>
+    <mu2>1000.0</mu2>
+    <kp>10000000.0</kp>
+    <kd>1.0</kd>
+    <selfCollide>true</selfCollide>
+  </gazebo>
+  <joint name="bigbeam1_gantry_to_smallbeam2" type="fixed">
+    <origin xyz="4.39 -3.2 0.09" rpy="0.0 0.0 0.0"/>
+    <parent link="bigbeam1_gantry"/>
+    <child link="smallbeam2_bigbeam1_gantry"/>
+  </joint>
+  <link name="rectangularbeam1_gantry">
+    <inertial>
+      <origin xyz="0.0 0.0 1.1440000000000001" rpy="0.0 0.0 0.0"/>
+      <mass value="1.0"/>
+      <inertia ixx="0.1" ixy="0.0" ixz="0.0" iyy="0.1" iyz="0.0" izz="0.01"/>
+    </inertial>
+    <visual>
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 1.5707963267948966 1.5707963267948966"/>
+      <geometry>
+        <mesh filename="package://larcc_description/meshes/minitec_45x90_3000.STL" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="grey"/>
+    </visual>
+    <collision>
+      <origin xyz="-0.045 1.5 -0.0225" rpy="0.0 1.5707963267948966 1.5707963267948966"/>
+      <geometry>
+        <box size="0.045 0.09 3.0"/>
+      </geometry>
+    </collision>
+  </link>
+  <gazebo reference="rectangularbeam1_bigbeam1_gantry">
+    <material>Gazebo/Grey</material>
+    <mu1>1000.0</mu1>
+    <mu2>1000.0</mu2>
+    <kp>10000000.0</kp>
+    <kd>1.0</kd>
+    <selfCollide>true</selfCollide>
+  </gazebo>
+  <joint name="bigbeam1_gantry_to_rectangularbeam1" type="fixed">
+    <origin xyz="1.455 -2.8 0.0" rpy="0.0 1.5707963267948966 0.0"/>
+    <parent link="bigbeam1_gantry"/>
+    <child link="rectangularbeam1_gantry"/>
+  </joint>
+  <link name="rectangularbeam2_gantry">
+    <inertial>
+      <origin xyz="0.0 0.0 1.1440000000000001" rpy="0.0 0.0 0.0"/>
+      <mass value="1.0"/>
+      <inertia ixx="0.1" ixy="0.0" ixz="0.0" iyy="0.1" iyz="0.0" izz="0.01"/>
+    </inertial>
+    <visual>
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 1.5707963267948966 1.5707963267948966"/>
+      <geometry>
+        <mesh filename="package://larcc_description/meshes/minitec_45x90_3000.STL" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="grey"/>
+    </visual>
+    <collision>
+      <origin xyz="-0.045 1.5 -0.0225" rpy="0.0 1.5707963267948966 1.5707963267948966"/>
+      <geometry>
+        <box size="0.045 0.09 3.0"/>
+      </geometry>
+    </collision>
+  </link>
+  <gazebo reference="rectangularbeam2_bigbeam1_gantry">
+    <material>Gazebo/Grey</material>
+    <mu1>1000.0</mu1>
+    <mu2>1000.0</mu2>
+    <kp>10000000.0</kp>
+    <kd>1.0</kd>
+    <selfCollide>true</selfCollide>
+  </gazebo>
+  <joint name="bigbeam1_gantry_to_rectangularbeam2" type="fixed">
+    <origin xyz="2.455 -2.8 0.0" rpy="0.0 1.5707963267948966 0.0"/>
+    <parent link="bigbeam1_gantry"/>
+    <child link="rectangularbeam2_gantry"/>
+  </joint>
+  <link name="rectangularbeam3_gantry">
+    <inertial>
+      <origin xyz="0.0 0.0 1.1440000000000001" rpy="0.0 0.0 0.0"/>
+      <mass value="1.0"/>
+      <inertia ixx="0.1" ixy="0.0" ixz="0.0" iyy="0.1" iyz="0.0" izz="0.01"/>
+    </inertial>
+    <visual>
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 1.5707963267948966 1.5707963267948966"/>
+      <geometry>
+        <mesh filename="package://larcc_description/meshes/minitec_45x90_3000.STL" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <material name="grey"/>
+    </visual>
+    <collision>
+      <origin xyz="-0.045 1.5 -0.0225" rpy="0.0 1.5707963267948966 1.5707963267948966"/>
+      <geometry>
+        <box size="0.045 0.09 3.0"/>
+      </geometry>
+    </collision>
+  </link>
+  <gazebo reference="rectangularbeam3_bigbeam1_gantry">
+    <material>Gazebo/Grey</material>
+    <mu1>1000.0</mu1>
+    <mu2>1000.0</mu2>
+    <kp>10000000.0</kp>
+    <kd>1.0</kd>
+    <selfCollide>true</selfCollide>
+  </gazebo>
+  <joint name="bigbeam1_gantry_to_rectangularbeam3" type="fixed">
+    <origin xyz="3.455 -2.8 0.0" rpy="0.0 1.5707963267948966 0.0"/>
+    <parent link="bigbeam1_gantry"/>
+    <child link="rectangularbeam3_gantry"/>
+  </joint>
+  <joint name="lidar_1_base_mount_joint" type="fixed">
+    <origin xyz="0.026425312680547843 1.7117202235903182 -0.043221281403057976" rpy="-0.3916307937507776 1.150477525247869 -0.024945541132269457"/>
+    <parent link="rectangularbeam3_gantry"/>
+    <child link="lidar_1_base_link"/>
+  </joint>
+  <link name="lidar_1_base_link">
+    <inertial>
+      <origin xyz="0.0 0.0 0.03585" rpy="0 0 0"/>
+      <mass value="0.83"/>
+      <inertia ixx="0.000908059425" ixy="0.0" ixz="0.0" iyy="0.000908059425" iyz="0.0" izz="0.0011049624"/>
+    </inertial>
+    <visual>
+      <geometry>
+        <mesh filename="package://velodyne_description/meshes/VLP16_base_1.dae"/>
+      </geometry>
+    </visual>
+    <visual>
+      <geometry>
+        <mesh filename="package://velodyne_description/meshes/VLP16_base_2.dae"/>
+      </geometry>
+    </visual>
+    <collision>
+      <origin xyz="0.0 0.0 0.03585" rpy="0.0 0.0 0.0"/>
+      <geometry>
+        <cylinder radius="0.0516" length="0.0717"/>
+      </geometry>
+    </collision>
+  </link>
+  <joint name="lidar_1_base_scan_joint" type="fixed">
+    <origin xyz="0.0 0.0 0.0377" rpy="0.0 0.0 0.0"/>
+    <parent link="lidar_1_base_link"/>
+    <child link="lidar_1"/>
+  </joint>
+  <link name="lidar_1">
+    <inertial>
+      <origin xyz="0.0 0.0 0.0" rpy="0 0 0"/>
+      <mass value="0.01"/>
+      <inertia ixx="1e-07" ixy="0.0" ixz="0.0" iyy="1e-07" iyz="0.0" izz="1e-07"/>
+    </inertial>
+    <visual>
+      <origin xyz="0.0 0.0 -0.0377" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="package://velodyne_description/meshes/VLP16_scan.dae"/>
+      </geometry>
+    </visual>
+  </link>
+  <gazebo reference="lidar_1">
+    <sensor name="lidar_1-VLP16" type="ray">
+      <pose>0 0 0 0 0 0</pose>
+      <visualize>false</visualize>
+      <update_rate>8</update_rate>
+      <ray>
+        <scan>
+          <horizontal>
+            <samples>1875</samples>
+            <resolution>1</resolution>
+            <min_angle>-3.141592653589793</min_angle>
+            <max_angle>3.141592653589793</max_angle>
+          </horizontal>
+          <vertical>
+            <samples>16</samples>
+            <resolution>1</resolution>
+            <min_angle>-0.2617993877991494</min_angle>
+            <max_angle> 0.2617993877991494</max_angle>
+          </vertical>
+        </scan>
+        <range>
+          <min>0.3</min>
+          <max>131.0</max>
+          <resolution>0.001</resolution>
+        </range>
+        <noise>
+          <type>gaussian</type>
+          <mean>0.0</mean>
+          <stddev>0.0</stddev>
+        </noise>
+      </ray>
+      <plugin filename="libgazebo_ros_velodyne_laser.so" name="gazebo_ros_laser_controller">
+        <topicName>/lidar_1/velodyne_points</topicName>
+        <frameName>lidar_1</frameName>
+        <organize_cloud>False</organize_cloud>
+        <min_range>0.9</min_range>
+        <max_range>130.0</max_range>
+        <gaussianNoise>0.008</gaussianNoise>
+      </plugin>
+    </sensor>
+  </gazebo>
+  <joint name="lidar_2_base_mount_joint" type="fixed">
+    <origin xyz="0.1199365210121366 2.6249016201787385 -0.022500207899441457" rpy="-1.6316990784705678 0.008709199244442389 -1.0908792276996022"/>
+    <parent link="rectangularbeam2_gantry"/>
+    <child link="lidar_2_base_link"/>
+  </joint>
+  <link name="lidar_2_base_link">
+    <inertial>
+      <origin xyz="0.0 0.0 0.03585" rpy="0 0 0"/>
+      <mass value="0.83"/>
+      <inertia ixx="0.000908059425" ixy="0.0" ixz="0.0" iyy="0.000908059425" iyz="0.0" izz="0.0011049624"/>
+    </inertial>
+    <visual>
+      <geometry>
+        <mesh filename="package://velodyne_description/meshes/VLP16_base_1.dae"/>
+      </geometry>
+    </visual>
+    <visual>
+      <geometry>
+        <mesh filename="package://velodyne_description/meshes/VLP16_base_2.dae"/>
+      </geometry>
+    </visual>
+    <collision>
+      <origin xyz="0.0 0.0 0.03585" rpy="0.0 0.0 0.0"/>
+      <geometry>
+        <cylinder radius="0.0516" length="0.0717"/>
+      </geometry>
+    </collision>
+  </link>
+  <joint name="lidar_2_base_scan_joint" type="fixed">
+    <origin xyz="0.0 0.0 0.0377" rpy="0.0 0.0 0.0"/>
+    <parent link="lidar_2_base_link"/>
+    <child link="lidar_2"/>
+  </joint>
+  <link name="lidar_2">
+    <inertial>
+      <origin xyz="0.0 0.0 0.0" rpy="0 0 0"/>
+      <mass value="0.01"/>
+      <inertia ixx="1e-07" ixy="0.0" ixz="0.0" iyy="1e-07" iyz="0.0" izz="1e-07"/>
+    </inertial>
+    <visual>
+      <origin xyz="0.0 0.0 -0.0377" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="package://velodyne_description/meshes/VLP16_scan.dae"/>
+      </geometry>
+    </visual>
+  </link>
+  <gazebo reference="lidar_2">
+    <sensor name="lidar_2-VLP16" type="ray">
+      <pose>0 0 0 0 0 0</pose>
+      <visualize>false</visualize>
+      <update_rate>8</update_rate>
+      <ray>
+        <scan>
+          <horizontal>
+            <samples>1875</samples>
+            <resolution>1</resolution>
+            <min_angle>-3.141592653589793</min_angle>
+            <max_angle>3.141592653589793</max_angle>
+          </horizontal>
+          <vertical>
+            <samples>16</samples>
+            <resolution>1</resolution>
+            <min_angle>-0.2617993877991494</min_angle>
+            <max_angle> 0.2617993877991494</max_angle>
+          </vertical>
+        </scan>
+        <range>
+          <min>0.3</min>
+          <max>131.0</max>
+          <resolution>0.001</resolution>
+        </range>
+        <noise>
+          <type>gaussian</type>
+          <mean>0.0</mean>
+          <stddev>0.0</stddev>
+        </noise>
+      </ray>
+      <plugin filename="libgazebo_ros_velodyne_laser.so" name="gazebo_ros_laser_controller">
+        <topicName>/lidar_2/velodyne_points</topicName>
+        <frameName>lidar_2</frameName>
+        <organize_cloud>False</organize_cloud>
+        <min_range>0.9</min_range>
+        <max_range>130.0</max_range>
+        <gaussianNoise>0.008</gaussianNoise>
+      </plugin>
+    </sensor>
+  </gazebo>
+  <joint name="lidar_3_base_mount_joint" type="fixed">
+    <origin xyz="0.08640669286251047 1.7130781412124634 0.10502409934997538" rpy="-2.0786548105065696 0.24858863767591938 -1.2554841671561743"/>
+    <parent link="rectangularbeam1_gantry"/>
+    <child link="lidar_3_base_link"/>
+  </joint>
+  <link name="lidar_3_base_link">
+    <inertial>
+      <origin xyz="0.0 0.0 0.03585" rpy="0 0 0"/>
+      <mass value="0.83"/>
+      <inertia ixx="0.000908059425" ixy="0.0" ixz="0.0" iyy="0.000908059425" iyz="0.0" izz="0.0011049624"/>
+    </inertial>
+    <visual>
+      <geometry>
+        <mesh filename="package://velodyne_description/meshes/VLP16_base_1.dae"/>
+      </geometry>
+    </visual>
+    <visual>
+      <geometry>
+        <mesh filename="package://velodyne_description/meshes/VLP16_base_2.dae"/>
+      </geometry>
+    </visual>
+    <collision>
+      <origin xyz="0.0 0.0 0.03585" rpy="0.0 0.0 0.0"/>
+      <geometry>
+        <cylinder radius="0.0516" length="0.0717"/>
+      </geometry>
+    </collision>
+  </link>
+  <joint name="lidar_3_base_scan_joint" type="fixed">
+    <origin xyz="0.0 0.0 0.0377" rpy="0.0 0.0 0.0"/>
+    <parent link="lidar_3_base_link"/>
+    <child link="lidar_3"/>
+  </joint>
+  <link name="lidar_3">
+    <inertial>
+      <origin xyz="0.0 0.0 0.0" rpy="0 0 0"/>
+      <mass value="0.01"/>
+      <inertia ixx="1e-07" ixy="0.0" ixz="0.0" iyy="1e-07" iyz="0.0" izz="1e-07"/>
+    </inertial>
+    <visual>
+      <origin xyz="0.0 0.0 -0.0377" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="package://velodyne_description/meshes/VLP16_scan.dae"/>
+      </geometry>
+    </visual>
+  </link>
+  <gazebo reference="lidar_3">
+    <sensor name="lidar_3-VLP16" type="ray">
+      <pose>0 0 0 0 0 0</pose>
+      <visualize>false</visualize>
+      <update_rate>8</update_rate>
+      <ray>
+        <scan>
+          <horizontal>
+            <samples>1875</samples>
+            <resolution>1</resolution>
+            <min_angle>-3.141592653589793</min_angle>
+            <max_angle>3.141592653589793</max_angle>
+          </horizontal>
+          <vertical>
+            <samples>16</samples>
+            <resolution>1</resolution>
+            <min_angle>-0.2617993877991494</min_angle>
+            <max_angle> 0.2617993877991494</max_angle>
+          </vertical>
+        </scan>
+        <range>
+          <min>0.3</min>
+          <max>131.0</max>
+          <resolution>0.001</resolution>
+        </range>
+        <noise>
+          <type>gaussian</type>
+          <mean>0.0</mean>
+          <stddev>0.0</stddev>
+        </noise>
+      </ray>
+      <plugin filename="libgazebo_ros_velodyne_laser.so" name="gazebo_ros_laser_controller">
+        <topicName>/lidar_3/velodyne_points</topicName>
+        <frameName>lidar_3</frameName>
+        <organize_cloud>False</organize_cloud>
+        <min_range>0.9</min_range>
+        <max_range>130.0</max_range>
+        <gaussianNoise>0.008</gaussianNoise>
+      </plugin>
+    </sensor>
+  </gazebo>
+  <joint name="camera_1_joint" type="fixed">
+    <origin xyz="2.8 0.0 -0.09" rpy="0.0 0.5235987755982988 -1.5707963267948966"/>
+    <parent link="bigbeam1_gantry"/>
+    <child link="camera_1_link"/>
+  </joint>
+  <link name="camera_1_link">
+    <inertial>
+      <origin xyz="0.0 0.0 0.0" rpy="0 0 0"/>
+      <mass value="0.01"/>
+      <inertia ixx="4.9000000000000005e-06" ixy="0.0" ixz="0.0" iyy="4.9000000000000005e-06" iyz="0.0" izz="4.9000000000000005e-06"/>
+    </inertial>
+    <visual>
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+      <geometry>
+        <mesh filename="package://hector_sensors_description/meshes/kinect_camera/kinect_camera_simple.dae"/>
+      </geometry>
+    </visual>
+    <collision>
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+      <geometry>
+        <mesh filename="package://hector_sensors_description/meshes/kinect_camera/kinect_camera_simple.stl"/>
+      </geometry>
+    </collision>
+  </link>
+  <joint name="camera_1_depth_joint" type="fixed">
+    <origin xyz="0.0 -0.02 0.0" rpy="0.0 0.0 0.0"/>
+    <parent link="camera_1_link"/>
+    <child link="camera_1_depth_frame"/>
+  </joint>
+  <link name="camera_1_depth_frame"/>
+  <joint name="camera_1_depth_optical_joint" type="fixed">
+    <origin xyz="0.0 0.0 0.0" rpy="-1.5707963267948966 0.0 -1.5707963267948966"/>
+    <parent link="camera_1_depth_frame"/>
+    <child link="camera_1_depth_optical_frame"/>
+  </joint>
+  <link name="camera_1_depth_optical_frame"/>
+  <joint name="camera_1_rgb_joint" type="fixed">
+    <origin xyz="0.0 -0.0125 0.0" rpy="0.0 0.0 0.0"/>
+    <parent link="camera_1_link"/>
+    <child link="camera_1_rgb_frame"/>
+  </joint>
+  <link name="camera_1_rgb_frame"/>
+  <joint name="camera_1_rgb_optical_joint" type="fixed">
+    <origin xyz="0.0 0.0 0.0" rpy="-1.5707963267948966 0.0 -1.5707963267948966"/>
+    <parent link="camera_1_rgb_frame"/>
+    <child link="camera_1_rgb_optical_frame"/>
+  </joint>
+  <link name="camera_1_rgb_optical_frame"/>
+  <gazebo reference="camera_1_depth_frame">
+    <sensor name="camera_1" type="depth">
+      <update_rate>20</update_rate>
+      <camera>
+        <horizontal_fov>1.0471975511965976</horizontal_fov>
+        <image>
+          <format>B8G8R8</format>
+          <width>640</width>
+          <height>480</height>
+        </image>
+        <clip>
+          <near>0.10</near>
+          <far>8.0</far>
+        </clip>
+      </camera>
+      <plugin filename="libgazebo_ros_openni_kinect.so" name="camera_1_camera_controller">
+        <imageTopicName>null</imageTopicName>
+        <cameraInfoTopicName>null/camera_info</cameraInfoTopicName>
+        <depthImageTopicName>camera_1/depth/image_raw</depthImageTopicName>
+        <depthImageCameraInfoTopicName>camera_1/depth/camera_info</depthImageCameraInfoTopicName>
+        <pointCloudTopicName>camera_1/depth/points</pointCloudTopicName>
+        <frameName>camera_1_depth_optical_frame</frameName>
+      </plugin>
+    </sensor>
+  </gazebo>
+  <gazebo reference="camera_1_rgb_frame">
+    <sensor name="camera_1" type="camera">
+      <update_rate>20.0</update_rate>
+      <camera>
+        <horizontal_fov>1.0471975511965976</horizontal_fov>
+        <image>
+          <format>B8G8R8</format>
+          <width>640</width>
+          <height>480</height>
+        </image>
+        <clip>
+          <near>0.10</near>
+          <far>8.0</far>
+        </clip>
+      </camera>
+      <plugin filename="libgazebo_ros_camera.so" name="camera_1}_rgb_camera_controller">
+        <alwaysOn>true</alwaysOn>
+        <updateRate>0</updateRate>
+        <imageTopicName>camera_1/rgb/image_raw</imageTopicName>
+        <cameraInfoTopicName>camera_1/rgb/camera_info</cameraInfoTopicName>
+        <frameName>camera_1_rgb_optical_frame</frameName>
+      </plugin>
+    </sensor>
+  </gazebo>
+  <joint name="camera_2_joint" type="fixed">
+    <origin xyz="-0.09 2.0 -0.1" rpy="0.0 0.5235987755982988 3.665191429188092"/>
+    <parent link="smallbeam2_bigbeam1_gantry"/>
+    <child link="camera_2_link"/>
+  </joint>
+  <link name="camera_2_link">
+    <inertial>
+      <origin xyz="0.0 0.0 0.0" rpy="0 0 0"/>
+      <mass value="0.564"/>
+      <inertia ixx="0.003881243" ixy="0.0" ixz="0.0" iyy="0.00049894" iyz="0.0" izz="0.003879257"/>
+    </inertial>
+    <visual>
+      <origin xyz="-0.03 -0.06 0.0" rpy="3.141592653589793 0.0 1.5707963267948966"/>
+      <geometry>
+        <mesh filename="package://larcc_description/meshes/sensors/astra2.dae" scale="1.0 1.0 1.0"/>
+      </geometry>
+    </visual>
+    <collision>
+      <origin xyz="-0.01 -0.06 0.0" rpy="0.0 0.0 0.0"/>
+      <geometry>
+        <box size="0.04 0.165 0.03"/>
+      </geometry>
+    </collision>
+  </link>
+  <gazebo reference="camera_2_link">
+    <selfCollide>false</selfCollide>
+  </gazebo>
+  <joint name="camera_2_rgb_joint" type="fixed">
+    <origin xyz="0.0 -0.045 0.0" rpy="0.0 0.0 0.0"/>
+    <parent link="camera_2_link"/>
+    <child link="camera_2_rgb_frame"/>
+  </joint>
+  <link name="camera_2_rgb_frame"/>
+  <joint name="camera_2_rgb_optical_joint" type="fixed">
+    <origin xyz="0.0 0.0 0.0" rpy="-1.5707963267948966 0.0 -1.5707963267948966"/>
+    <parent link="camera_2_rgb_frame"/>
+    <child link="camera_2_rgb_optical_frame"/>
+  </joint>
+  <link name="camera_2_rgb_optical_frame"/>
+  <joint name="camera_2_depth_joint" type="fixed">
+    <origin xyz="0.0 -0.02 0.0" rpy="0.0 0.0 0.0"/>
+    <parent link="camera_2_link"/>
+    <child link="camera_2_depth_frame"/>
+  </joint>
+  <link name="camera_2_depth_frame"/>
+  <joint name="camera_2_depth_optical_joint" type="fixed">
+    <origin xyz="0.0 0.0 0.0" rpy="-1.5707963267948966 0.0 -1.5707963267948966"/>
+    <parent link="camera_2_depth_frame"/>
+    <child link="camera_2_depth_optical_frame"/>
+  </joint>
+  <link name="camera_2_depth_optical_frame"/>
+  <gazebo reference="camera_2_depth_frame">
+    <sensor name="camera" type="depth">
+      <always_on>true</always_on>
+      <update_rate>8.0</update_rate>
+      <camera>
+        <horizontal_fov>1.0471975511965976</horizontal_fov>
+        <image>
+          <format>B8G8R8</format>
+          <width>1280</width>
+          <height>800</height>
+        </image>
+        <clip>
+          <near>0.10</near>
+          <far>8.0</far>
+        </clip>
+      </camera>
+      <plugin filename="libgazebo_ros_openni_kinect.so" name="camera_2_camera_controller">
+        <cameraName>camera_2</cameraName>
+        <alwaysOn>true</alwaysOn>
+        <updateRate>0</updateRate>
+        <imageTopicName>rgb/image_raw</imageTopicName>
+        <depthImageTopicName>depth/image_raw</depthImageTopicName>
+        <pointCloudTopicName>depth/points</pointCloudTopicName>
+        <cameraInfoTopicName>rgb/camera_info</cameraInfoTopicName>
+        <depthImageCameraInfoTopicName>depth/camera_info</depthImageCameraInfoTopicName>
+        <frameName>camera_2_rgb_optical_frame</frameName>
+        <baseline>0.1</baseline>
+        <distortion_k1>0.0</distortion_k1>
+        <distortion_k2>0.0</distortion_k2>
+        <distortion_k3>0.0</distortion_k3>
+        <distortion_t1>0.0</distortion_t1>
+        <distortion_t2>0.0</distortion_t2>
+        <pointCloudCutoff>0.4</pointCloudCutoff>
+      </plugin>
+    </sensor>
+  </gazebo>
+  <joint name="camera_3_joint" type="fixed">
+    <origin xyz="0.09 2.0 -0.09" rpy="0.0 0.5235987755982988 -0.5235987755982988"/>
+    <parent link="smallbeam1_bigbeam1_gantry"/>
+    <child link="camera_3_link"/>
+  </joint>
+  <link name="camera_3_link">
+    <inertial>
+      <origin xyz="0.0 0.0 0.0" rpy="0 0 0"/>
+      <mass value="0.564"/>
+      <inertia ixx="0.003881243" ixy="0.0" ixz="0.0" iyy="0.00049894" iyz="0.0" izz="0.003879257"/>
+    </inertial>
+    <visual>
+      <origin xyz="-0.03 -0.06 0.0" rpy="3.141592653589793 0.0 1.5707963267948966"/>
+      <geometry>
+        <mesh filename="package://larcc_description/meshes/sensors/astra2.dae" scale="1.0 1.0 1.0"/>
+      </geometry>
+    </visual>
+    <collision>
+      <origin xyz="-0.01 -0.06 0.0" rpy="0.0 0.0 0.0"/>
+      <geometry>
+        <box size="0.04 0.165 0.03"/>
+      </geometry>
+    </collision>
+  </link>
+  <gazebo reference="camera_3_link">
+    <selfCollide>false</selfCollide>
+  </gazebo>
+  <joint name="camera_3_rgb_joint" type="fixed">
+    <origin xyz="0.0 -0.045 0.0" rpy="0.0 0.0 0.0"/>
+    <parent link="camera_3_link"/>
+    <child link="camera_3_rgb_frame"/>
+  </joint>
+  <link name="camera_3_rgb_frame"/>
+  <joint name="camera_3_rgb_optical_joint" type="fixed">
+    <origin xyz="0.0 0.0 0.0" rpy="-1.5707963267948966 0.0 -1.5707963267948966"/>
+    <parent link="camera_3_rgb_frame"/>
+    <child link="camera_3_rgb_optical_frame"/>
+  </joint>
+  <link name="camera_3_rgb_optical_frame"/>
+  <joint name="camera_3_depth_joint" type="fixed">
+    <origin xyz="0.0 -0.02 0.0" rpy="0.0 0.0 0.0"/>
+    <parent link="camera_3_link"/>
+    <child link="camera_3_depth_frame"/>
+  </joint>
+  <link name="camera_3_depth_frame"/>
+  <joint name="camera_3_depth_optical_joint" type="fixed">
+    <origin xyz="0.0 0.0 0.0" rpy="-1.5707963267948966 0.0 -1.5707963267948966"/>
+    <parent link="camera_3_depth_frame"/>
+    <child link="camera_3_depth_optical_frame"/>
+  </joint>
+  <link name="camera_3_depth_optical_frame"/>
+  <gazebo reference="camera_3_depth_frame">
+    <sensor name="camera" type="depth">
+      <always_on>true</always_on>
+      <update_rate>8.0</update_rate>
+      <camera>
+        <horizontal_fov>1.0471975511965976</horizontal_fov>
+        <image>
+          <format>B8G8R8</format>
+          <width>1280</width>
+          <height>800</height>
+        </image>
+        <clip>
+          <near>0.10</near>
+          <far>8.0</far>
+        </clip>
+      </camera>
+      <plugin filename="libgazebo_ros_openni_kinect.so" name="camera_3_camera_controller">
+        <cameraName>camera_3</cameraName>
+        <alwaysOn>true</alwaysOn>
+        <updateRate>0</updateRate>
+        <imageTopicName>rgb/image_raw</imageTopicName>
+        <depthImageTopicName>depth/image_raw</depthImageTopicName>
+        <pointCloudTopicName>depth/points</pointCloudTopicName>
+        <cameraInfoTopicName>rgb/camera_info</cameraInfoTopicName>
+        <depthImageCameraInfoTopicName>depth/camera_info</depthImageCameraInfoTopicName>
+        <frameName>camera_3_rgb_optical_frame</frameName>
+        <baseline>0.1</baseline>
+        <distortion_k1>0.0</distortion_k1>
+        <distortion_k2>0.0</distortion_k2>
+        <distortion_k3>0.0</distortion_k3>
+        <distortion_t1>0.0</distortion_t1>
+        <distortion_t2>0.0</distortion_t2>
+        <pointCloudCutoff>0.4</pointCloudCutoff>
+      </plugin>
+    </sensor>
+  </gazebo>
+  <joint name="camera_4_joint" type="fixed">
+    <origin xyz="2.5798078585099953 0.3016966908424003 -0.15510182775161002" rpy="0.024916512128059128 0.564249592081892 -1.5296757238963479"/>
+    <parent link="bigbeam1_gantry"/>
+    <child link="camera_4_link"/>
+  </joint>
+  <link name="camera_4_link">
+    <inertial>
+      <origin xyz="0.0 0.0 0.0" rpy="0 0 0"/>
+      <mass value="0.564"/>
+      <inertia ixx="0.003881243" ixy="0.0" ixz="0.0" iyy="0.00049894" iyz="0.0" izz="0.003879257"/>
+    </inertial>
+    <visual>
+      <origin xyz="-0.03 -0.06 0.0" rpy="3.141592653589793 0.0 1.5707963267948966"/>
+      <geometry>
+        <mesh filename="package://larcc_description/meshes/sensors/astra2.dae" scale="1.0 1.0 1.0"/>
+      </geometry>
+    </visual>
+    <collision>
+      <origin xyz="-0.01 -0.06 0.0" rpy="0.0 0.0 0.0"/>
+      <geometry>
+        <box size="0.04 0.165 0.03"/>
+      </geometry>
+    </collision>
+  </link>
+  <gazebo reference="camera_4_link">
+    <selfCollide>false</selfCollide>
+  </gazebo>
+  <joint name="camera_4_rgb_joint" type="fixed">
+    <origin xyz="0.0 -0.045 0.0" rpy="0.0 0.0 0.0"/>
+    <parent link="camera_4_link"/>
+    <child link="camera_4_rgb_frame"/>
+  </joint>
+  <link name="camera_4_rgb_frame"/>
+  <joint name="camera_4_rgb_optical_joint" type="fixed">
+    <origin xyz="0.0 0.0 0.0" rpy="-1.5707963267948966 0.0 -1.5707963267948966"/>
+    <parent link="camera_4_rgb_frame"/>
+    <child link="camera_4_rgb_optical_frame"/>
+  </joint>
+  <link name="camera_4_rgb_optical_frame"/>
+  <joint name="camera_4_depth_joint" type="fixed">
+    <origin xyz="0.0 -0.02 0.0" rpy="0.0 0.0 0.0"/>
+    <parent link="camera_4_link"/>
+    <child link="camera_4_depth_frame"/>
+  </joint>
+  <link name="camera_4_depth_frame"/>
+  <joint name="camera_4_depth_optical_joint" type="fixed">
+    <origin xyz="0.0 0.0 0.0" rpy="-1.5707963267948966 0.0 -1.5707963267948966"/>
+    <parent link="camera_4_depth_frame"/>
+    <child link="camera_4_depth_optical_frame"/>
+  </joint>
+  <link name="camera_4_depth_optical_frame"/>
+  <gazebo reference="camera_4_depth_frame">
+    <sensor name="camera" type="depth">
+      <always_on>true</always_on>
+      <update_rate>8.0</update_rate>
+      <camera>
+        <horizontal_fov>1.0471975511965976</horizontal_fov>
+        <image>
+          <format>B8G8R8</format>
+          <width>1280</width>
+          <height>800</height>
+        </image>
+        <clip>
+          <near>0.10</near>
+          <far>8.0</far>
+        </clip>
+      </camera>
+      <plugin filename="libgazebo_ros_openni_kinect.so" name="camera_4_camera_controller">
+        <cameraName>camera_4</cameraName>
+        <alwaysOn>true</alwaysOn>
+        <updateRate>0</updateRate>
+        <imageTopicName>rgb/image_raw</imageTopicName>
+        <depthImageTopicName>depth/image_raw</depthImageTopicName>
+        <pointCloudTopicName>depth/points</pointCloudTopicName>
+        <cameraInfoTopicName>rgb/camera_info</cameraInfoTopicName>
+        <depthImageCameraInfoTopicName>depth/camera_info</depthImageCameraInfoTopicName>
+        <frameName>camera_4_rgb_optical_frame</frameName>
+        <baseline>0.1</baseline>
+        <distortion_k1>0.0</distortion_k1>
+        <distortion_k2>0.0</distortion_k2>
+        <distortion_k3>0.0</distortion_k3>
+        <distortion_t1>0.0</distortion_t1>
+        <distortion_t2>0.0</distortion_t2>
+        <pointCloudCutoff>0.4</pointCloudCutoff>
+      </plugin>
+    </sensor>
+  </gazebo>
+</robot>

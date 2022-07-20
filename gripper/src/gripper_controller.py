@@ -52,8 +52,17 @@ def request_gripper_callback(data):
             print(result)
         else:
             result = 'failed'
-            print(result)
+            print('status:' + str(result))
 
+        pub.publish(result)
+    elif gripper_request_dict["action"] == 'status':
+        result = hand.status()
+        print(result)
+        pub.publish('status: ' + str(result))
+
+    elif gripper_request_dict['action'] == 'connect':
+        hand.connect(HOST, PORT)
+        result = 'Gripper is connected.'
         pub.publish(result)
 
     elif gripper_request_dict['action'] == 'disconnect':
@@ -83,6 +92,7 @@ def move(position, speed, force):
     force_mA = hand.get_force_mA(final_force)
 
     return status, position_mm, force_mA
+
 
 
 if __name__ == '__main__':

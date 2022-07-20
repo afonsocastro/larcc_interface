@@ -11,6 +11,8 @@ print("Connected")
 
 hand.reset()
 hand.activate()
+result = hand.wait_activate_complete()
 
+hand.adjust()
 hand.disconnect()
 print("Disconnected")

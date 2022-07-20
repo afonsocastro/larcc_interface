@@ -1,0 +1,112 @@
+<?xml version="1.0"?>
+<robot name="tripod_macro" xmlns:xacro="http://ros.org/wiki/xacro">
+
+    <!-- Tripod macro, the one that is called from another file.-->
+    <xacro:macro name="tripod_macro" params="name parent *origin">
+
+    <!-- Tripod link-->
+    <link name="${name}">
+        <visual>
+            <origin xyz="0 0 0" rpy="0 0 0"/>
+            <geometry>
+                <mesh filename="package://mmtbot_description/meshes/tripod/tripod.dae" scale="0.04 0.04 0.04"/>
+            </geometry>
+            <material name="grey"/>
+        </visual>
+        <collision name="tripod_collision">
+            <origin xyz="0 0 0" rpy="0 0 0"/>
+            <geometry>
+                <mesh filename="package://mmtbot_description/meshes/tripod/tripod.dae" scale="0.04 0.04 0.04"/>
+            </geometry>
+        </collision>
+        <inertial>
+            <mass value="1.0" />
+            <origin xyz="0 0 0" rpy="0 0 0"/>
+            <inertia ixx="1" ixy="0"  ixz="0" iyy="1" iyz="0" izz="1" />
+        </inertial>
+    </link>
+
+    <gazebo reference="${name}">
+        <material>Gazebo/Grey</material>
+        <mu1>50.0</mu1>
+        <mu2>50.0</mu2>
+        <kp>1000000.0</kp>
+        <kd>1.0</kd>
+        <selfCollide>false</selfCollide>
+    </gazebo>
+
+    <!-- parent to tripod -->
+    <joint name="${parent}_to_${name}" type="fixed">
+        <parent link="${parent}"/>
+        <child link="${name}" />
+        <xacro:insert_block name="origin"/>
+    </joint>
+
+    <gazebo reference="${name}">
+        <material>Gazebo/Grey</material>
+        <mu1>50.0</mu1>
+        <mu2>50.0</mu2>
+        <kp>1000000.0</kp>
+        <kd>1.0</kd>
+        <selfCollide>false</selfCollide>
+    </gazebo>
+
+    <link name="${name}_plate">
+        <visual>
+            <origin xyz="0 0 0" rpy="0 0 0"/>
+            <geometry>
+                <box size="0.04 0.4 0.015"/>
+            </geometry>
+            <material name="grey"/>
+        </visual>
+        <collision name="tripod_collision">
+            <origin xyz="0 0 0" rpy="0 0 0"/>
+            <geometry>
+                <box size="0.04 0.15 0.015"/>
+            </geometry>
+        </collision>
+        <inertial>
+            <mass value="1.0" />
+            <origin xyz="0 0 0" rpy="0 0 0"/>
+            <inertia ixx="1" ixy="0"  ixz="0" iyy="1" iyz="0" izz="1" />
+        </inertial>
+    </link>
+
+    <gazebo reference="${name}">
+        <material>Gazebo/Grey</material>
+        <mu1>50.0</mu1>
+        <mu2>50.0</mu2>
+        <kp>1000000.0</kp>
+        <kd>1.0</kd>
+        <selfCollide>false</selfCollide>
+    </gazebo>
+
+    <!-- tripod to tripod plate-->
+    <joint name="${name}_to_${name}_plate" type="fixed">
+        <parent link="${name}"/>
+        <child link="${name}_plate" />
+        <origin xyz=".01 .03 1.33" rpy="0 ${M_PI/10} 0"/>
+    </joint>
+
+    <!-- Tripod left support-->
+    <link name="${name}_left_support"/>
+
+    <!-- tripod plate to tripod left support -->
+    <joint name="${name}_plate_to_${name}_left_support" type="fixed">
+        <parent link="${name}_plate"/>
+        <child link="${name}_left_support" />
+        <origin xyz="0 0.18 0.0075" rpy="0 0 0"/>
+    </joint>
+
+    <!-- Tripod right support-->
+    <link name="${name}_right_support"/>
+
+    <!-- tripod plate to tripod right support -->
+    <joint name="${name}_plate_to_${name}_right_support" type="fixed">
+        <parent link="${name}_plate"/>
+        <child link="${name}_right_support" />
+        <origin xyz="0 -0.18 0.0075" rpy="0 0 0"/>
+    </joint>
+
+    </xacro:macro>
+</robot>

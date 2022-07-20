@@ -15,7 +15,8 @@ class ArmGripperComm:
                           "arm_joints_goal": 0,
                           "gripper_closed": False,
                           "gripper_active": 0,
-                          "have_object": 0}
+                          "have_object": 0,
+                          "last_status": None}
 
         rospy.Subscriber("gripper_response", String, self.gripper_response_callback)
         self.pub_gripper = rospy.Publisher('gripper_request', String, queue_size=10)
@@ -33,6 +34,8 @@ class ArmGripperComm:
             self.state_dic["gripper_closed"] = not self.state_dic["gripper_closed"]
         elif str(data).find("Gripper is now active! Ready to receive commands.") >= 0:
             self.state_dic["gripper_active"] = 1
+        elif str(data).find("status:") >= 0:
+            self.state_dic["last_status"] = data
 
     def arm_response_callback(self, data):
         if str(data).find("Arm is now at initial pose.") >= 0:
@@ -62,6 +65,13 @@ class ArmGripperComm:
         while self.state_dic["gripper_closed"]:
             time.sleep(0.1)
 
+    def gripper_connect(self):
+        # values = [position, speed, force]
+        my_dict = {'action': 'connect'}
+        encoded_data_string = json.dumps(my_dict)
+        rospy.loginfo(encoded_data_string)
+        self.pub_gripper.publish(encoded_data_string)
+
     def gripper_disconnect(self):
         # values = [position, speed, force]
         my_dict = {'action': 'disconnect'}
@@ -89,6 +99,13 @@ class ArmGripperComm:
 
         while not self.state_dic["gripper_closed"]:
             time.sleep(0.1)
+
+    def gripper_status(self):
+        # values = [position, speed, force]
+        my_dict = {'action': 'status'}
+        encoded_data_string = json.dumps(my_dict)
+        rospy.loginfo(encoded_data_string)
+        self.pub_gripper.publish(encoded_data_string)
 
     # Sends a message to the arm controller to move the arm to a preconfigured intial postion
     def move_arm_to_initial_pose(self):
@@ -126,7 +143,7 @@ class ArmGripperComm:
         rospy.loginfo(_arm_dict_)
         self.pub_arm.publish(_encoded_data_string_)
 
-        self.state_dic["arm_initial_pose"] = 0
+        self.state_dic["arm_joints_goal"] = 0
 
         while self.state_dic["arm_joints_goal"] != 1:
             time.sleep(0.1)
