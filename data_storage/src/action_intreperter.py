@@ -99,7 +99,7 @@ if __name__ == '__main__':
 
     model_path = "../../neural_networks/keras"
 
-    model = keras.models.load_model(model_path + "/myModel2")
+    model = keras.models.load_model(model_path + "/myModel")
 
     # ---------------------------------------------------------------------------------------------
     # -------------------------------INITIATE COMMUNICATION----------------------------------------

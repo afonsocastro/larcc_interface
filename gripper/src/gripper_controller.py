@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+import time
 
 import rospy
 from std_msgs.msg import String
@@ -29,7 +30,7 @@ def request_gripper_callback(data):
         elif init_state == 1:
             result = 'Gripper is now active! Ready to receive commands.'
             print(result)
-        pub.publish(result)
+        # pub.publish(result)
 
     elif gripper_request_dict['action'] == 'move':
         position = gripper_request_dict['values'][0]
@@ -38,37 +39,47 @@ def request_gripper_callback(data):
 
         status, position_mm, force_mA = move(position, speed, force)
 
-        if status == 0:
-            # result = 'no object detected: position = {:.1f}mm, force = {:.1f}mA '.format(position_mm, force_mA)
-            result = 'No object detected.'
-            print(result)
-        elif status == 1:
-            # result = 'object detected closing: position = {:.1f}mm, force = {:.1f}mA '.format(position_mm, force_mA)
-            result = 'Object detected.'
-            print(result)
-        elif status == 2:
-            # result = 'object detected opening: position = {:.1f}mm, force = {:.1f}mA '.format(position_mm, force_mA)
-            result = 'Object detected.'
-            print(result)
-        else:
-            result = 'failed'
-            print('status:' + str(result))
+        # if status == 0:
+        #     # result = 'no object detected: position = {:.1f}mm, force = {:.1f}mA '.format(position_mm, force_mA)
+        #     result = 'No object detected.'
+        #     print(result)
+        # elif status == 1:
+        #     # result = 'object detected closing: position = {:.1f}mm, force = {:.1f}mA '.format(position_mm, force_mA)
+        #     result = 'Object detected.'
+        #     print(result)
+        # elif status == 2:
+        #     # result = 'object detected opening: position = {:.1f}mm, force = {:.1f}mA '.format(position_mm, force_mA)
+        #     result = 'Object detected.'
+        #     print(result)
+        # else:
+        #     result = 'failed'
+        #     print('status:' + str(result))
 
-        pub.publish(result)
-    elif gripper_request_dict["action"] == 'status':
-        result = hand.status()
-        print(result)
-        pub.publish('status: ' + str(result))
+        # pub.publish(result)
+    # elif gripper_request_dict["action"] == 'status':
+        # result = hand.get_instant_gripper_status()
+        # my_json_string = dto_to_json(result)
+        # pub.publish(my_json_string)
 
     elif gripper_request_dict['action'] == 'connect':
         hand.connect(HOST, PORT)
-        result = 'Gripper is connected.'
-        pub.publish(result)
+        # result = 'Gripper is connected.'
+        # pub.publish(result)
+        # result = hand.get_instant_gripper_status()
+        # my_json_string = dto_to_json(result)
+        # pub.publish(my_json_string)
 
-    elif gripper_request_dict['action'] == 'disconnect':
+    result = hand.get_instant_gripper_status()
+    my_json_string = dto_to_json(result)
+    pub.publish(my_json_string)
+
+    if gripper_request_dict['action'] == 'disconnect':
+        # result = hand.get_instant_gripper_status()
+        # my_json_string = dto_to_json(result)
+        # pub.publish(my_json_string)
         hand.disconnect()
-        result = 'Gripper is disconnected.'
-        pub.publish(result)
+        # result = 'Gripper is disconnected.'
+        # pub.publish(result)
 
 
 def hand_init_procedures():
@@ -93,6 +104,12 @@ def move(position, speed, force):
 
     return status, position_mm, force_mA
 
+
+def dto_to_json(dto):
+    my_dic = dto.__dict__
+    my_json = json.dumps(my_dic)
+
+    return my_json
 
 
 if __name__ == '__main__':

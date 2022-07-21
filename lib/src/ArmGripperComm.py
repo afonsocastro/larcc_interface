@@ -4,19 +4,19 @@ import json
 import time
 import rospy
 from std_msgs.msg import String
+from gripper.src.GripperStatusDTO import GripperStatusDTO
 
 
 class ArmGripperComm:
 
     def __init__(self):
-
         self.state_dic = {"arm_initial_pose": 0,
                           "arm_pose_goal": 0,
                           "arm_joints_goal": 0,
                           "gripper_closed": False,
-                          "gripper_active": 0,
-                          "have_object": 0,
-                          "last_status": None}
+                          "gripper_active": False,
+                          "object_detected": False,
+                          "gripper_pos": 0}
 
         rospy.Subscriber("gripper_response", String, self.gripper_response_callback)
         self.pub_gripper = rospy.Publisher('gripper_request', String, queue_size=10)
@@ -26,16 +26,28 @@ class ArmGripperComm:
 
     def gripper_response_callback(self, data):
 
-        if str(data).find("No object detected.") >= 0:
-            self.state_dic["have_object"] = 0
-            self.state_dic["gripper_closed"] = not self.state_dic["gripper_closed"]
-        elif str(data).find("Object detected.") >= 0:
-            self.state_dic["have_object"] = 1
-            self.state_dic["gripper_closed"] = not self.state_dic["gripper_closed"]
-        elif str(data).find("Gripper is now active! Ready to receive commands.") >= 0:
-            self.state_dic["gripper_active"] = 1
-        elif str(data).find("status:") >= 0:
-            self.state_dic["last_status"] = data
+        gripper_status_dict = json.loads(data.data)
+        rospy.loginfo(gripper_status_dict)
+
+        if gripper_status_dict["requested_position"] >= 140:
+            self.state_dic["gripper_closed"] = False
+        elif gripper_status_dict["requested_position"] <= 0:
+            self.state_dic["gripper_closed"] = True
+
+        self.state_dic["gripper_active"] = gripper_status_dict["is_activated"]
+        self.state_dic["object_detected"] = gripper_status_dict["object_detected"]
+        self.state_dic["gripper_pos"] = gripper_status_dict["actual_position"]
+
+        # if str(data).find("No object detected.") >= 0:
+        #     self.state_dic["have_object"] = 0
+        #     self.state_dic["gripper_closed"] = not self.state_dic["gripper_closed"]
+        # elif str(data).find("Object detected.") >= 0:
+        #     self.state_dic["have_object"] = 1
+        #     self.state_dic["gripper_closed"] = not self.state_dic["gripper_closed"]
+        # elif str(data).find("Gripper is now active! Ready to receive commands.") >= 0:
+        #     self.state_dic["gripper_active"] = 1
+        # elif str(data).find("status:") >= 0:
+        #     self.state_dic["last_status"] = data
 
     def arm_response_callback(self, data):
         if str(data).find("Arm is now at initial pose.") >= 0:
@@ -72,6 +84,9 @@ class ArmGripperComm:
         rospy.loginfo(encoded_data_string)
         self.pub_gripper.publish(encoded_data_string)
 
+        while not self.state_dic["gripper_active"]:
+            time.sleep(0.1)
+
     def gripper_disconnect(self):
         # values = [position, speed, force]
         my_dict = {'action': 'disconnect'}
@@ -86,7 +101,7 @@ class ArmGripperComm:
         rospy.loginfo(encoded_data_string_)
         self.pub_gripper.publish(encoded_data_string_)
 
-        while self.state_dic["gripper_active"] != 1:
+        while not self.state_dic["gripper_active"]:
             time.sleep(0.1)
 
     # Sends a message to the gripper controller to close the gripper
