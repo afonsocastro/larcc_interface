@@ -30,6 +30,7 @@ activation_options = ['relu', 'sigmoid']
 optimizer_options = ["Adam", "SGD"]
 loss_options = ['sparse_categorical_crossentropy']
 
+
 early_stop_patience = 20
 
 
