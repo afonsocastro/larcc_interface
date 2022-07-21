@@ -21,24 +21,9 @@ arm_gripper_comm = ArmGripperComm()
 
 time.sleep(0.2) # Waiting time to ros nodes properly initiate
 
-arm_gripper_comm.gripper_init()
+arm_gripper_comm.gripper_connect()
+
+if not arm_gripper_comm.state_dic["object_detected"]:
+    arm_gripper_comm.gripper_init()
 
 arm_gripper_comm.gripper_disconnect()
-
-#
-# hand = RobotiqHand()
-#
-# hand.connect(HOST, PORT)
-# print("Connected")
-#
-# hand.reset()
-# print("Reseted")
-# hand.activate()
-# print("Waiting")
-# result = hand.wait_activate_complete()
-# print(result)
-# if result != 0x31:
-#     hand.disconnect()
-#
-# hand.adjust()
-# # hand.disconnect()
