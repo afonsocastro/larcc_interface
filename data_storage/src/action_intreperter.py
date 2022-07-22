@@ -84,10 +84,12 @@ if __name__ == '__main__':
                         help="If argmument is present, activates gripper")
     parser.add_argument("-maip", "--move_arm_to_inicial_position", action="store_true",
                         help="If argmument is present, activates gripper")
+    parser.add_argument("-c", "--config_file", type=str, default="data_storage_config",
+                        help="If argmument is present, activates gripper")
 
     args = vars(parser.parse_args())
 
-    f = open('../config/data_storage_config.json')
+    f = open('../config/' + args["config_file"] + '.json')
 
     config = json.load(f)
 
@@ -150,7 +152,7 @@ if __name__ == '__main__':
 
     limit = int(config["time"] * config["rate"])
 
-    trainning_data_array = np.empty((0, limit * config["n_variables"]))
+    trainning_data_array = np.empty((0, limit * len(config["data"])))
 
     sequential_actions = False
 

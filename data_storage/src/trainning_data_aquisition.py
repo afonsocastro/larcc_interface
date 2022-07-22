@@ -141,9 +141,9 @@ if __name__ == '__main__':
 
     rest_state_mean = np.mean(np.array(list_calibration))
 
-    limit = int(config["time"] * config["rate"])
+    limit = int(config["storage_time"] * config["rate"])
 
-    trainning_data_array = np.empty((0, limit * config["n_variables"]))
+    trainning_data_array = np.empty((0, limit * len(config["data"])))
 
     for j in range(0, args["number_reps"]):
 

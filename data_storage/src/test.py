@@ -1,4 +1,7 @@
 #!/usr/bin/env python3
+import json
+import math
+
 import numpy as np
 from sklearn.preprocessing import normalize
 
@@ -11,6 +14,46 @@ def normalize_data(vector, measurements):
     vector_data_norm = np.reshape(experiment_array_norm, (1, vector.shape[0]))
     return vector_data_norm
 
+
+def sample_shortener(array, measurements, store_config, train_config):
+
+    new_measurements = store_config["rate"] * train_config["time"]
+    array_shortened = np.empty((0, int(new_measurements * len(store_config["data"]))))
+
+    classification = []
+    for vector in array:
+        data_array = np.reshape(vector[:-1], (measurements, int(len(vector) / measurements)))
+        idx_start = 0
+        idx_end = int(new_measurements)
+
+        c = vector[-1]
+
+        while True:
+            if idx_end > measurements:
+                break
+
+            vector_shortened = np.reshape(data_array[idx_start:idx_end, :], (1, array_shortened.shape[1]))
+            array_shortened = np.append(array_shortened, vector_shortened, axis=0)
+            classification.append(c)
+            idx_start += int(new_measurements)
+            idx_end += int(new_measurements)
+
+    array_shortened = np.append(array_shortened, np.reshape([classification], (-1, 1)), axis=1)
+
+path = "./../data/trainning2/"
+config_file = "training_config"
+
+f = open(path + '../../config/data_storage_config.json')
+storage_config = json.load(f)
+f.close()
+f = open(path + '../../config/' + config_file + '.json')
+training_config = json.load(f)
+f.close()
+data_file = "learning_data.npy"
+
+experiment_data = np.load(path + data_file)
+
+sample_shortener(experiment_data, 50, storage_config, training_config)
 
 # path = "../data/trainning/"
 # file = "../data/trainning2/test_array.npy"
