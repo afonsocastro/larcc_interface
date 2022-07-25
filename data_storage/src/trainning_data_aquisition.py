@@ -219,8 +219,8 @@ if __name__ == '__main__':
           f'{data_for_learning.wrench_pose.orientation.x}, {data_for_learning.wrench_pose.orientation.y}, ' \
           f'{data_for_learning.wrench_pose.orientation.z}, {data_for_learning.wrench_pose.orientation.w})'
 
-    with open('../data/raw_learning_data/position_historic.txt', 'w') as f:
-        f.write(pos)
+    with open('../data/raw_learning_data/position_historic.txt', 'a') as f:
+        f.write(pos + "\n")
 
     del data_for_learning, arm_gripper_comm
 
