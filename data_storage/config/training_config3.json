@@ -6,6 +6,5 @@
   "data_filtered" : ["timestamp", "joint_ef0", "jointe_ef1", "joint_ef2", "jointe_ef3",
     "joint_ef4", "jointe_ef5", "gripper_fx", "gripper_fy", "gripper_fz", "gripper_mx",
     "gripper_my", "gripper_mz"],
-  "parent_frame": "wrist_3_link",
-  "initial_pose": [0.04963350296020508, -1.4019640249064942, 1.642327133809225, 0.276273174876831, 1.6312499046325684, -3.0556214491473597]
+  "initial_pose": [0.2740921974182129, -0.9531358045390625, 1.1279285589801233, -2.4319454632201136, -1.5507386366473597, 0.026149988174438477]
 }
