@@ -6,7 +6,7 @@ from matplotlib import pyplot as plt
 import numpy as np
 import statistics
 
-path = "../data/sensor_testing/"
+path = "../data/sensor_testing/initial_pose_testing/"
 
 res = os.listdir(path)
 i = 0
@@ -17,7 +17,7 @@ for file in res:
 
 idx = input("Select idx from test json: ")
 
-f = open(path + f'test{idx}.json')
+f = open(path + res[int(idx)])
 
 data = json.load(f)
 
@@ -43,5 +43,7 @@ for i in range(0, 2):
         axs[i, j].plot([mean, mean], [0, 30], color='red')
         axs[i, j].plot([low, low], [0, 30], color='yellow')
         axs[i, j].plot([high, high], [0, 30], color='yellow')
+
+        print(labels[idx] + " mean: " + str(mean))
 
 plt.show()

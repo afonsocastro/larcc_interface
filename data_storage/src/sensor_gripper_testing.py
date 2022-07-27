@@ -53,7 +53,7 @@ while not rospy.is_shutdown():
     data["my"].append(current_data.wrench_force_torque.torque.y)
     data["mz"].append(current_data.wrench_force_torque.torque.z)
 
-    if i > 1000:
+    if i > 300:
         break
 
     i += 1
@@ -90,13 +90,13 @@ for key in data:
                    "min": float(val_min)}
 
 
-path = "../data/sensor_testing/"
+path = "../data/sensor_testing/initial_pose_testing/"
 
 res = os.listdir(path)
 
 idx = len(res)
 
-with open(path + f'test{idx}.json', 'w') as fp:
+with open(path + f'initial_pose_3000ms_{idx + 1 - 43}.json', 'w') as fp:
     json.dump(struct, fp)
 
 x = np.arange(min(data["fx"]), max(data["fx"]), 0.025)

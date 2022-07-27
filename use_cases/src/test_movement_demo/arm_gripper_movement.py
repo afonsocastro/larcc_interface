@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import argparse
 import json
+import os
 
 import tf2_ros
 from lib.src.ArmGripperComm import ArmGripperComm
@@ -8,16 +9,30 @@ import rospy
 import time
 
 parser = argparse.ArgumentParser(description="Arguments for trainning script")
-parser.add_argument("-m", "--movement", type=str,
+parser.add_argument("-m", "--movement", type=str, default="",
                     help="It is the name of the movement configuration JSON in the config directory of this package")
 
 args = vars(parser.parse_args())
 
-f = open('../../config/' + args["movement"] + '.json')
+path = "../../config/"
 
-config = json.load(f)
+if args['movement'] == "":
+    res = os.listdir(path)
+    i = 0
 
-f.close()
+    for file in res:
+        print(f'[{i}]:' + file)
+        i += 1
+
+    idx = input("Select idx from test json: ")
+
+    f = open(path + res[int(idx)])
+    config = json.load(f)
+    f.close()
+else:
+    f = open(path + args["movement"] + '.json')
+    config = json.load(f)
+    f.close()
 
 rospy.init_node("arm_gripper_movement", anonymous=True)
 

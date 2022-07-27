@@ -11,7 +11,7 @@ from sklearn.preprocessing import normalize
 from lib.src.ArmGripperComm import ArmGripperComm
 
 
-def add_to_vector(data, vector, first_timestamp):
+def add_to_vector(data, vector, first_timestamp, dic_offset):
 
     if first_time_stamp is None:
         first_timestamp = data.timestamp()
@@ -19,11 +19,18 @@ def add_to_vector(data, vector, first_timestamp):
     else:
         timestamp = data.timestamp() - first_timestamp
 
-    new_data = np.array([timestamp, data.joints_effort[0], data.joints_effort[1], data.joints_effort[2],
-                         data.joints_effort[3], data.joints_effort[4], data.joints_effort[5],
-                         data.wrench_force_torque.force.x, data.wrench_force_torque.force.y,
-                         data.wrench_force_torque.force.z, data.wrench_force_torque.torque.x,
-                         data.wrench_force_torque.torque.y, data.wrench_force_torque.torque.z])
+    new_data = np.array([timestamp, data.joints_effort[0] - dic_offset["j0"],
+                         data.joints_effort[1] - dic_offset["j1"],
+                         data.joints_effort[2] - dic_offset["j2"],
+                         data.joints_effort[3] - dic_offset["j3"],
+                         data.joints_effort[4] - dic_offset["j4"],
+                         data.joints_effort[5]- dic_offset["j5"],
+                         data.wrench_force_torque.force.x - dic_offset["fx"],
+                         data.wrench_force_torque.force.y - dic_offset["fy"],
+                         data.wrench_force_torque.force.z - dic_offset["fz"],
+                         data.wrench_force_torque.torque.x - dic_offset["mx"],
+                         data.wrench_force_torque.torque.y - dic_offset["my"],
+                         data.wrench_force_torque.torque.z - - dic_offset["mz"]])
 
     return np.append(vector, new_data), first_timestamp
 
@@ -33,6 +40,17 @@ def calc_data_mean(data):
                        data.wrench_force_torque.torque.y, data.wrench_force_torque.torque.z])
 
     return np.mean(abs(values))
+
+
+def offset_calculation(dic):
+
+    dic_offset_mean = {}
+
+    for key in dic:
+
+        dic_offset_mean[key] = np.mean(dic[key])
+
+    return dic_offset_mean
 
 
 def save_trainnning_data(data, categ, action_list):
@@ -114,8 +132,8 @@ if __name__ == '__main__':
     # ---------------------------------------------------------------------------------------------
 
     try:
-        arm_gripper_comm.move_arm_to_initial_pose()
-
+        joints = config["initial_pose"]
+        arm_gripper_comm.move_arm_to_joints_state(joints[0], joints[1], joints[2], joints[3], joints[4], joints[5])
         if args["activate_gripper"] == 1:
             input("Press ENTER to activate gripper in 3 secs")
             for i in range(0, 3):
@@ -131,17 +149,42 @@ if __name__ == '__main__':
     except:
         print("ctrl+C pressed")
 
-    list_calibration = []
+    list_gripper_calibration = []
+    dic_offset_calibration = {"fx": [],
+                              "fy": [],
+                              "fz": [],
+                              "mx": [],
+                              "my": [],
+                              "mz": [],
+                              "j0": [],
+                              "j1": [],
+                              "j2": [],
+                              "j3": [],
+                              "j4": [],
+                              "j5": [],}
+    print("CALIBRATING...")
 
-    print("Calculating rest state variables...")
+    for i in range(0, 20):
+        list_gripper_calibration.append(calc_data_mean(data_for_learning))
+        dic_offset_calibration["fx"].append(data_for_learning.wrench_force_torque.force.x)
+        dic_offset_calibration["fy"].append(data_for_learning.wrench_force_torque.force.y)
+        dic_offset_calibration["fz"].append(data_for_learning.wrench_force_torque.force.z)
+        dic_offset_calibration["mx"].append(data_for_learning.wrench_force_torque.torque.x)
+        dic_offset_calibration["my"].append(data_for_learning.wrench_force_torque.torque.y)
+        dic_offset_calibration["mz"].append(data_for_learning.wrench_force_torque.torque.z)
 
-    for i in range(0, 99):
-        list_calibration.append(calc_data_mean(data_for_learning))
-        time.sleep(0.01)
+        dic_offset_calibration["j0"].append(data_for_learning.joints_effort[0])
+        dic_offset_calibration["j1"].append(data_for_learning.joints_effort[1])
+        dic_offset_calibration["j2"].append(data_for_learning.joints_effort[2])
+        dic_offset_calibration["j3"].append(data_for_learning.joints_effort[3])
+        dic_offset_calibration["j4"].append(data_for_learning.joints_effort[4])
+        dic_offset_calibration["j5"].append(data_for_learning.joints_effort[5])
+        rate.sleep()
 
-    rest_state_mean = np.mean(np.array(list_calibration))
+    rest_state_mean = np.mean(np.array(list_gripper_calibration))
+    dic_varible_offset = offset_calculation(dic_offset_calibration)
 
-    limit = int(config["storage_time"] * config["rate"])
+    limit = int(config["time"] * config["rate"])
 
     trainning_data_array = np.empty((0, limit * len(config["data"])))
 
@@ -178,7 +221,8 @@ if __name__ == '__main__':
 
                 i += 1
                 print(data_for_learning)
-                vector_data, first_time_stamp = add_to_vector(data_for_learning, vector_data, first_time_stamp)
+                vector_data, first_time_stamp = add_to_vector(data_for_learning,
+                                                              vector_data, first_time_stamp, dic_varible_offset)
 
                 data_mean = calc_data_mean(data_for_learning)
                 variance = data_mean - rest_state_mean
@@ -212,15 +256,12 @@ if __name__ == '__main__':
         category = args["category"]
 
     pos = f'time: {datetime.now().strftime("%d/%m/%Y %H:%M:%S")}, action: {category}, ' \
-          f'number_experiments: {trainning_data_array.shape[0]} ' \
+          f'number_experiments: {trainning_data_array.shape[0]}, ' \
           f'joints_pos: {data_for_learning.joints_position}, gripper_pos: ' \
           f'({data_for_learning.wrench_pose.position.x}, ' \
           f'{data_for_learning.wrench_pose.position.y}, {data_for_learning.wrench_pose.position.z}, ' \
           f'{data_for_learning.wrench_pose.orientation.x}, {data_for_learning.wrench_pose.orientation.y}, ' \
           f'{data_for_learning.wrench_pose.orientation.z}, {data_for_learning.wrench_pose.orientation.w})'
-
-    with open('../data/raw_learning_data/position_historic.txt', 'a') as f:
-        f.write(pos + "\n")
 
     del data_for_learning, arm_gripper_comm
 
@@ -232,6 +273,9 @@ if __name__ == '__main__':
     out = input(f"You wish to save the {trainning_data_array.shape[0]} {classification} experiment? (s/n)\n")
 
     if out == "s":
+        with open('../data/raw_learning_data/position_historic.txt', 'a') as f:
+            f.write(pos + "\n")
+
         print(f"Trainning saved!\nIt was saved {trainning_data_array.shape[0]} experiments")
         save_trainnning_data(trainning_data_array, category, config["action_classes"])
     else:
