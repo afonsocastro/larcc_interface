@@ -118,7 +118,7 @@ if __name__ == '__main__':
     # -------------------------------INITIATE COMMUNICATION----------------------------------------
     # ---------------------------------------------------------------------------------------------
 
-    rospy.init_node("tranning_data_aquisition", anonymous=True)
+    rospy.init_node("training_data_aquisition", anonymous=True)
 
     data_for_learning = DataForLearning()
     arm_gripper_comm = ArmGripperComm()
@@ -161,7 +161,7 @@ if __name__ == '__main__':
                               "j2": [],
                               "j3": [],
                               "j4": [],
-                              "j5": [],}
+                              "j5": []}
     print("CALIBRATING...")
 
     for i in range(0, 20):
@@ -182,7 +182,7 @@ if __name__ == '__main__':
         rate.sleep()
 
     rest_state_mean = np.mean(np.array(list_gripper_calibration))
-    dic_varible_offset = offset_calculation(dic_offset_calibration)
+    dic_variable_offset = offset_calculation(dic_offset_calibration)
 
     limit = int(config["time"] * config["rate"])
 
@@ -222,7 +222,7 @@ if __name__ == '__main__':
                 i += 1
                 print(data_for_learning)
                 vector_data, first_time_stamp = add_to_vector(data_for_learning,
-                                                              vector_data, first_time_stamp, dic_varible_offset)
+                                                              vector_data, first_time_stamp, dic_variable_offset)
 
                 data_mean = calc_data_mean(data_for_learning)
                 variance = data_mean - rest_state_mean

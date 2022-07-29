@@ -3,7 +3,6 @@ import argparse
 import json
 import os
 
-import tf2_ros
 from lib.src.ArmGripperComm import ArmGripperComm
 import rospy
 import time
@@ -41,6 +40,9 @@ arm_gripper_comm = ArmGripperComm()
 time.sleep(0.2)
 
 arm_gripper_comm.gripper_connect()
+
+if not arm_gripper_comm.state_dic["gripper_active"]:
+    arm_gripper_comm.gripper_init()
 
 for pos in config["positions"]:
     arm_gripper_comm.move_arm_to_joints_state(pos[0], pos[1], pos[2], pos[3], pos[4], pos[5])

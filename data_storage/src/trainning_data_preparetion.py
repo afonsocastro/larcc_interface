@@ -53,7 +53,7 @@ class SortedDataForLearning:
             self.trainning_data = self.data_norm[:div_idx]
             self.test_data = self.data_norm[div_idx:]
 
-            np.save("/tmp/trainning_data.npy", self.trainning_data)
+            np.save("/tmp/training_data.npy", self.trainning_data)
             np.save("/tmp/test_data.npy", self.test_data)
 
             print("Learning data shape")
@@ -83,6 +83,7 @@ class SortedDataForLearning:
                 if idx_end > measurements:
                     break
 
+                print(data_array[idx_start:idx_end, :])
                 vector_shortened = np.reshape(data_array[idx_start:idx_end, :], (1, array_shortened.shape[1]))
                 array_shortened = np.append(array_shortened, vector_shortened, axis=0)
                 classification.append(c)

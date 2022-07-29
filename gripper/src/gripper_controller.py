@@ -83,7 +83,7 @@ def request_gripper_callback(data):
 
 
 def hand_init_procedures():
-    hand.connect(HOST, PORT)
+    # hand.connect(HOST, PORT)
 
     hand.reset()
     hand.activate()
