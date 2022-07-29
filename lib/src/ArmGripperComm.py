@@ -4,7 +4,7 @@ import json
 import time
 import rospy
 from std_msgs.msg import String
-from gripper.src.GripperStatusDTO import GripperStatusDTO
+# from gripper.src.GripperStatusDTO import GripperStatusDTO
 
 
 class ArmGripperComm:

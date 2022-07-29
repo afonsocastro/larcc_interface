@@ -40,7 +40,8 @@ def normalize_data(vector, measurements):
     return vector_data_norm
 
 
-def add_to_vector(data, vector, first_timestamp, list_idx):
+# def add_to_vector(data, vector, first_timestamp, list_idx):
+def add_to_vector(data, vector, first_timestamp):
 
     if first_time_stamp is None:
         first_timestamp = data.timestamp()
@@ -59,11 +60,11 @@ def add_to_vector(data, vector, first_timestamp, list_idx):
                 data.wrench_force_torque.force.z, data.wrench_force_torque.torque.x,
                 data.wrench_force_torque.torque.y, data.wrench_force_torque.torque.z]
 
-    new_data_filtered = []
-    for idx in list_idx:
-        new_data_filtered.append(new_data[idx])
+    # new_data_filtered = []
+    # for idx in list_idx:
+    #     new_data_filtered.append(new_data[idx])
 
-    return np.append(vector, new_data_filtered), first_timestamp
+    return np.append(vector, new_data), first_timestamp
 
 
 def calc_data_mean(data):
@@ -95,9 +96,9 @@ if __name__ == '__main__':
 
     f.close()
 
-    list_filter_idx = []
-    for filtered in config["data_filtered"]:
-        list_filter_idx.append(config["data"].index(filtered))
+    # list_filter_idx = []
+    # for filtered in config["data_filtered"]:
+    #     list_filter_idx.append(config["data"].index(filtered))
 
     model_path = "../../neural_networks/keras"
 
@@ -190,8 +191,9 @@ if __name__ == '__main__':
 
                 i += 1
                 # print(data_for_learning)
-                vector_data, first_time_stamp = add_to_vector(data_for_learning, vector_data, first_time_stamp,
-                                                              list_filter_idx)
+                vector_data, first_time_stamp = add_to_vector(data_for_learning, vector_data, first_time_stamp)
+                # vector_data, first_time_stamp = add_to_vector(data_for_learning, vector_data, first_time_stamp,
+                #                                               list_filter_idx)
 
                 data_mean = calc_data_mean(data_for_learning)
                 variance = data_mean - rest_state_mean

@@ -90,7 +90,7 @@ if __name__ == '__main__':
             pub_force_trorque.publish(msg)
 
             end = time.time()
-            if end - start > 60 and closed == 0:
+            if end - start > 2 and closed == 0:
                 print('close slow')
                 hand.move(255, 0, 1)
                 closed = 1

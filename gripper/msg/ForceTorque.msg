@@ -1,0 +1,4 @@
+geometry_msgs/Vector3 WrenchForce
+geometry_msgs/Vector3 WrenchTorque
+std_msgs/Float64MultiArray JointsEffort
+std_msgs/Float64 GripperCurrent
