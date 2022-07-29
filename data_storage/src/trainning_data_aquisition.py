@@ -24,7 +24,7 @@ def add_to_vector(data, vector, first_timestamp, dic_offset):
                          data.joints_effort[2] - dic_offset["j2"],
                          data.joints_effort[3] - dic_offset["j3"],
                          data.joints_effort[4] - dic_offset["j4"],
-                         data.joints_effort[5]- dic_offset["j5"],
+                         data.joints_effort[5] - dic_offset["j5"],
                          data.wrench_force_torque.force.x - dic_offset["fx"],
                          data.wrench_force_torque.force.y - dic_offset["fy"],
                          data.wrench_force_torque.force.z - dic_offset["fz"],

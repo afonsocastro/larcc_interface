@@ -83,7 +83,8 @@ class SortedDataForLearning:
                 if idx_end > measurements:
                     break
 
-                print(data_array[idx_start:idx_end, :])
+                data_array[idx_start:idx_end, 0] = data_array[idx_start:idx_end, 0] - data_array[idx_start:idx_end, 0][0]
+
                 vector_shortened = np.reshape(data_array[idx_start:idx_end, :], (1, array_shortened.shape[1]))
                 array_shortened = np.append(array_shortened, vector_shortened, axis=0)
                 classification.append(c)

@@ -1,10 +1,10 @@
 {
   "action_classes": ["pull", "push", "shake", "twist"],
-  "force_threshold_start": 0.1,
+  "force_threshold_start": 0.05,
   "force_threshold_end": 0.05,
   "rate": 100.0,
   "time": 0.5,
-  "threshold_counter_limit": 3,
+  "threshold_counter_limit":4,
   "waiting_offset": 0.2,
   "data" : ["timestamp", "joint_ef0", "jointe_ef1", "joint_ef2", "jointe_ef3",
     "joint_ef4", "jointe_ef5", "gripper_fx", "gripper_fy", "gripper_fz", "gripper_mx",

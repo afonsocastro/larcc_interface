@@ -52,9 +52,13 @@ if __name__ == '__main__':
     axes = plt.gca()
     axes.set_xlim(-0.1, 10)
     axes.set_ylim(dlim - 4 * config["force_threshold_start"], ulim + 4 * config["force_threshold_start"])
-    line, = axes.plot([0, 10], [dlim, dlim], 'r-')
-    uplim = axes.plot([0, 10], [ulim, ulim], 'b-')
-    dplim = axes.plot([0, 10], [dlim, dlim], 'b-')
+    line, = axes.plot([0, 100], [dlim, dlim], 'r-')
+    uplim = axes.plot([0, 100], [ulim, ulim], 'b-')
+    dplim = axes.plot([0, 100], [dlim, dlim], 'b-')
+
+    cal = axes.plot([0, 100], [dlim, dlim], 'k-')
+
+    axes.title.set_title(str(round(cal, 5)) + "NO FORCE")
 
     st = time.time()
     while not rospy.is_shutdown():
