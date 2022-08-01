@@ -164,7 +164,7 @@ if __name__ == '__main__':
                               "j5": []}
     print("CALIBRATING...")
 
-    for i in range(0, 20):
+    for i in range(0, 50):
         list_gripper_calibration.append(calc_data_mean(data_for_learning))
         dic_offset_calibration["fx"].append(data_for_learning.wrench_force_torque.force.x)
         dic_offset_calibration["fy"].append(data_for_learning.wrench_force_torque.force.y)
