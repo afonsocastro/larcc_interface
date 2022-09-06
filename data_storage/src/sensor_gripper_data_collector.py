@@ -48,14 +48,14 @@ if __name__ == "__main__":
     linesfx, = ax[0].plot([], [], '-r')
     linesfy, = ax[0].plot([], [], '-g')
     linesfz, = ax[0].plot([], [], '-b')
-    ax[0].set_xlim(0, 600)
-    ax[0].set_ylim(-2, 6)
+    ax[0].set_xlim(0, 100)
+    ax[0].set_ylim(-20, 20)
 
     linesmx, = ax[1].plot([], [], '-r')
     linesmy, = ax[1].plot([], [], '-g')
     linesmz, = ax[1].plot([], [], '-b')
-    ax[1].set_xlim(0, 600)
-    ax[1].set_ylim(-0.4, 0.4)
+    ax[1].set_xlim(0, 100)
+    ax[1].set_ylim(-2, 2)
 
     data_dic = {"timestamp": [],
                 "wrist3": [],
@@ -102,12 +102,12 @@ if __name__ == "__main__":
 
         rate.sleep()
 
-    res = os.listdir('../data/sensor_testing/paper_analysis')
+    res = os.listdir('../data/sensor_testing/paper_analysis/second_attempt')
 
     for file in res:
         print(file)
 
     name = input("Input file name:\n")
 
-    with open(f'../data//sensor_testing/paper_analysis/{name}.json', 'w') as fp:
+    with open(f'../data//sensor_testing/paper_analysis/second_attempt/{name}.json', 'w') as fp:
         json.dump(data_dic, fp)
