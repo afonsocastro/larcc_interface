@@ -10,16 +10,17 @@ from tabulate import tabulate
 import itertools
 import json
 from statistics import mean
+from data_storage.src.trainning_data_preparetion import SortedDataForLearning
 
 # batch_size_options = [32, 64, 96, 192, 256]
 batch_size_options = [96]
-epochs_options = [500]
-n_layers_options = [1, 2, 3]
-neurons_per_layer_option = [16, 32, 64]
-learning_rate_options = [0.01, 0.001, 0.0001]
-dropout_options = [0, 0.2, 0.5]
+epochs_options = [300]
+n_layers_options = [2, 3]
+neurons_per_layer_option = [32, 64]
+learning_rate_options = [0.001]
+dropout_options = [0.2, 0.5]
 # activation_options = ['relu', 'sigmoid', 'softsign', 'tanh', 'selu']
-activation_options = ['relu', 'softsign', 'tanh', 'selu']
+activation_options = ['relu', 'selu']
 # optimizer_options = ["Adam", "SGD", "RMSprop"]
 optimizer_options = ["Adam"]
 loss_options = ['sparse_categorical_crossentropy']
@@ -28,7 +29,7 @@ loss_options = ['sparse_categorical_crossentropy']
 model_options = [neurons_per_layer_option, activation_options]
 layer_options = list(itertools.product(*model_options))
 
-early_stop_patience = 20
+early_stop_patience = 30
 best_results_printed = 10
 
 
@@ -126,14 +127,15 @@ def build_model(layer_combination_list, dro, learning_rate, _optimizer, _loss):
 
 if __name__ == '__main__':
 
+    median_n_tests = 1
+
     validation_split = 0.3
 
-    all_data = np.load('../data/learning_data_training.npy', mmap_mode=None, allow_pickle=False, fix_imports=True,
-                       encoding='ASCII')
+    sorted_data_for_learning = SortedDataForLearning(path="./../../data_storage/data/raw_learning_data/")
 
-    validation_n = len(all_data) * validation_split
+    training_data = sorted_data_for_learning.trainning_data
 
-    all_data = np.array(all_data)
+    validation_n = len(training_data) * validation_split
 
     total_tests = 0
     for batch_size in batch_size_options:
@@ -145,14 +147,19 @@ if __name__ == '__main__':
                             for layers in n_layers_options:
                                 model_combinations = list(itertools.product(layer_options, repeat=layers))
                                 for model_combination in model_combinations:
-                                    # total_tests += 1
-                                    total_tests += 3
+                                    total_tests += median_n_tests
 
-    print("total_tests")
+
+    print("\ntotal_tests")
     print(total_tests)
 
+
+    print("\nMedian of %d tests evaluation, for each network configuration!\n" %(median_n_tests))
+
     print("total_configurations")
-    print(int(total_tests/3))
+    print(int(total_tests/median_n_tests))
+
+    print("\n")
 
     total_time = 0
     results_list = []
@@ -181,8 +188,8 @@ if __name__ == '__main__':
 
                                     callback = keras.callbacks.EarlyStopping(monitor='val_loss',
                                                                              patience=early_stop_patience)
-                                    for trial in range(0, 3):
-                                        fit_history = model.fit(x=all_data[:, :-1], y=all_data[:, -1],
+                                    for trial in range(0, median_n_tests):
+                                        fit_history = model.fit(x=training_data[:, :-1], y=training_data[:, -1],
                                                                 validation_split=validation_split,
                                                                 batch_size=batch_size, shuffle=True, epochs=epoch,
                                                                 verbose=0, callbacks=[callback])

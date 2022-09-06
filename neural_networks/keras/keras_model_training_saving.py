@@ -9,48 +9,66 @@ from tensorflow.keras.metrics import categorical_crossentropy
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Activation, Dense, Dropout
 import matplotlib.pyplot as plt
+from data_storage.src.trainning_data_preparetion import SortedDataForLearning
+import json
+
+def create_model_from_json(input_shape, model_config):
+    model = Sequential()
+
+    for layer in model_config["layers"]:
+        if layer["id"] == 0:
+            model.add(Dense(units=layer["neurons"], input_shape=(input_shape,), activation=layer["activation"],
+                            kernel_regularizer='l1'))
+            # model.add(Dropout(layer["dropout"]))
+        elif layer["id"] == model_config["n_layers"] - 1:
+            model.add(Dense(units=layer["neurons"], activation=layer["activation"], kernel_regularizer='l1'))
+            model.add(Dropout(model_config["dropout"]))
+        else:
+            model.add(Dense(units=layer["neurons"], activation=layer["activation"], kernel_regularizer='l1'))
+            # model.add(Dropout(layer["dropout"]))
+
+    model.add(Dense(units=4, activation='softmax'))
+
+    # `rankdir='LR'` is to make the graph horizontal.
+    # keras.utils.plot_model(model, show_shapes=True, rankdir="LR")
+    keras.utils.plot_model(model, show_shapes=True)
+
+    model.summary()
+
+    if model_config["optimizer"] == "Adam":
+        model.compile(optimizer=Adam(learning_rate=model_config["lr"]), loss=model_config["loss"],
+                      metrics=['accuracy'])
+    elif model_config["optimizer"] == "SGD":
+        model.compile(optimizer=SGD(learning_rate=model_config["lr"]), loss=model_config["loss"],
+                      metrics=['accuracy'])
+    elif model_config["optimizer"] == "Nadam":
+        model.compile(optimizer=Nadam(learning_rate=model_config["lr"]), loss=model_config["loss"],
+                      metrics=['accuracy'])
+    elif model_config["optimizer"] == "RMSprop":
+        model.compile(optimizer=RMSprop(learning_rate=model_config["lr"]), loss=model_config["loss"],
+                      metrics=['accuracy'])
+
+    return model
+
 
 if __name__ == '__main__':
     validation_split = 0.3
 
-    all_data = np.load('../data/learning_data_training.npy', mmap_mode=None, allow_pickle=False, fix_imports=True,
-                       encoding='ASCII')
+    model_config = json.load(open('model_config.json'))
 
-    print("type(all_data)")
-    print(type(all_data))
+    model = create_model_from_json(input_shape=650, model_config = model_config)
 
-    # val_dataframe = dataframe.sample(frac=0.2, random_state=1337)
-    # train_dataframe = dataframe.drop(val_dataframe.index)
+    sorted_data_for_learning = SortedDataForLearning(path="./../../data_storage/data/raw_learning_data/")
 
-    validation_n = len(all_data) * validation_split
+    training_data = sorted_data_for_learning.trainning_data
 
+    validation_n = len(training_data) * validation_split
 
-    all_data = np.array(all_data)
-    # all_data = all_data.reshape(-1, 1)
-    #
+    callback = keras.callbacks.EarlyStopping(monitor='val_loss', patience=model_config["early_stop_patience"])
 
-    model = Sequential([
-        Dense(units=64, input_shape=(650,), activation='relu'),
-        Dropout(0.1),
-        Dense(units=64, activation='relu'),
-        Dropout(0.1),
-        # Dense(units=64, activation='relu'),
-        # Dropout(0.1),
-        Dense(units=4, activation='softmax')
-    ])
-
-    # `rankdir='LR'` is to make the graph horizontal.
-    keras.utils.plot_model(model, show_shapes=True, rankdir="LR")
-
-    model.summary()
-
-    model.compile(optimizer=Adam(learning_rate=0.001), loss='sparse_categorical_crossentropy', metrics=['accuracy'])
-
-    callback = keras.callbacks.EarlyStopping(monitor='loss', patience=20)
-
-    fit_history = model.fit(x=all_data[:, :-1], y=all_data[:, -1], validation_split=validation_split, batch_size=64,
-                            # shuffle=True, epochs=300, verbose=2)
-                            shuffle=True, epochs=300, verbose=2, callbacks=[callback])
+    fit_history = model.fit(x=training_data[:, :-1], y=training_data[:, -1], validation_split=validation_split,
+                            batch_size=model_config["batch_size"],
+                            shuffle=True, epochs=model_config["epochs"], verbose=2, callbacks=[callback])
 
     fig = plt.figure()
 
@@ -73,7 +91,7 @@ if __name__ == '__main__':
     plt.show()
 
     print("\n")
-    print("Using %d samples for training and %d for validation" % (len(all_data) - validation_n, validation_n))
+    print("Using %d samples for training and %d for validation" % (len(training_data) - validation_n, validation_n))
     print("\n")
 
     model.save("myModel")
