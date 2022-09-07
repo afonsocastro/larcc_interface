@@ -21,7 +21,7 @@ if __name__ == '__main__':
     # --------------------------------------INPUT VARIABLES----------------------------------------
     # ---------------------------------------------------------------------------------------------
 
-    f = open('../config/data_storage_config.json')
+    f = open('../../config/data_storage_config.json')
 
     config = json.load(f)
 

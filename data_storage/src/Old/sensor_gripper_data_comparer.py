@@ -6,7 +6,7 @@ from matplotlib import pyplot as plt
 import numpy as np
 import statistics
 
-path = "../data/sensor_testing/initial_pose_testing/"
+path = "../../data/sensor_testing/initial_pose_testing/"
 
 res = os.listdir(path)
 

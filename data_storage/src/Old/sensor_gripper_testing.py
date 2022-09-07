@@ -90,7 +90,7 @@ for key in data:
                    "min": float(val_min)}
 
 
-path = "../data/sensor_testing/initial_pose_testing/"
+path = "../../data/sensor_testing/initial_pose_testing/"
 
 res = os.listdir(path)
 

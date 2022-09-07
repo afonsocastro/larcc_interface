@@ -17,7 +17,6 @@ class SortedDataForLearning:
         self.data_shortened = np.empty((0, 0))
         self.data_norm = np.empty((0, 0))
         self.data_filtered = np.empty((0, 0))
-        self.data_classes_filtered = np.empty((0, 0))
 
         self.trainning_data = np.empty((0, 0))
         self.test_data = np.empty((0, 0))
@@ -41,27 +40,13 @@ class SortedDataForLearning:
         if file_exist:
             experiment_data = np.load(path + data_file)
 
-            self.filter_classes(experiment_data, storage_config, training_config)
-            print("Class filter complete...")
+            self.sample_shortener(experiment_data, measurements, storage_config, training_config)
 
-            if storage_config["time"] == training_config["time"]:
-                self.data_shortened = self.data_classes_filtered
-            else:
-                self.sample_shortener(self.data_classes_filtered, measurements, storage_config, training_config)
-                # self.sample_shortener(experiment_data, measurements, storage_config, training_config)
-                print("Time truncation complete...")
-
-            if len(storage_config["data"]) == len(training_config["data_filtered"]):
-                self.data_filtered = self.data_shortened
-            else:
-                self.filter_data(self.data_shortened, storage_config, training_config)
-                print("Variable filter complete...")
+            self.filter_data(self.data_shortened, storage_config, training_config)
 
             self.normalize_data(self.data_filtered, storage_config, training_config)
-            print("Normalization complete...")
 
             np.random.shuffle(self.data_norm)
-            print("Shuffle complete...")
 
             div_idx = int(div * self.data_norm.shape[0])
 
@@ -79,7 +64,7 @@ class SortedDataForLearning:
         else:
             print("Could not find learning data file")
 
-        print("Script lasted for: " + str(round((time.time() - st), 2)) + " seconds")
+        print("Script run for: " + str(round((time.time() - st), 2)) + " seconds")
 
     def sample_shortener(self, array, measurements, store_config, train_config):
 
@@ -156,22 +141,6 @@ class SortedDataForLearning:
         array_filtered = np.append(array_filtered, np.reshape([array[:, -1]], (-1, 1)), axis=1)
 
         self.data_filtered = array_filtered
-
-    def filter_classes(self, array, store_config, train_config):
-
-        class_idx = []
-
-        for i in range(0, len(store_config["action_classes"])):
-            if store_config["action_classes"][i] in train_config["action_classes"]:
-                class_idx.append(i)
-
-        new_array = np.empty((0, array.shape[1]))
-
-        for j in range(0, array.shape[0]):
-            if int(array[j, -1]) in class_idx:
-                new_array = np.append(new_array, [array[j, :]], axis=0)
-
-        self.data_classes_filtered = new_array
 
 
 if __name__ == '__main__':
