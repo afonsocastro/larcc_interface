@@ -15,6 +15,9 @@ from lib.src.ArmGripperComm import ArmGripperComm
 from tabulate import tabulate
 import pyfiglet
 
+from config.definitions import ROOT_DIR
+from config.definitions import NN_DIR
+
 
 def print_tabulate(real_time_predictions, config):
 
@@ -100,9 +103,11 @@ if __name__ == '__main__':
     # for filtered in config["data_filtered"]:
     #     list_filter_idx.append(config["data"].index(filtered))
 
-    model_path = "../../neural_networks/keras"
+    # model_path = "../../neural_networks/keras"
+    # model_path = ROOT_DIR + "/neural_networks/keras"
 
-    model = keras.models.load_model(model_path + "/myModel")
+    # model = keras.models.load_model(ROOT_DIR + "/neural_networks/keras/myModel")
+    model = keras.models.load_model(NN_DIR + "/keras/myModel")
 
     # ---------------------------------------------------------------------------------------------
     # -------------------------------INITIATE COMMUNICATION----------------------------------------

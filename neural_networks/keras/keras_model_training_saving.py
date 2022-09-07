@@ -4,7 +4,7 @@ import tensorflow as tf
 import numpy as np
 from tensorflow import keras
 from tensorflow.keras import layers
-from tensorflow.keras.optimizers import Adam, SGD
+from tensorflow.keras.optimizers import Adam, SGD, Nadam, RMSprop
 from tensorflow.keras.metrics import categorical_crossentropy
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Activation, Dense, Dropout
@@ -12,7 +12,7 @@ import matplotlib.pyplot as plt
 from data_storage.src.trainning_data_preparetion import SortedDataForLearning
 import json
 
-def create_model_from_json(input_shape, model_config):
+def create_model_from_json(input_shape, model_config, output_shape):
     model = Sequential()
 
     for layer in model_config["layers"]:
@@ -27,7 +27,7 @@ def create_model_from_json(input_shape, model_config):
             model.add(Dense(units=layer["neurons"], activation=layer["activation"], kernel_regularizer='l1'))
             # model.add(Dropout(layer["dropout"]))
 
-    model.add(Dense(units=4, activation='softmax'))
+    model.add(Dense(units=output_shape, activation='softmax'))
 
     # `rankdir='LR'` is to make the graph horizontal.
     # keras.utils.plot_model(model, show_shapes=True, rankdir="LR")
@@ -54,11 +54,11 @@ def create_model_from_json(input_shape, model_config):
 if __name__ == '__main__':
     validation_split = 0.3
 
-    model_config = json.load(open('model_config.json'))
+    model_config = json.load(open('model_config_optimized_4_outputs.json'))
 
-    model = create_model_from_json(input_shape=650, model_config = model_config)
+    model = create_model_from_json(input_shape=650, model_config = model_config, output_shape=3)
 
-    sorted_data_for_learning = SortedDataForLearning(path="./../../data_storage/data/raw_learning_data/")
+    sorted_data_for_learning = SortedDataForLearning()
 
     training_data = sorted_data_for_learning.trainning_data
 
@@ -69,6 +69,7 @@ if __name__ == '__main__':
     fit_history = model.fit(x=training_data[:, :-1], y=training_data[:, -1], validation_split=validation_split,
                             batch_size=model_config["batch_size"],
                             shuffle=True, epochs=model_config["epochs"], verbose=2, callbacks=[callback])
+                            # shuffle=True, epochs=1000, verbose=2)
 
     fig = plt.figure()
 

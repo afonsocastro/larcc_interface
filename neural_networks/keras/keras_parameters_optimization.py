@@ -13,10 +13,10 @@ from statistics import mean
 from data_storage.src.trainning_data_preparetion import SortedDataForLearning
 
 # batch_size_options = [32, 64, 96, 192, 256]
-batch_size_options = [96]
+batch_size_options = [64, 96]
 epochs_options = [300]
 n_layers_options = [2, 3]
-neurons_per_layer_option = [32, 64]
+neurons_per_layer_option = [16, 32, 64]
 learning_rate_options = [0.001]
 dropout_options = [0.2, 0.5]
 # activation_options = ['relu', 'sigmoid', 'softsign', 'tanh', 'selu']
@@ -72,12 +72,11 @@ def writing_model_config_json(lr, optimizer, dropo, loss, batch_size, epochs, mo
     data = {'layers': layers, 'lr': lr, 'n_layers': n_layers, 'dropout': dropo, 'optimizer': optimizer, 'loss': loss,
             'batch_size': batch_size, 'epochs': epochs, 'early_stop_patience': early_stop_patience}
 
-    with open('model_config.json', 'w') as fp:
+    with open('model_config_optimized_4_outputs.json', 'w') as fp:
         json.dump(data, fp)
 
 
-def build_model(layer_combination_list, dro, learning_rate, _optimizer, _loss):
-# def build_model(layer_combination_list, _optimizer, _loss):
+def build_model(layer_combination_list, dro, learning_rate, _optimizer, _loss, output_shape):
 
     n_layers = len(layer_combination_list)
     model = Sequential()
@@ -99,7 +98,7 @@ def build_model(layer_combination_list, dro, learning_rate, _optimizer, _loss):
             model.add(Dense(units=neurons, activation=activation, kernel_regularizer='l1'))
             # model.add(Dropout(dropout))
 
-    model.add(Dense(units=4, activation='softmax'))
+    model.add(Dense(units=output_shape, activation='softmax'))
 
     keras.utils.plot_model(model, show_shapes=True, rankdir="LR")
 
@@ -127,11 +126,11 @@ def build_model(layer_combination_list, dro, learning_rate, _optimizer, _loss):
 
 if __name__ == '__main__':
 
-    median_n_tests = 1
+    median_n_tests = 3
 
     validation_split = 0.3
 
-    sorted_data_for_learning = SortedDataForLearning(path="./../../data_storage/data/raw_learning_data/")
+    sorted_data_for_learning = SortedDataForLearning()
 
     training_data = sorted_data_for_learning.trainning_data
 
@@ -149,10 +148,8 @@ if __name__ == '__main__':
                                 for model_combination in model_combinations:
                                     total_tests += median_n_tests
 
-
     print("\ntotal_tests")
     print(total_tests)
-
 
     print("\nMedian of %d tests evaluation, for each network configuration!\n" %(median_n_tests))
 
@@ -183,8 +180,7 @@ if __name__ == '__main__':
 
                                     star_time = time.time()
 
-                                    model = build_model(model_combination, do, lr, optimizer, loss)
-                                    # model = build_model(model_combination, optimizer, loss)
+                                    model = build_model(model_combination, do, lr, optimizer, loss, output_shape=3)
 
                                     callback = keras.callbacks.EarlyStopping(monitor='val_loss',
                                                                              patience=early_stop_patience)

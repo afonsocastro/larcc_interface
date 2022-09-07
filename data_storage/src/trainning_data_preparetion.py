@@ -6,10 +6,11 @@ import time
 
 import numpy as np
 from sklearn.preprocessing import normalize
+from config.definitions import ROOT_DIR
 
 
 class SortedDataForLearning:
-    def __init__(self, path="./../data/raw_learning_data/", data_file="raw_learning_data.npy",
+    def __init__(self, path=ROOT_DIR + "/data_storage/data/raw_learning_data/", data_file="raw_learning_data.npy",
                  config_file="training_config", div=0.7):
 
         st = time.time()
@@ -22,10 +23,10 @@ class SortedDataForLearning:
         self.trainning_data = np.empty((0, 0))
         self.test_data = np.empty((0, 0))
 
-        f = open(path + '../../config/data_storage_config.json')
+        f = open(ROOT_DIR + '/data_storage/config/data_storage_config.json')
         storage_config = json.load(f)
         f.close()
-        f = open(path + '../../config/' + config_file + '.json')
+        f = open(ROOT_DIR + '/data_storage/config/' + config_file + '.json')
         training_config = json.load(f)
         f.close()
 
