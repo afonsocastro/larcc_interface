@@ -1,5 +1,5 @@
 {
-  "action_classes": ["pull", "push", "shake", "twist"],
+  "action_classes": ["pull", "push", "shake"],
   "force_threshold_start": 0.05,
   "force_threshold_end": 0.05,
   "rate": 100.0,
