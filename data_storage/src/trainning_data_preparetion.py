@@ -178,7 +178,7 @@ class SortedDataForLearning:
 if __name__ == '__main__':
 
     parser = argparse.ArgumentParser(description="Arguments for sorter script")
-    parser.add_argument("-p", "--path", type=str, default="./../data/raw_learning_data/",
+    parser.add_argument("-p", "--path", type=str, default="/data_storage/data/raw_learning_data/",
                         help="The relative path to the .npy file")
     parser.add_argument("-f", "--file", type=str, default="raw_learning_data.npy",
                         help="The name of the .npy file")

@@ -1,8 +1,11 @@
 #!/usr/bin/env python3
+import argparse
 import json
+import os
 import random
 import time
 import numpy as np
+from colorama import Fore
 from matplotlib import pyplot as plt
 from matplotlib.widgets import Button
 import math
@@ -11,27 +14,37 @@ from config.definitions import ROOT_DIR
 
 
 class DataVisualizer:
-    def __init__(self,  path=ROOT_DIR + "/data_storage/data/raw_learning_data/", data_file="raw_learning_data.npy",
-                 config_file="data_storage_config"):
+    def __init__(self,  path=ROOT_DIR + "/data_storage/data/raw_learning_data/", config_file="data_storage_config"):
 
         self.idx = 0
-        self.file_name = data_file
 
-        data_matrix = np.load(path + data_file)
+        res = os.listdir(path)
+        i = 0
+
+        for file in res:
+            print(f'[{i}]:' + file)
+            i += 1
+
+        idx = int(input("Select idx for the matrix: "))
+        self.file_name = res[idx]
+        data_matrix = np.load(path + res[idx])
 
         f = open(ROOT_DIR + '/data_storage/config/' + config_file + '.json')
         self.config = json.load(f)
         f.close()
 
+        self.prediction = None
+        for classification in self.config["action_classes"]:
+            if classification in self.file_name:
+                self.prediction = classification
+
         self.measurements = int(self.config["time"] * self.config["rate"])
         self.n_variables = len(self.config["data"])
 
-        if data_matrix.shape[1] % self.n_variables != 0:
-            self.data = data_matrix[:, :-1]
-            self.classifications = data_matrix[:, -1]
-        else:
-            self.data = data_matrix
-            self.classifications = np.array([])
+        self.data = data_matrix[:, :-1]
+        self.classifications = data_matrix[:, -1]
+
+        self.is_graph_outdated = True
 
         plt.ion()
         self.fig, self.ax = plt.subplots(3, 1)
@@ -46,6 +59,9 @@ class DataVisualizer:
         axprev100 = plt.axes([0.335, 0.025, 0.1, 0.05])
         axnext100 = plt.axes([0.59, 0.025, 0.1, 0.05])
         axrandom = plt.axes([0.44, 0.025, 0.145, 0.05])
+
+        axprev_inaccurate = plt.axes([0.03, 0.025, 0.09, 0.05])
+        axnext_inaccurate = plt.axes([0.905, 0.025, 0.09, 0.05])
 
         bnext1 = Button(axnext1, ' +1')
         bnext1.on_clicked(self.next1)
@@ -68,38 +84,79 @@ class DataVisualizer:
         brandom = Button(axrandom, ' random')
         brandom.on_clicked(self.random_idx)
 
+        bprev_inaccurate = Button(axprev_inaccurate, ' Previous Inaccuracy')
+        bprev_inaccurate.on_clicked(self.prev_inaccurate)
+
+        bnext_inaccurate = Button(axnext_inaccurate, ' Next Inaccuracy')
+        bnext_inaccurate.on_clicked(self.next_inaccurate)
+
         while True:
+            if self.is_graph_outdated:
+                if self.idx >= self.data.shape[0]:
+                    self.idx = self.data.shape[0] - 1
+
+                if self.idx <= 0:
+                    self.idx = 0
+
+                self.update_graph()
+
             self.fig.canvas.draw()
             self.fig.canvas.flush_events()
             time.sleep(0.01)
 
     def next1(self, event):
         self.idx += 1
-        self.update_graph()
+        self.is_graph_outdated = True
 
     def prev1(self, event):
         self.idx -= 1
-        self.update_graph()
+        self.is_graph_outdated = True
 
     def next10(self, event):
         self.idx += 10
-        self.update_graph()
+        self.is_graph_outdated = True
 
     def prev10(self, event):
         self.idx -= 10
-        self.update_graph()
+        self.is_graph_outdated = True
 
     def next100(self, event):
         self.idx += 100
-        self.update_graph()
+        self.is_graph_outdated = True
 
     def prev100(self, event):
         self.idx -= 100
-        self.update_graph()
+        self.is_graph_outdated = True
 
     def random_idx(self, event):
         self.idx = random.randint(0, self.data.shape[0])
-        self.update_graph()
+        self.is_graph_outdated = True
+
+    def prev_inaccurate(self, event):
+        for i in range(1, 500):
+            if self.idx - i <= 0:
+                self.idx = 0
+                break
+
+            true_classification = str(self.config["action_classes"][int(self.classifications[self.idx - i])])
+            if true_classification != self.prediction:
+                self.idx -= i
+                break
+
+        self.is_graph_outdated = True
+
+    def next_inaccurate(self, event):
+        for i in range(1, 500):
+            if self.idx + i >= self.data.shape[0]:
+                self.idx = self.data.shape[0] - 1
+                break
+
+            true_classification = str(self.config["action_classes"][int(self.classifications[self.idx + i])])
+            if true_classification != self.prediction:
+                self.idx += i
+                break
+
+        self.is_graph_outdated = True
 
     def update_graph(self):
 
@@ -149,14 +206,32 @@ class DataVisualizer:
         self.ax[2].legend(self.lines[9:12], ["Mx", "My", "Mz"])
         self.ax[2].set_ylim((-torques_y_lim, torques_y_lim))
 
-        if len(self.classifications) > 0:
-            self.fig.suptitle(self.config["action_classes"][int(self.classifications[self.idx])]
-                              + f" : {self.idx}", fontsize=25)
+        true_classification = str(self.config["action_classes"][int(self.classifications[self.idx])])
+
+        if true_classification == self.prediction:
+            outcome = "Accurate prediction"
         else:
-            self.fig.suptitle(self.file_name + f" : {self.idx}", fontsize=25)
+            outcome = "Fail prediction"
+
+        self.fig.suptitle("Predicted=" + self.prediction + ", True=" +
+                          true_classification + ", " + outcome +
+                          ", " + str(self.idx), fontsize=25)
+
+        self.is_graph_outdated = False
 
 
 if __name__ == "__main__":
 
-    data_vis = DataVisualizer()
+    parser = argparse.ArgumentParser(description="Arguments for visualizer script")
+    parser.add_argument("-p", "--path", type=str, default="/data_storage/data/raw_learning_data/",
+                        help="The relative path to the .npy file")
+    parser.add_argument("-f", "--file", type=str, default="raw_learning_data.npy",
+                        help="The relative path to the .npy file")
+    parser.add_argument("-c", "--config_file", type=str, default="data_storage_config",
+                        help="If argmument is present, activates gripper")
+
+    args = vars(parser.parse_args())
+
+    data_vis = DataVisualizer(path=ROOT_DIR + "/data_storage/data/" + args["path"] + "/",
+                              config_file=args["config_file"])
 
