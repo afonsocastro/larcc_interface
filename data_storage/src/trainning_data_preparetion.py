@@ -52,7 +52,8 @@ class SortedDataForLearning:
                 # self.sample_shortener(experiment_data, measurements, storage_config, training_config)
                 print("Time truncation complete...")
 
-            if len(storage_config["data"]) == len(training_config["data_filtered"]):
+            # if len(storage_config["data"]) == len(training_config["data_filtered"]):
+            if len(storage_config["data"]) == len(training_config["data"]):
                 self.data_filtered = self.data_shortened
             else:
                 self.filter_data(self.data_shortened, storage_config, training_config)
