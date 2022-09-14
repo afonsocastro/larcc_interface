@@ -8,6 +8,12 @@ import matplotlib.pyplot as plt
 from config.definitions import ROOT_DIR
 
 
+def valuelabel(ax, labelss, mean):
+    for i in range(len(labelss)):
+        ax.text(i, mean[i] + 0.01, round(mean[i], 5), ha='center')
+                # bbox=dict(facecolor='cyan', alpha=0.8))
+
+
 if __name__ == '__main__':
 
     test_data = np.load('/tmp/test_data.npy', mmap_mode=None, allow_pickle=False, fix_imports=True,
@@ -81,25 +87,18 @@ if __name__ == '__main__':
 
     labels = ['PULL', 'PUSH', 'SHAKE']
 
-    # data = {'apple': 10, 'orange': 15, 'lemon': 5, 'lime': 20}
-    # names = list(data.keys())
-    # values = list(data.values())
-
-    fig, axs = plt.subplots(1, 3, figsize=(9, 3), sharey=True)
-    p0 = axs[0].bar(labels, mean_0)
+    fig, axs = plt.subplots(1, 3, figsize=(12, 5), sharey=True)
+    axs[0].bar(labels, mean_0)
     axs[0].set_title("predicted PUSHES")
-
-    # p0.label(mean_0)
+    valuelabel(axs[0], labels, mean_0)
 
     axs[1].bar(labels, mean_1)
     axs[1].set_title("predicted PULLS")
-    # for i, v in enumerate(mean_1):
-    #     axs[1].text(v -0.5, i -0.5, str(v), color='black', fontweight='bold')
+    valuelabel(axs[1], labels, mean_1)
 
     axs[2].bar(labels, mean_2)
     axs[2].set_title("predicted SHAKES")
-
-    # axs[2].bar_label(mean_2, padding=3)
+    valuelabel(axs[2], labels, mean_2)
 
     fig.suptitle('Output Confidence')
 
