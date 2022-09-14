@@ -121,9 +121,23 @@ class SortedDataForLearning:
         for vector in learning_array:
 
             data_array = np.reshape(vector, (measurements, int(len(vector) / measurements)))
-            experiment_array_norm = normalize(data_array, axis=0, norm='max')
+            data_array_norm = np.empty((data_array.shape[0], 0))
 
-            vector_data_norm = np.reshape(experiment_array_norm, (1, vector.shape[0]))
+            idx = 0
+            for n in train_config["normalization_clusters"]:
+                data_sub_array = data_array[:, idx:idx+n]
+                idx += n
+
+                data_max = abs(max(data_sub_array.min(), data_sub_array.max(), key=abs))
+
+                data_sub_array_norm = data_sub_array / data_max
+                data_array_norm = np.hstack((data_array_norm, data_sub_array_norm))
+
+            vector_data_norm = np.reshape(data_array_norm, (1, vector.shape[0]))
+
+            # experiment_array_norm = normalize(data_array, axis=0, norm='max')
+            #
+            # vector_data_norm = np.reshape(experiment_array_norm, (1, vector.shape[0]))
 
             array_norm = np.append(array_norm, vector_data_norm, axis=0)
 
@@ -179,7 +193,7 @@ class SortedDataForLearning:
 if __name__ == '__main__':
 
     parser = argparse.ArgumentParser(description="Arguments for sorter script")
-    parser.add_argument("-p", "--path", type=str, default="/data_storage/data/raw_learning_data/",
+    parser.add_argument("-p", "--path", type=str, default=ROOT_DIR + "/data_storage/data/raw_learning_data/",
                         help="The relative path to the .npy file")
     parser.add_argument("-f", "--file", type=str, default="raw_learning_data.npy",
                         help="The name of the .npy file")

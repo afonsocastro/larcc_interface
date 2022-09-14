@@ -33,7 +33,7 @@ class DataVisualizer:
         self.config = json.load(f)
         f.close()
 
-        self.prediction = None
+        self.prediction = "None"
         for classification in self.config["action_classes"]:
             if classification in self.file_name:
                 self.prediction = classification

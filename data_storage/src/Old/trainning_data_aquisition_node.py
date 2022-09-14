@@ -177,31 +177,31 @@ def calc_data_mean(data):
 
 def save_trainnning_data(data, result, is_trainning):
 
-    path = "../../data/trainning/"
+    path = "../../data/old_data/trainning/"
 
     files = os.listdir(path)
 
     if is_trainning == 1:
         for file in files:
             if file.find("trainning_data.") != -1:
-                prev_data_array = np.load(f"../../data/trainning/trainning_data.npy")
+                prev_data_array = np.load(f"../../data/old_data/trainning/trainning_data.npy")
                 data = np.append(prev_data_array, data, axis=0)
 
             if file.find("trainning_data_results.") != -1:
-                prev_result_array = np.load(f"../../data/trainning/trainning_data_results.npy")
+                prev_result_array = np.load(f"../../data/old_data/trainning/trainning_data_results.npy")
                 result = np.append(prev_result_array, result, axis=0)
 
-        np.save(f"../../data/trainning/trainning_data.npy", data.astype('float32'))
-        np.save(f"../../data/trainning/trainning_data_results.npy", result.astype('float32'))
+        np.save(f"../../data/old_data/trainning/trainning_data.npy", data.astype('float32'))
+        np.save(f"../../data/old_data/trainning/trainning_data_results.npy", result.astype('float32'))
 
     else:
         for file in files:
             if file.find("test_data.") != -1:
-                prev_data_array = np.load(f"../../data/trainning/test_data.npy")
+                prev_data_array = np.load(f"../../data/old_data/trainning/test_data.npy")
                 data = np.append(prev_data_array, data, axis=0)
 
             if file.find("test_data_results.") != -1:
-                prev_result_array = np.load(f"../../data/trainning/test_data_results.npy")
+                prev_result_array = np.load(f"../../data/old_data/trainning/test_data_results.npy")
                 result = np.append(prev_result_array, result, axis=0)
 
         rng_state = np.random.get_state()
@@ -209,8 +209,8 @@ def save_trainnning_data(data, result, is_trainning):
         np.random.set_state(rng_state)
         np.random.shuffle(result)
 
-        np.save(f"../../data/trainning/test_data.npy", data.astype('float32'))
-        np.save(f"../../data/trainning/test_data_results.npy", result.astype('float32'))
+        np.save(f"../../data/old_data/trainning/test_data.npy", data.astype('float32'))
+        np.save(f"../../data/old_data/trainning/test_data_results.npy", result.astype('float32'))
 
     print("Trainning: " + str(data.shape))
 
