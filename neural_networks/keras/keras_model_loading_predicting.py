@@ -25,15 +25,25 @@ if __name__ == '__main__':
                        encoding='ASCII')
 
     model = keras.models.load_model("myModel")
+
+    n_labels = 3
+
     predictions_list = []
     pull_matx = []
     push_matx = []
     shake_matx = []
+    # twist_matx = []
 
     col = test_data.shape[1]
     predicted_pull_matx = np.empty((0, col))
     predicted_push_matx = np.empty((0, col))
     predicted_shake_matx = np.empty((0, col))
+    # predicted_twist_matx = np.empty((0, col))
+
+    output_predicted_pull = np.empty((0, n_labels))
+    output_predicted_push = np.empty((0, n_labels))
+    output_predicted_shake = np.empty((0, n_labels))
+    # output_predicted_twist = np.empty((0, n_labels))
 
     for i in range(0, len(test_data)):
         prediction = model.predict(x=test_data[i:i+1, :-1], verbose=2)
@@ -43,20 +53,34 @@ if __name__ == '__main__':
         if decoded_prediction == 0:
             pull_matx.append(predict_lst)
             predicted_pull_matx = np.append(predicted_pull_matx, [test_data[i, :]], axis=0)
+            output_predicted_pull = np.append(output_predicted_pull, prediction, axis=0)
 
         elif decoded_prediction == 1:
             push_matx.append(predict_lst)
             predicted_push_matx = np.append(predicted_push_matx, [test_data[i, :]], axis=0)
+            output_predicted_push = np.append(output_predicted_push, prediction, axis=0)
 
         elif decoded_prediction == 2:
             shake_matx.append(predict_lst)
             predicted_shake_matx = np.append(predicted_shake_matx, [test_data[i, :]], axis=0)
+            output_predicted_shake = np.append(output_predicted_shake, prediction, axis=0)
+
+        # elif decoded_prediction == 3:
+        #     twist_matx.append(predict_lst)
+        #     predicted_twist_matx = np.append(predicted_twist_matx, [test_data[i, :]], axis=0)
+        #     output_predicted_twist = np.append(output_predicted_twist, prediction, axis=0)
 
         predictions_list.append(decoded_prediction)
 
     np.save(ROOT_DIR + "/neural_networks/keras/predicted_data/predicted_pull.npy", predicted_pull_matx)
     np.save(ROOT_DIR + "/neural_networks/keras/predicted_data/predicted_push.npy", predicted_push_matx)
     np.save(ROOT_DIR + "/neural_networks/keras/predicted_data/predicted_shake.npy", predicted_shake_matx)
+    # np.save(ROOT_DIR + "/neural_networks/keras/predicted_data/predicted_twist.npy", predicted_twist_matx)
+
+    np.save(ROOT_DIR + "/neural_networks/keras/predicted_data/output_predicted_pull.npy", output_predicted_pull)
+    np.save(ROOT_DIR + "/neural_networks/keras/predicted_data/output_predicted_push.npy", output_predicted_push)
+    np.save(ROOT_DIR + "/neural_networks/keras/predicted_data/output_predicted_shake.npy", output_predicted_shake)
+    # np.save(ROOT_DIR + "/neural_networks/keras/predicted_data/output_predicted_twist.npy", output_predicted_twist)
 
     pull_mat = np.matrix(predicted_pull_matx)
     with open(ROOT_DIR + "/neural_networks/keras/predicted_data/predicted_pull.txt", 'wb') as f:
@@ -71,6 +95,21 @@ if __name__ == '__main__':
     shake_mat = np.matrix(predicted_shake_matx)
     with open(ROOT_DIR + "/neural_networks/keras/predicted_data/predicted_shake.txt", 'wb') as f:
         for line in shake_mat:
+            np.savetxt(f, line, fmt='%.2f')
+
+    output_pull_mat = np.matrix(output_predicted_pull)
+    with open(ROOT_DIR + "/neural_networks/keras/predicted_data/output_predicted_pull.txt", 'wb') as f:
+        for line in output_pull_mat:
+            np.savetxt(f, line, fmt='%.2f')
+
+    output_push_mat = np.matrix(output_predicted_push)
+    with open(ROOT_DIR + "/neural_networks/keras/predicted_data/output_predicted_push.txt", 'wb') as f:
+        for line in output_push_mat:
+            np.savetxt(f, line, fmt='%.2f')
+
+    output_shake_mat = np.matrix(output_predicted_shake)
+    with open(ROOT_DIR + "/neural_networks/keras/predicted_data/output_predicted_shake.txt", 'wb') as f:
+        for line in output_shake_mat:
             np.savetxt(f, line, fmt='%.2f')
 
     pull_matrix = np.array(pull_matx)
@@ -108,12 +147,15 @@ if __name__ == '__main__':
     axs[0].text(2, mean_0[2] + 0.05, round(std_0[2], 5), ha='center', style='italic')
 
     axs[0].text(0, minimum_0[0] - 0.03, round(minimum_0[0], 5), ha='center')
-    axs[0].text(1, minimum_0[1] - 0.03, round(minimum_0[1], 5), ha='center')
-    axs[0].text(2, minimum_0[2] - 0.03, round(minimum_0[2], 5), ha='center')
+    # axs[0].text(1, minimum_0[1] - 0.03, round(minimum_0[1], 5), ha='center')
+    # axs[0].text(2, minimum_0[2] - 0.03, round(minimum_0[2], 5), ha='center')
 
-    axs[0].text(0, maximum_0[0] + 0.01, round(maximum_0[0], 5), ha='center')
-    axs[0].text(1, maximum_0[1] + 0.01, round(maximum_0[1], 5), ha='center')
-    axs[0].text(2, maximum_0[2] + 0.01, round(maximum_0[2], 5), ha='center')
+    for i in range(0, n_labels):
+        if maximum_0[i] > 0.15:
+            axs[0].text(i, maximum_0[i] + 0.01, round(maximum_0[i], 5), ha='center')
+
+    # axs[0].text(1, maximum_0[1] + 0.01, round(maximum_0[1], 5), ha='center')
+    # axs[0].text(2, maximum_0[2] + 0.01, round(maximum_0[2], 5), ha='center')
     # valuelabel(axs[0], labels, minimum_0, 0.01, 0)
     # valuelabel(axs[0], labels, maximum_0, 0.01, 0)
 
@@ -140,13 +182,17 @@ if __name__ == '__main__':
     axs[1].text(1, mean_1[1] - 0.1, round(std_1[1], 5), ha='center', style='italic')
     axs[1].text(2, mean_1[2] + 0.05, round(std_1[2], 5), ha='center', style='italic')
 
-    axs[1].text(0, minimum_1[0] - 0.03, round(minimum_1[0], 5), ha='center')
+    # axs[1].text(0, minimum_1[0] - 0.03, round(minimum_1[0], 5), ha='center')
     axs[1].text(1, minimum_1[1] - 0.03, round(minimum_1[1], 5), ha='center')
-    axs[1].text(2, minimum_1[2] - 0.03, round(minimum_1[2], 5), ha='center')
+    # axs[1].text(2, minimum_1[2] - 0.03, round(minimum_1[2], 5), ha='center')
 
-    axs[1].text(0, maximum_1[0] + 0.01, round(maximum_1[0], 5), ha='center')
-    axs[1].text(1, maximum_1[1] + 0.01, round(maximum_1[1], 5), ha='center')
-    axs[1].text(2, maximum_1[2] + 0.01, round(maximum_1[2], 5), ha='center')
+    for i in range(0, n_labels):
+        if maximum_1[i] > 0.15:
+            axs[1].text(i, maximum_1[i] + 0.01, round(maximum_1[i], 5), ha='center')
+
+    # axs[1].text(0, maximum_1[0] + 0.01, round(maximum_1[0], 5), ha='center')
+    # axs[1].text(1, maximum_1[1] + 0.01, round(maximum_1[1], 5), ha='center')
+    # axs[1].text(2, maximum_1[2] + 0.01, round(maximum_1[2], 5), ha='center')
 
     for p in axs[1].patches:
         w = p.get_width()  # get width of bar
@@ -170,13 +216,17 @@ if __name__ == '__main__':
     axs[2].text(1, mean_2[1] + 0.05, round(std_2[1], 5), ha='center', style='italic')
     axs[2].text(2, mean_2[2] - 0.1, round(std_2[2], 5), ha='center', style='italic')
 
-    axs[2].text(0, minimum_2[0] - 0.03, round(minimum_2[0], 5), ha='center')
-    axs[2].text(1, minimum_2[1] - 0.03, round(minimum_2[1], 5), ha='center')
+    # axs[2].text(0, minimum_2[0] - 0.03, round(minimum_2[0], 5), ha='center')
+    # axs[2].text(1, minimum_2[1] - 0.03, round(minimum_2[1], 5), ha='center')
     axs[2].text(2, minimum_2[2] - 0.03, round(minimum_2[2], 5), ha='center')
 
-    axs[2].text(0, maximum_2[0] + 0.01, round(maximum_2[0], 5), ha='center')
-    axs[2].text(1, maximum_2[1] + 0.01, round(maximum_2[1], 5), ha='center')
-    axs[2].text(2, maximum_2[2] + 0.01, round(maximum_2[2], 5), ha='center')
+    for i in range(0, n_labels):
+        if maximum_2[i] > 0.15:
+            axs[2].text(i, maximum_2[i] + 0.01, round(maximum_2[i], 5), ha='center')
+
+    # axs[2].text(0, maximum_2[0] + 0.01, round(maximum_2[0], 5), ha='center')
+    # axs[2].text(1, maximum_2[1] + 0.01, round(maximum_2[1], 5), ha='center')
+    # axs[2].text(2, maximum_2[2] + 0.01, round(maximum_2[2], 5), ha='center')
 
     for p in axs[2].patches:
         w = p.get_width()  # get width of bar
