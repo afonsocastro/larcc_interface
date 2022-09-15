@@ -209,13 +209,26 @@ class DataVisualizer:
         true_classification = str(self.config["action_classes"][int(self.classifications[self.idx])])
 
         if true_classification == self.prediction:
-            outcome = "Accurate prediction"
+            outcome = "Accurate"
         else:
-            outcome = "Fail prediction"
+            outcome = "Fail"
+
+        outputs = np.empty(())
+        if self.prediction == "shake":
+            outputs = np.load(ROOT_DIR + '/neural_networks/keras/predicted_data/output_predicted_shake.npy', mmap_mode=None, allow_pickle=False, fix_imports=True,
+                        encoding='ASCII')
+        elif self.prediction == "pull":
+            outputs = np.load(ROOT_DIR + '/neural_networks/keras/predicted_data/output_predicted_pull.npy', mmap_mode=None, allow_pickle=False, fix_imports=True,
+                        encoding='ASCII')
+        elif self.prediction == "push":
+            outputs = np.load(ROOT_DIR + '/neural_networks/keras/predicted_data/output_predicted_push.npy', mmap_mode=None, allow_pickle=False, fix_imports=True,
+                        encoding='ASCII')
 
         self.fig.suptitle("Predicted=" + self.prediction + ", True=" +
                           true_classification + ", " + outcome +
-                          ", " + str(self.idx), fontsize=25)
+                          ", " + str(self.idx) + " => [" + str(round(outputs[self.idx][0], 3)) + ", " +
+                          str(round(outputs[self.idx][1], 3)) + ", " + str(round(outputs[self.idx][2], 4)) +"]", fontsize=20)
+
 
         self.is_graph_outdated = False
 
@@ -223,15 +236,29 @@ class DataVisualizer:
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(description="Arguments for visualizer script")
-    parser.add_argument("-p", "--path", type=str, default="/data_storage/data/raw_learning_data/",
+    # parser.add_argument("-p", "--path", type=str, default="/data_storage/data/raw_learning_data/",
+    #                     help="The relative path to the .npy file")
+
+    parser.add_argument("-p", "--path", type=str, default="predicted_learning_data",
                         help="The relative path to the .npy file")
+
     parser.add_argument("-f", "--file", type=str, default="raw_learning_data.npy",
                         help="The relative path to the .npy file")
+
     parser.add_argument("-c", "--config_file", type=str, default="data_storage_config",
                         help="If argmument is present, activates gripper")
 
+    # parser.add_argument("-c", "--config_file", type=str, default="training_config",
+    #                     help="If argmument is present, activates gripper")
+
+
     args = vars(parser.parse_args())
 
-    data_vis = DataVisualizer(path=ROOT_DIR + "/data_storage/data/" + args["path"] + "/",
+    # data_vis = DataVisualizer(path=ROOT_DIR + "/data_storage/data/" + args["path"] + "/",
+    #                           config_file=args["config_file"])
+
+    data_vis = DataVisualizer(path=ROOT_DIR + "/neural_networks/keras/predicted_data/",
                               config_file=args["config_file"])
+
+    # data_vis = DataVisualizer()
 

@@ -24,6 +24,9 @@ if __name__ == '__main__':
     test_data = np.load('/tmp/test_data.npy', mmap_mode=None, allow_pickle=False, fix_imports=True,
                        encoding='ASCII')
 
+    # test_data = np.load(ROOT_DIR + '/data_storage/data/trainning_learning_data/test_data.npy', mmap_mode=None, allow_pickle=False, fix_imports=True,
+    #                     encoding='ASCII')
+
     model = keras.models.load_model("myModel")
 
     n_labels = 3
