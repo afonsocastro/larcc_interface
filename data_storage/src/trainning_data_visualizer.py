@@ -38,6 +38,17 @@ class DataVisualizer:
             if classification in self.file_name:
                 self.prediction = classification
 
+        self.outputs = np.empty(())
+        if self.prediction == "shake":
+            self.outputs = np.load(ROOT_DIR + '/neural_networks/keras/predicted_data/output_predicted_shake.npy', mmap_mode=None, allow_pickle=False, fix_imports=True,
+                        encoding='ASCII')
+        elif self.prediction == "pull":
+            self.outputs = np.load(ROOT_DIR + '/neural_networks/keras/predicted_data/output_predicted_pull.npy', mmap_mode=None, allow_pickle=False, fix_imports=True,
+                        encoding='ASCII')
+        elif self.prediction == "push":
+            self.outputs = np.load(ROOT_DIR + '/neural_networks/keras/predicted_data/output_predicted_push.npy', mmap_mode=None, allow_pickle=False, fix_imports=True,
+                        encoding='ASCII')
+
         self.measurements = int(self.config["time"] * self.config["rate"])
         self.n_variables = len(self.config["data"])
 
@@ -213,21 +224,21 @@ class DataVisualizer:
         else:
             outcome = "Fail"
 
-        outputs = np.empty(())
-        if self.prediction == "shake":
-            outputs = np.load(ROOT_DIR + '/neural_networks/keras/predicted_data/output_predicted_shake.npy', mmap_mode=None, allow_pickle=False, fix_imports=True,
-                        encoding='ASCII')
-        elif self.prediction == "pull":
-            outputs = np.load(ROOT_DIR + '/neural_networks/keras/predicted_data/output_predicted_pull.npy', mmap_mode=None, allow_pickle=False, fix_imports=True,
-                        encoding='ASCII')
-        elif self.prediction == "push":
-            outputs = np.load(ROOT_DIR + '/neural_networks/keras/predicted_data/output_predicted_push.npy', mmap_mode=None, allow_pickle=False, fix_imports=True,
-                        encoding='ASCII')
+        # outputs = np.empty(())
+        # if self.prediction == "shake":
+        #     outputs = np.load(ROOT_DIR + '/neural_networks/keras/predicted_data/output_predicted_shake.npy', mmap_mode=None, allow_pickle=False, fix_imports=True,
+        #                 encoding='ASCII')
+        # elif self.prediction == "pull":
+        #     outputs = np.load(ROOT_DIR + '/neural_networks/keras/predicted_data/output_predicted_pull.npy', mmap_mode=None, allow_pickle=False, fix_imports=True,
+        #                 encoding='ASCII')
+        # elif self.prediction == "push":
+        #     outputs = np.load(ROOT_DIR + '/neural_networks/keras/predicted_data/output_predicted_push.npy', mmap_mode=None, allow_pickle=False, fix_imports=True,
+        #                 encoding='ASCII')
 
         self.fig.suptitle("Predicted=" + self.prediction + ", True=" +
                           true_classification + ", " + outcome +
-                          ", " + str(self.idx) + " => [" + str(round(outputs[self.idx][0], 3)) + ", " +
-                          str(round(outputs[self.idx][1], 3)) + ", " + str(round(outputs[self.idx][2], 4)) +"]", fontsize=20)
+                          ", " + str(self.idx) + " => [" + str(round(self.outputs[self.idx][0], 3)) + ", " +
+                          str(round(self.outputs[self.idx][1], 3)) + ", " + str(round(self.outputs[self.idx][2], 4)) +"]", fontsize=20)
 
 
         self.is_graph_outdated = False
