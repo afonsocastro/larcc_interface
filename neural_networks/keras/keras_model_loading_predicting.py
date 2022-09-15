@@ -6,12 +6,17 @@ from sklearn.metrics import confusion_matrix
 import numpy as np
 import matplotlib.pyplot as plt
 from config.definitions import ROOT_DIR
+from tabulate import tabulate
+import pyfiglet
+from colorama import Fore
 
 
-def valuelabel(ax, labelss, mean):
+def valuelabel(ax, labelss, values, pose, pred):
     for i in range(len(labelss)):
-        ax.text(i, mean[i] + 0.01, round(mean[i], 5), ha='center')
-                # bbox=dict(facecolor='cyan', alpha=0.8))
+        if pred == i:
+            ax.text(i, values[i] + pose, round(values[i], 5), ha='center')
+        else:
+            ax.text(i, values[i] + pose, round(values[i], 5), ha='center')
 
 
 if __name__ == '__main__':
@@ -74,14 +79,17 @@ if __name__ == '__main__':
 
     # Calculate mean values across each column
     mean_0 = pull_matrix.mean(axis=0)
+    std_0 = pull_matrix.std(axis=0)
     minimum_0 = np.min(pull_matrix, axis=0)
     maximum_0 = np.max(pull_matrix, axis=0)
 
     mean_1 = push_matrix.mean(axis=0)
+    std_1 = push_matrix.std(axis=0)
     minimum_1 = np.min(push_matrix, axis=0)
     maximum_1 = np.max(push_matrix, axis=0)
 
     mean_2 = shake_matrix.mean(axis=0)
+    std_2 = shake_matrix.std(axis=0)
     minimum_2 = np.min(shake_matrix, axis=0)
     maximum_2 = np.max(shake_matrix, axis=0)
 
@@ -89,16 +97,96 @@ if __name__ == '__main__':
 
     fig, axs = plt.subplots(1, 3, figsize=(12, 5), sharey=True)
     axs[0].bar(labels, mean_0)
-    axs[0].set_title("predicted PUSHES")
-    valuelabel(axs[0], labels, mean_0)
+    axs[0].set_title("predicted PULLS (" + str(len(pull_matrix)) + ")")
+
+    axs[0].text(0, mean_0[0] -0.05, round(mean_0[0], 5), ha='center', fontweight='bold')
+    axs[0].text(1, mean_0[1] + 0.1, round(mean_0[1], 5), ha='center', fontweight='bold')
+    axs[0].text(2, mean_0[2] + 0.1, round(mean_0[2], 5), ha='center', fontweight='bold')
+
+    axs[0].text(0, mean_0[0] - 0.1, round(std_0[0], 5), ha='center', style='italic')
+    axs[0].text(1, mean_0[1] + 0.05, round(std_0[1], 5), ha='center', style='italic')
+    axs[0].text(2, mean_0[2] + 0.05, round(std_0[2], 5), ha='center', style='italic')
+
+    axs[0].text(0, minimum_0[0] - 0.03, round(minimum_0[0], 5), ha='center')
+    axs[0].text(1, minimum_0[1] - 0.03, round(minimum_0[1], 5), ha='center')
+    axs[0].text(2, minimum_0[2] - 0.03, round(minimum_0[2], 5), ha='center')
+
+    axs[0].text(0, maximum_0[0] + 0.01, round(maximum_0[0], 5), ha='center')
+    axs[0].text(1, maximum_0[1] + 0.01, round(maximum_0[1], 5), ha='center')
+    axs[0].text(2, maximum_0[2] + 0.01, round(maximum_0[2], 5), ha='center')
+    # valuelabel(axs[0], labels, minimum_0, 0.01, 0)
+    # valuelabel(axs[0], labels, maximum_0, 0.01, 0)
+
+    for p in axs[0].patches:
+        w = p.get_width()  # get width of bar
+        axs[0].hlines(minimum_0[0], -w/2, w/2, colors='r')
+        axs[0].hlines(minimum_0[1], 0.2 + w/2, 0.2 + w/2 + w, colors='r')
+        axs[0].hlines(minimum_0[2], w/2 + 0.4 + w, w/2 + 0.4 + w + w, colors='r')
+
+        axs[0].hlines(maximum_0[0], -w / 2, w / 2, colors='g')
+        axs[0].hlines(maximum_0[1], 0.2 + w / 2, 0.2 + w / 2 + w, colors='g')
+        axs[0].hlines(maximum_0[2], w / 2 + 0.4 + w, w / 2 + 0.4 + w + w, colors='g')
+
 
     axs[1].bar(labels, mean_1)
-    axs[1].set_title("predicted PULLS")
-    valuelabel(axs[1], labels, mean_1)
+    # axs[1].set_title("predicted PUSHES")
+    axs[1].set_title("predicted PUSHES (" + str(len(push_matrix)) + ")")
+
+    axs[1].text(0, mean_1[0] + 0.1, round(mean_1[0], 5), ha='center', fontweight='bold')
+    axs[1].text(1, mean_1[1] - 0.05, round(mean_1[1], 5), ha='center', fontweight='bold')
+    axs[1].text(2, mean_1[2] + 0.1, round(mean_1[2], 5), ha='center', fontweight='bold')
+
+    axs[1].text(0, mean_1[0] + 0.05, round(std_1[0], 5), ha='center', style='italic')
+    axs[1].text(1, mean_1[1] - 0.1, round(std_1[1], 5), ha='center', style='italic')
+    axs[1].text(2, mean_1[2] + 0.05, round(std_1[2], 5), ha='center', style='italic')
+
+    axs[1].text(0, minimum_1[0] - 0.03, round(minimum_1[0], 5), ha='center')
+    axs[1].text(1, minimum_1[1] - 0.03, round(minimum_1[1], 5), ha='center')
+    axs[1].text(2, minimum_1[2] - 0.03, round(minimum_1[2], 5), ha='center')
+
+    axs[1].text(0, maximum_1[0] + 0.01, round(maximum_1[0], 5), ha='center')
+    axs[1].text(1, maximum_1[1] + 0.01, round(maximum_1[1], 5), ha='center')
+    axs[1].text(2, maximum_1[2] + 0.01, round(maximum_1[2], 5), ha='center')
+
+    for p in axs[1].patches:
+        w = p.get_width()  # get width of bar
+        axs[1].hlines(minimum_1[0], -w/2, w/2, colors='r')
+        axs[1].hlines(minimum_1[1], 0.2 + w/2, 0.2 + w/2 + w, colors='r')
+        axs[1].hlines(minimum_1[2], w/2 + 0.4 + w, w/2 + 0.4 + w + w, colors='r')
+
+        axs[1].hlines(maximum_1[0], -w / 2, w / 2, colors='g')
+        axs[1].hlines(maximum_1[1], 0.2 + w / 2, 0.2 + w / 2 + w, colors='g')
+        axs[1].hlines(maximum_1[2], w / 2 + 0.4 + w, w / 2 + 0.4 + w + w, colors='g')
 
     axs[2].bar(labels, mean_2)
-    axs[2].set_title("predicted SHAKES")
-    valuelabel(axs[2], labels, mean_2)
+    # axs[2].set_title("predicted SHAKES")
+    axs[2].set_title("predicted SHAKES (" + str(len(shake_matrix)) + ")")
+
+    axs[2].text(0, mean_2[0] + 0.1, round(mean_2[0], 5), ha='center', fontweight='bold')
+    axs[2].text(1, mean_2[1] + 0.1 , round(mean_2[1], 5), ha='center', fontweight='bold')
+    axs[2].text(2, mean_2[2] - 0.05, round(mean_2[2], 5), ha='center', fontweight='bold')
+
+    axs[2].text(0, mean_2[0] + 0.05, round(std_2[0], 5), ha='center', style='italic')
+    axs[2].text(1, mean_2[1] + 0.05, round(std_2[1], 5), ha='center', style='italic')
+    axs[2].text(2, mean_2[2] - 0.1, round(std_2[2], 5), ha='center', style='italic')
+
+    axs[2].text(0, minimum_2[0] - 0.03, round(minimum_2[0], 5), ha='center')
+    axs[2].text(1, minimum_2[1] - 0.03, round(minimum_2[1], 5), ha='center')
+    axs[2].text(2, minimum_2[2] - 0.03, round(minimum_2[2], 5), ha='center')
+
+    axs[2].text(0, maximum_2[0] + 0.01, round(maximum_2[0], 5), ha='center')
+    axs[2].text(1, maximum_2[1] + 0.01, round(maximum_2[1], 5), ha='center')
+    axs[2].text(2, maximum_2[2] + 0.01, round(maximum_2[2], 5), ha='center')
+
+    for p in axs[2].patches:
+        w = p.get_width()  # get width of bar
+        axs[2].hlines(minimum_2[0], -w / 2, w / 2, colors='r')
+        axs[2].hlines(minimum_2[1], 0.2 + w / 2, 0.2 + w / 2 + w, colors='r')
+        axs[2].hlines(minimum_2[2], w / 2 + 0.4 + w, w / 2 + 0.4 + w + w, colors='r')
+
+        axs[2].hlines(maximum_2[0], -w / 2, w / 2, colors='g')
+        axs[2].hlines(maximum_2[1], 0.2 + w / 2, 0.2 + w / 2 + w, colors='g')
+        axs[2].hlines(maximum_2[2], w / 2 + 0.4 + w, w / 2 + 0.4 + w + w, colors='g')
 
     fig.suptitle('Output Confidence')
 
@@ -113,9 +201,41 @@ if __name__ == '__main__':
 
     # cm_plot_labels = ['PULL', 'PUSH', 'SHAKE', 'TWIST']
     cm_plot_labels = ['PULL', 'PUSH', 'SHAKE']
-
     disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=cm_plot_labels)
 
     disp.plot(cmap=plt.cm.Blues)
     # plt.show()
     plt.savefig(ROOT_DIR + "/neural_networks/keras/predicted_data/confusion_matrix.png", bbox_inches='tight')
+
+    total_pull = cm[0][0] + cm[1][0] + cm[2][0]
+    pull_acc = cm[0][0] / total_pull
+
+    total_push = cm[0][1] + cm[1][1] + cm[2][1]
+    push_acc = cm[1][1] / total_push
+
+    total_shake = cm[0][2] + cm[1][2] + cm[2][2]
+    shake_acc = cm[2][2] / total_shake
+
+    total = sum(sum(cm))
+
+    print("total")
+    print(total)
+
+    total_right = cm[0][0] + cm[1][1] + cm[2][2]
+
+    print("total_right")
+    print(total_right)
+    # fig2 = plt.plot()
+    accs = [pull_acc, push_acc, shake_acc]
+    columns = ('PULL', 'PUSH', 'SHAKE')
+    rows = ["accuracy"]
+
+    print("\n")
+
+    print(Fore.LIGHTBLUE_EX + "Confusion Matrix Accuracy" + Fore.RESET)
+    print(tabulate([accs], headers=cm_plot_labels, tablefmt="fancy_grid"))
+    print("\n")
+    print(Fore.LIGHTBLUE_EX + "Total Accuracy: " + Fore.LIGHTYELLOW_EX + str(round(total_right/total, 5)) + Fore.RESET)
+    print("\n")
+
+    # plt.savefig(ROOT_DIR + "/neural_networks/keras/predicted_data/table.png", bbox_inches='tight')
