@@ -38,16 +38,8 @@ class DataVisualizer:
             if classification in self.file_name:
                 self.prediction = classification
 
-        self.outputs = np.empty(())
-        if self.prediction == "shake":
-            self.outputs = np.load(ROOT_DIR + '/neural_networks/keras/predicted_data/output_predicted_shake.npy', mmap_mode=None, allow_pickle=False, fix_imports=True,
-                        encoding='ASCII')
-        elif self.prediction == "pull":
-            self.outputs = np.load(ROOT_DIR + '/neural_networks/keras/predicted_data/output_predicted_pull.npy', mmap_mode=None, allow_pickle=False, fix_imports=True,
-                        encoding='ASCII')
-        elif self.prediction == "push":
-            self.outputs = np.load(ROOT_DIR + '/neural_networks/keras/predicted_data/output_predicted_push.npy', mmap_mode=None, allow_pickle=False, fix_imports=True,
-                        encoding='ASCII')
+        self.outputs = np.load(ROOT_DIR + '/neural_networks/keras/predicted_data/output_predicted_' + self.prediction
+                               + '.npy', mmap_mode=None, allow_pickle=False, fix_imports=True, encoding='ASCII')
 
         self.measurements = int(self.config["time"] * self.config["rate"])
         self.n_variables = len(self.config["data"])
@@ -224,22 +216,11 @@ class DataVisualizer:
         else:
             outcome = "Fail"
 
-        # outputs = np.empty(())
-        # if self.prediction == "shake":
-        #     outputs = np.load(ROOT_DIR + '/neural_networks/keras/predicted_data/output_predicted_shake.npy', mmap_mode=None, allow_pickle=False, fix_imports=True,
-        #                 encoding='ASCII')
-        # elif self.prediction == "pull":
-        #     outputs = np.load(ROOT_DIR + '/neural_networks/keras/predicted_data/output_predicted_pull.npy', mmap_mode=None, allow_pickle=False, fix_imports=True,
-        #                 encoding='ASCII')
-        # elif self.prediction == "push":
-        #     outputs = np.load(ROOT_DIR + '/neural_networks/keras/predicted_data/output_predicted_push.npy', mmap_mode=None, allow_pickle=False, fix_imports=True,
-        #                 encoding='ASCII')
-
         self.fig.suptitle("Predicted=" + self.prediction + ", True=" +
                           true_classification + ", " + outcome +
                           ", " + str(self.idx) + " => [" + str(round(self.outputs[self.idx][0], 3)) + ", " +
-                          str(round(self.outputs[self.idx][1], 3)) + ", " + str(round(self.outputs[self.idx][2], 4)) +"]", fontsize=20)
-
+                          str(round(self.outputs[self.idx][1], 3)) + ", " + str(round(self.outputs[self.idx][2], 3))
+                          + ", " + str(round(self.outputs[self.idx][3], 3)) + "]", fontsize=20)
 
         self.is_graph_outdated = False
 
@@ -262,14 +243,9 @@ if __name__ == "__main__":
     # parser.add_argument("-c", "--config_file", type=str, default="training_config",
     #                     help="If argmument is present, activates gripper")
 
-
     args = vars(parser.parse_args())
-
-    # data_vis = DataVisualizer(path=ROOT_DIR + "/data_storage/data/" + args["path"] + "/",
-    #                           config_file=args["config_file"])
 
     data_vis = DataVisualizer(path=ROOT_DIR + "/neural_networks/keras/predicted_data/",
                               config_file=args["config_file"])
 
-    # data_vis = DataVisualizer()
 

@@ -13,12 +13,12 @@ from statistics import mean
 from data_storage.src.trainning_data_preparetion import SortedDataForLearning
 
 # batch_size_options = [32, 64, 96, 192, 256]
-batch_size_options = [64, 96]
+batch_size_options = [96]
 epochs_options = [300]
-n_layers_options = [2, 3]
-neurons_per_layer_option = [16, 32, 64]
+n_layers_options = [3]
+neurons_per_layer_option = [32, 64]
 learning_rate_options = [0.001]
-dropout_options = [0.2, 0.5]
+dropout_options = [0.2]
 # activation_options = ['relu', 'sigmoid', 'softsign', 'tanh', 'selu']
 activation_options = ['relu', 'selu']
 # optimizer_options = ["Adam", "SGD", "RMSprop"]
@@ -56,7 +56,7 @@ def printProgressBar(iteration, total, prefix='', suffix='', decimals=3, length=
         print()
 
 
-def writing_model_config_json(lr, optimizer, dropo, loss, batch_size, epochs, model_combination):
+def writing_model_config_json(lr, optimizer, dropo, loss, batch_size, epochs, model_combination, o_n):
 
     layers = []
     n_layers = len(model_combination)
@@ -72,7 +72,7 @@ def writing_model_config_json(lr, optimizer, dropo, loss, batch_size, epochs, mo
     data = {'layers': layers, 'lr': lr, 'n_layers': n_layers, 'dropout': dropo, 'optimizer': optimizer, 'loss': loss,
             'batch_size': batch_size, 'epochs': epochs, 'early_stop_patience': early_stop_patience}
 
-    with open('model_config_optimized_4_outputs.json', 'w') as fp:
+    with open('model_config_optimized_' + str(o_n) + '_outputs.json', 'w') as fp:
         json.dump(data, fp)
 
 
@@ -125,8 +125,8 @@ def build_model(layer_combination_list, dro, learning_rate, _optimizer, _loss, o
 
 
 if __name__ == '__main__':
-
-    median_n_tests = 3
+    output_neurons = 4
+    median_n_tests = 1
 
     validation_split = 0.3
 
@@ -180,7 +180,7 @@ if __name__ == '__main__':
 
                                     star_time = time.time()
 
-                                    model = build_model(model_combination, do, lr, optimizer, loss, output_shape=3)
+                                    model = build_model(model_combination, do, lr, optimizer, loss, output_shape=output_neurons)
 
                                     callback = keras.callbacks.EarlyStopping(monitor='val_loss',
                                                                              patience=early_stop_patience)
@@ -250,4 +250,4 @@ if __name__ == '__main__':
     print("\ntotal_time: %f" % total_time)
 
     writing_model_config_json(best_parameters["lr"], best_parameters["optimizer"], best_parameters["dropout"], best_parameters["loss"],
-                              best_parameters["batch_size"], best_parameters["epochs"], best_parameters["model"])
+                              best_parameters["batch_size"], best_parameters["epochs"], best_parameters["model"], output_neurons)

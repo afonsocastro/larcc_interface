@@ -1,0 +1,1 @@
+{"layers": [{"id": 0, "neurons": 32, "activation": "relu"}, {"id": 1, "neurons": 16, "activation": "selu"}, {"id": 2, "neurons": 32, "activation": "relu"}], "lr": 0.001, "n_layers": 3, "dropout": 0.2, "optimizer": "Adam", "loss": "sparse_categorical_crossentropy", "batch_size": 64, "epochs": 300, "early_stop_patience": 30}
