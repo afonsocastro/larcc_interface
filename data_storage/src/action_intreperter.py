@@ -14,6 +14,8 @@ from sklearn.preprocessing import normalize
 from lib.src.ArmGripperComm import ArmGripperComm
 from tabulate import tabulate
 import pyfiglet
+from config.definitions import ROOT_DIR
+
 
 from config.definitions import ROOT_DIR
 from config.definitions import NN_DIR
@@ -34,12 +36,28 @@ def print_tabulate(real_time_predictions, config):
         print("\n")
 
 
-def normalize_data(vector, measurements):
+def normalize_data(vector, measurements, train_config):
 
     data_array = np.reshape(vector, (measurements, int(len(vector) / measurements)))
-    experiment_array_norm = normalize(data_array, axis=0, norm='max')
+    data_array_norm = np.empty((data_array.shape[0], 0))
 
-    vector_data_norm = np.reshape(experiment_array_norm, (1, vector.shape[0]))
+    idx = 0
+    for n in train_config["normalization_clusters"]:
+        data_sub_array = data_array[:, idx:idx + n]
+        idx += n
+
+        data_max = abs(max(data_sub_array.min(), data_sub_array.max(), key=abs))
+
+        data_sub_array_norm = data_sub_array / data_max
+        data_array_norm = np.hstack((data_array_norm, data_sub_array_norm))
+
+    vector_data_norm = np.reshape(data_array_norm, (1, vector.shape[0]))
+
+    # data_array = np.reshape(vector, (measurements, int(len(vector) / measurements)))
+    # experiment_array_norm = normalize(data_array, axis=0, norm='max')
+    #
+    # vector_data_norm = np.reshape(experiment_array_norm, (1, vector.shape[0]))
+
     return vector_data_norm
 
 
@@ -93,9 +111,15 @@ if __name__ == '__main__':
 
     args = vars(parser.parse_args())
 
-    f = open('../config/' + args["config_file"] + '.json')
+    f = open(ROOT_DIR + '/data_storage/config/' + args["config_file"] + '.json')
 
-    config = json.load(f)
+    storage_config = json.load(f)
+
+    f.close()
+
+    f = open(ROOT_DIR + '/data_storage/config/trainning_config.json')
+
+    trainning_config = json.load(f)
 
     f.close()
 
@@ -118,7 +142,7 @@ if __name__ == '__main__':
     data_for_learning = DataForLearning()
     arm_gripper_comm = ArmGripperComm()
 
-    rate = rospy.Rate(config["rate"])
+    rate = rospy.Rate(storage_config["rate"])
 
     time.sleep(0.2) # Waiting time to ros nodes properly initiate
 
@@ -156,9 +180,9 @@ if __name__ == '__main__':
 
     rest_state_mean = np.mean(np.array(list_calibration))
 
-    limit = int(config["time"] * config["rate"])
+    limit = int(storage_config["time"] * storage_config["rate"])
 
-    trainning_data_array = np.empty((0, limit * len(config["data"])))
+    trainning_data_array = np.empty((0, limit * len(storage_config["data"])))
 
     sequential_actions = False
 
@@ -171,12 +195,12 @@ if __name__ == '__main__':
             data_mean = calc_data_mean(data_for_learning)
             variance = data_mean - rest_state_mean
 
-            if abs(variance) > config["force_threshold_start"]:
+            if abs(variance) > storage_config["force_threshold_start"]:
                 break
 
             time.sleep(0.1)
 
-        time.sleep(config["waiting_offset"]) # time waiting to initiate the experiment
+        time.sleep(storage_config["waiting_offset"]) # time waiting to initiate the experiment
 
         # ---------------------------------------------------------------------------------------------
         # -------------------------------------GET DATA------------------------------------------------
@@ -203,9 +227,9 @@ if __name__ == '__main__':
                 data_mean = calc_data_mean(data_for_learning)
                 variance = data_mean - rest_state_mean
 
-                if abs(variance) < config["force_threshold_end"]:
+                if abs(variance) < storage_config["force_threshold_end"]:
                     treshold_counter += 1
-                    if treshold_counter >= config["threshold_counter_limit"]:
+                    if treshold_counter >= storage_config["threshold_counter_limit"]:
                         end_experiment = True
                         break
                 else:
@@ -220,10 +244,10 @@ if __name__ == '__main__':
             print("\nNot enough for prediction\n")
         else:
             sequential_actions = True
-            vector_norm = normalize_data(vector_data, limit)
+            vector_norm = normalize_data(vector_data, limit, trainning_config)
             print("-----------------------------------------------------------")
             predictions = model.predict(x=vector_norm, verbose=2)
-            print_tabulate(list(predictions), config)
+            print_tabulate(list(predictions), storage_config)
             print("-----------------------------------------------------------")
 
     del data_for_learning, arm_gripper_comm
