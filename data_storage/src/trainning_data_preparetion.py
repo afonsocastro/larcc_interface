@@ -24,64 +24,128 @@ class SortedDataForLearning:
         self.test_data = np.empty((0, 0))
 
         f = open(ROOT_DIR + '/data_storage/config/data_storage_config.json')
-        storage_config = json.load(f)
+        self.storage_config = json.load(f)
         f.close()
         f = open(ROOT_DIR + '/data_storage/config/' + config_file + '.json')
-        training_config = json.load(f)
+        self.training_config = json.load(f)
         f.close()
 
-        measurements = int(storage_config["rate"] * storage_config["time"])
+        self.measurements = int(self.storage_config["rate"] * self.storage_config["time"])
 
-        files = os.listdir(path)
-        file_exist = False
+        # files = os.listdir(path)
+        # file_exist = False
 
-        for file in files:
-            if file.find(data_file) != -1:
-                file_exist = True
+        # for file in files:
+        #     if file.find(data_file) != -1:
+        #         file_exist = True
+        print(os.path.isdir(path))
+        print(path)
+        if os.path.isfile(path + data_file):
+            self.experiment_data = np.load(path + data_file)
 
-        if file_exist:
-            experiment_data = np.load(path + data_file)
-
-            self.filter_classes(experiment_data, storage_config, training_config)
-            print("Class filter complete...")
-
-            if storage_config["time"] == training_config["time"]:
-                self.data_shortened = self.data_classes_filtered
-            else:
-                self.sample_shortener(self.data_classes_filtered, measurements, storage_config, training_config)
-                # self.sample_shortener(experiment_data, measurements, storage_config, training_config)
-                print("Time truncation complete...")
-
-            # if len(storage_config["data"]) == len(training_config["data_filtered"]):
-            if len(storage_config["data"]) == len(training_config["data"]):
-                self.data_filtered = self.data_shortened
-            else:
-                self.filter_data(self.data_shortened, storage_config, training_config)
-                print("Variable filter complete...")
-
-            self.normalize_data(self.data_filtered, storage_config, training_config)
-            print("Normalization complete...")
-
-            np.random.shuffle(self.data_norm)
-            print("Shuffle complete...")
+            self.process_data()
+            # self.filter_classes(experiment_data, storage_config, training_config)
+            # print("Class filter complete...")
+            #
+            # if storage_config["time"] == training_config["time"]:
+            #     self.data_shortened = self.data_classes_filtered
+            # else:
+            #     self.sample_shortener(self.data_classes_filtered, measurements, storage_config, training_config)
+            #     # self.sample_shortener(experiment_data, measurements, storage_config, training_config)
+            #     print("Time truncation complete...")
+            #
+            # # if len(storage_config["data"]) == len(training_config["data_filtered"]):
+            # if len(storage_config["data"]) == len(training_config["data"]):
+            #     self.data_filtered = self.data_shortened
+            # else:
+            #     self.filter_data(self.data_shortened, storage_config, training_config)
+            #     print("Variable filter complete...")
+            #
+            # self.normalize_data(self.data_filtered, storage_config, training_config)
+            # print("Normalization complete...")
+            #
+            # np.random.shuffle(self.data_norm)
+            # print("Shuffle complete...")
 
             div_idx = int(div * self.data_norm.shape[0])
 
             self.trainning_data = self.data_norm[:div_idx]
             self.test_data = self.data_norm[div_idx:]
 
-            np.save("/tmp/training_data.npy", self.trainning_data)
-            np.save("/tmp/test_data.npy", self.test_data)
+            # np.save("/tmp/training_data.npy", self.trainning_data)
+            # np.save("/tmp/test_data.npy", self.test_data)
+            #
+            # print("<======================================================>")
+            # print("Learning data shape: " + str(self.trainning_data.shape))
+            # print("Testing data shape: " + str(self.test_data.shape))
+            # print("<======================================================>")
+        elif os.path.isdir(path):
+            self.raw_training_data = np.empty((0, 651))
+            self.raw_test_data = np.empty((0, 651))
 
-            print("Learning data shape")
-            print(self.trainning_data.shape)
-            print("Testing data shape")
-            print(self.test_data.shape)
+            files = os.listdir(path)
+            for file in files:
+                new_array = np.load(path + file)
+                for user in str(self.training_config["training_users"]):
+                    if user in file:
+                        self.raw_training_data = np.append(self.raw_training_data, new_array, axis=0)
+
+                for user in str(self.training_config["test_users"]):
+                    if user in file:
+                        self.raw_test_data = np.append(self.raw_test_data, new_array, axis=0)
+
+            print(self.raw_training_data.shape)
+            print(self.raw_test_data.shape)
+            print("========================================")
+            self.experiment_data = self.raw_training_data
+            self.process_data()
+            self.trainning_data = self.data_norm
+
+            print("========================================")
+            self.experiment_data = self.raw_test_data
+            self.process_data()
+            self.test_data = self.data_norm
 
         else:
             print("Could not find learning data file")
 
+        np.save("/tmp/training_data.npy", self.trainning_data)
+        np.save("/tmp/test_data.npy", self.test_data)
+
+        print("<======================================================>")
+        print("Learning data shape: " + str(self.trainning_data.shape))
+        print("Testing data shape: " + str(self.test_data.shape))
+        print("<======================================================>")
         print("Script lasted for: " + str(round((time.time() - st), 2)) + " seconds")
+
+    def process_data(self):
+
+        if self.storage_config["action_classes"] == self.training_config["action_classes"]:
+            self.data_classes_filtered = self.experiment_data
+        else:
+            self.filter_classes(self.experiment_data, self.storage_config, self.training_config)
+            print("Class filter complete...")
+
+        if self.storage_config["time"] == self.training_config["time"]:
+            self.data_shortened = self.data_classes_filtered
+        else:
+            self.sample_shortener(self.data_classes_filtered, self.measurements, self.storage_config,
+                                  self.training_config)
+            # self.sample_shortener(experiment_data, measurements, storage_config, training_config)
+            print("Time truncation complete...")
+
+        # if len(storage_config["data"]) == len(training_config["data_filtered"]):
+        if len(self.storage_config["data"]) == len(self.training_config["data"]):
+            self.data_filtered = self.data_shortened
+        else:
+            self.filter_data(self.data_shortened, self.storage_config, self.training_config)
+            print("Variable filter complete...")
+
+        self.normalize_data(self.data_filtered, self.storage_config, self.training_config)
+        print("Normalization complete...")
+
+        np.random.shuffle(self.data_norm)
+        print("Shuffle complete...")
 
     def sample_shortener(self, array, measurements, store_config, train_config):
 
@@ -205,6 +269,6 @@ if __name__ == '__main__':
 
     args = vars(parser.parse_args())
 
-    sort_data_for_learing = SortedDataForLearning(path=args["path"], data_file=args["file"],
+    sort_data_for_learing = SortedDataForLearning(path=ROOT_DIR + args["path"], data_file=args["file"],
                                                   config_file=args["config_file"], div=args["div"])
 

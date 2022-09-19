@@ -13,7 +13,7 @@ def print_stats(u, array, actions):
         if c in class_len:
             class_len[c] += 1
         else:
-            class_len[c] = 0
+            class_len[c] = 1
 
     print(f"User {u}")
     print(f"User has {array.shape[0]} experiments")
@@ -50,7 +50,7 @@ if __name__ == '__main__':
     users = split_config["users"]
     for idx in dic_of_matrixs:
         np.save(ROOT_DIR + f"/data_storage/data/raw_learning_data/user_splitted_data/"
-                           f"{users[int(idx)]}_learning_data.npy", dic_of_matrixs[idx])
+                           f"{users[int(idx)]}_learning_data_{int(idx)}.npy", dic_of_matrixs[idx])
 
         print_stats(users[int(idx)], dic_of_matrixs[idx], split_config["actions"])
 
