@@ -1,7 +1,5 @@
 #!/usr/bin/env python3
 
-import tensorflow as tf
-import numpy as np
 from tensorflow import keras
 from tensorflow.keras import layers
 from tensorflow.keras.optimizers import Adam, SGD, Nadam, RMSprop
@@ -11,6 +9,7 @@ from tensorflow.keras.layers import Activation, Dense, Dropout
 import matplotlib.pyplot as plt
 from data_storage.src.trainning_data_preparetion import SortedDataForLearning
 import json
+from config.definitions import ROOT_DIR
 
 
 def create_model_from_json(input_shape, model_config, output_shape):
@@ -56,13 +55,11 @@ if __name__ == '__main__':
     output_neurons = 4
     validation_split = 0.3
 
-    # model_config = json.load(open('model_config_optimized_3_outputs.json'))
-    # model_config = json.load(open('model_config_optimized_4_outputs.json'))
     model_config = json.load(open('model_config_optimized_' + str(output_neurons) + '_outputs.json'))
 
     model = create_model_from_json(input_shape=650, model_config = model_config, output_shape=output_neurons)
 
-    sorted_data_for_learning = SortedDataForLearning()
+    sorted_data_for_learning = SortedDataForLearning(path=ROOT_DIR + "/data_storage/data/raw_learning_data/user_splitted_data/")
 
     training_data = sorted_data_for_learning.trainning_data
 

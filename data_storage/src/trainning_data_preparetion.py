@@ -38,8 +38,14 @@ class SortedDataForLearning:
         # for file in files:
         #     if file.find(data_file) != -1:
         #         file_exist = True
+        print("os.path.isdir(path)")
         print(os.path.isdir(path))
+        print("path")
         print(path)
+        print("data_file")
+        print(data_file)
+        print("config_file")
+        print(config_file)
         if os.path.isfile(path + data_file):
             self.experiment_data = np.load(path + data_file)
 

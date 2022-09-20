@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 from tensorflow import keras
+from itertools import product
 from sklearn.metrics import ConfusionMatrixDisplay
 from sklearn.metrics import confusion_matrix
 import numpy as np
@@ -24,6 +25,52 @@ def save_txt_file(matrix, action, output):
         with open(ROOT_DIR + "/neural_networks/keras/predicted_data/output_predicted_" + action + ".txt", 'wb') as output_f:
             for output_line in output_mat:
                 np.savetxt(output_f, output_line, fmt='%.2f')
+
+
+def plot_confusion_matrix_percentage(confusion_matrix, display_labels=None, cmap="viridis", xticks_rotation="horizontal", title="Confusion Matrix"):
+        colorbar = True
+        im_kw = None
+        fig, ax = plt.subplots()
+        cm = confusion_matrix
+        n_classes = cm.shape[0]
+
+        default_im_kw = dict(interpolation="nearest", cmap=cmap)
+        im_kw = im_kw or {}
+        im_kw = {**default_im_kw, **im_kw}
+
+        im_ = ax.imshow(cm, **im_kw)
+        cmap_min, cmap_max = im_.cmap(0), im_.cmap(1.0)
+
+        text_ = np.empty_like(cm, dtype=object)
+
+        # print text with appropriate color depending on background
+        thresh = (cm.max() + cm.min()) / 2.0
+
+        for i, j in product(range(n_classes), range(n_classes)):
+            color = cmap_max if cm[i, j] < thresh else cmap_min
+            text_cm = format(cm[i, j], ".1f") + " %"
+            text_[i, j] = ax.text(
+                j, i, text_cm, ha="center", va="center", color=color
+            )
+
+        if display_labels is None:
+            display_labels = np.arange(n_classes)
+        else:
+            display_labels = display_labels
+        if colorbar:
+            fig.colorbar(im_, ax=ax)
+        ax.set(
+            xticks=np.arange(n_classes),
+            yticks=np.arange(n_classes),
+            xticklabels=display_labels,
+            yticklabels=display_labels,
+            ylabel="True label",
+            xlabel="Predicted label",
+        )
+
+        ax.set_ylim((n_classes - 0.5, -0.5))
+        fig.suptitle(title)
+        plt.setp(ax.get_xticklabels(), rotation=xticks_rotation)
 
 
 if __name__ == '__main__':
@@ -57,6 +104,11 @@ if __name__ == '__main__':
     output_predicted_shake = np.empty((0, n_labels))
     output_predicted_twist = np.empty((0, n_labels))
 
+    pull = {"true_positive": np.empty((0, n_labels)), "false_positive": np.empty((0, n_labels)), "false_negative": np.empty((0, n_labels))}
+    push = {"true_positive": np.empty((0, n_labels)), "false_positive": np.empty((0, n_labels)), "false_negative": np.empty((0, n_labels))}
+    shake = {"true_positive": np.empty((0, n_labels)), "false_positive": np.empty((0, n_labels)), "false_negative": np.empty((0, n_labels))}
+    twist = {"true_positive": np.empty((0, n_labels)), "false_positive": np.empty((0, n_labels)), "false_negative": np.empty((0, n_labels))}
+
     for i in range(0, len(test_data)):
         prediction = model.predict(x=test_data[i:i + 1, :-1], verbose=2)
 
@@ -65,6 +117,35 @@ if __name__ == '__main__':
             predict_lst.append(prediction[0][label])
 
         decoded_prediction = np.argmax(prediction)
+        true = test_data[i, -1]
+
+        for c in range(0, n_labels):
+            if true == c & decoded_prediction == c:
+                # TRUE POSITIVE
+                true_positive = np.append(np.empty((0, n_labels)), prediction, axis=0)
+            elif true != c & decoded_prediction == c:
+                # FALSE POSITIVE
+                false_positive = np.append(np.empty((0, n_labels)), prediction, axis=0)
+            elif true == c & decoded_prediction != c:
+                # FALSE NEGATIVE
+                false_negative = np.append(np.empty((0, n_labels)), prediction, axis=0)
+
+            if c == 0:
+                pull["true_positive"] = np.append(pull["true_positive"], true_positive, axis=0)
+                pull["false_positive"] = np.append(pull["false_positive"], false_positive, axis=0)
+                pull["false_negative"] = np.append(pull["false_negative"], false_negative, axis=0)
+            elif c == 1:
+                push["true_positive"] = np.append(push["true_positive"], true_positive, axis=0)
+                push["false_positive"] = np.append(push["false_positive"], false_positive, axis=0)
+                push["false_negative"] = np.append(push["false_negative"], false_negative, axis=0)
+            elif c == 2:
+                shake["true_positive"] = np.append(shake["true_positive"], true_positive, axis=0)
+                shake["false_positive"] = np.append(shake["false_positive"], false_positive, axis=0)
+                shake["false_negative"] = np.append(shake["false_negative"], false_negative, axis=0)
+            elif c == 3:
+                twist["true_positive"] = np.append(twist["true_positive"], true_positive, axis=0)
+                twist["false_positive"] = np.append(twist["false_positive"], false_positive, axis=0)
+                twist["false_negative"] = np.append(twist["false_negative"], false_negative, axis=0)
 
         if decoded_prediction == 0:
             pull_matx.append(predict_lst)
@@ -287,61 +368,71 @@ if __name__ == '__main__':
     predicted_values = np.asarray(predictions_list)
 
     cm = confusion_matrix(y_true=test_data[:, -1], y_pred=predicted_values)
+    print("cm")
+    print(cm)
 
+    cm_true = cm / cm.astype(np.float).sum(axis=1)
+    cm_predicted = cm / cm.astype(np.float).sum(axis=0)
+    cm_true_percentage = cm_true * 100
+    cm_predicted_percentage = cm_predicted * 100
+
+    print("cm_true")
+    print(cm_true)
+    print("cm_predicted")
+    print(cm_predicted)
+
+    blues = plt.cm.Blues
     disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=labels)
+    disp.plot(cmap=blues)
 
-    disp.plot(cmap=plt.cm.Blues)
     # plt.show()
     plt.savefig(ROOT_DIR + "/neural_networks/keras/predicted_data/confusion_matrix.png", bbox_inches='tight')
 
-    total_right, pull_acc, push_acc, shake_acc, twist_acc = 0, 0, 0, 0, 0
+    plot_confusion_matrix_percentage(confusion_matrix=cm_true_percentage, display_labels=labels, cmap=blues, title="True Percentage CM")
+    plt.savefig(ROOT_DIR + "/neural_networks/keras/predicted_data/confusion_matrix_true.png", bbox_inches='tight')
 
-    if n_labels == 3:
-        total_pull = cm[0][0] + cm[1][0] + cm[2][0]
-        pull_acc = cm[0][0] / total_pull
+    plot_confusion_matrix_percentage(confusion_matrix=cm_predicted_percentage, display_labels=labels, cmap=blues, title="Predicted Percentage CM")
+    plt.savefig(ROOT_DIR + "/neural_networks/keras/predicted_data/confusion_matrix_predicted.png", bbox_inches='tight')
 
-        total_push = cm[0][1] + cm[1][1] + cm[2][1]
-        push_acc = cm[1][1] / total_push
+    pull_acc_true = cm_true[0][0]
+    pull_acc_predicted = cm_predicted[0][0]
 
-        total_shake = cm[0][2] + cm[1][2] + cm[2][2]
-        shake_acc = cm[2][2] / total_shake
+    push_acc_true = cm_true[1][1]
+    push_acc_predicted = cm_predicted[1][1]
 
-    elif n_labels == 4:
-        total_pull = cm[0][0] + cm[1][0] + cm[2][0] + cm[3][0]
-        pull_acc = cm[0][0] / total_pull
-
-        total_push = cm[0][1] + cm[1][1] + cm[2][1] + cm[3][1]
-        push_acc = cm[1][1] / total_push
-
-        total_shake = cm[0][2] + cm[1][2] + cm[2][2] + cm[3][2]
-        shake_acc = cm[2][2] / total_shake
-
-        total_twist = cm[0][3] + cm[1][3] + cm[2][3] + cm[3][3]
-        twist_acc = cm[3][3] / total_twist
+    shake_acc_true = cm_true[2][2]
+    shake_acc_predicted = cm_predicted[2][2]
+    if n_labels == 4:
+        twist_acc_true = cm_true[3][3]
+        twist_acc_predicted = cm_predicted[3][3]
 
     total = sum(sum(cm))
 
     print("total")
     print(total)
 
+    total_right = cm[0][0] + cm[1][1] + cm[2][2]
     if n_labels == 3:
-        total_right = cm[0][0] + cm[1][1] + cm[2][2]
-        accs = [pull_acc, push_acc, shake_acc]
+        accs_true = [pull_acc_true, push_acc_true, shake_acc_true]
+        accs_predicted = [pull_acc_predicted, push_acc_predicted, shake_acc_predicted]
         columns = ('PULL', 'PUSH', 'SHAKE')
     elif n_labels == 4:
-        total_right = cm[0][0] + cm[1][1] + cm[2][2] + cm[3][3]
-        accs = [pull_acc, push_acc, shake_acc, twist_acc]
+        total_right = total_right + cm[3][3]
+        accs_true = [pull_acc_true, push_acc_true, shake_acc_true, twist_acc_true]
+        accs_predicted = [pull_acc_predicted, push_acc_predicted, shake_acc_predicted, twist_acc_predicted]
         columns = ('PULL', 'PUSH', 'SHAKE', 'TWIST')
 
     print("total_right")
     print(total_right)
 
-    rows = ["accuracy"]
-
     print("\n")
 
-    print(Fore.LIGHTBLUE_EX + "Confusion Matrix Accuracy" + Fore.RESET)
-    print(tabulate([accs], headers=labels, tablefmt="fancy_grid"))
+    print(Fore.LIGHTBLUE_EX + "Confusion Matrix True Accuracy" + Fore.RESET)
+    print(tabulate([accs_true], headers=labels, tablefmt="fancy_grid"))
+    print("\n")
+
+    print(Fore.LIGHTBLUE_EX + "Confusion Matrix Predicted Accuracy" + Fore.RESET)
+    print(tabulate([accs_predicted], headers=labels, tablefmt="fancy_grid"))
     print("\n")
     print(
         Fore.LIGHTBLUE_EX + "Total Accuracy: " + Fore.LIGHTYELLOW_EX + str(round(total_right / total, 5)) + Fore.RESET)
