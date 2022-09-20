@@ -59,7 +59,7 @@ class ActionVisualizer:
 
         new_vector[0] = timestamp
 
-        if self.data_array == []:
+        if not self.data_array:
             self.data_array = np.array([new_vector])
         else:
             self.data_array = np.append(self.data_array, [new_vector], axis=0)
