@@ -59,7 +59,7 @@ class ActionVisualizer:
 
         new_vector[0] = timestamp
 
-        if not self.data_array:
+        if len(self.data_array) == 0:
             self.data_array = np.array([new_vector])
         else:
             self.data_array = np.append(self.data_array, [new_vector], axis=0)
@@ -69,7 +69,7 @@ class ActionVisualizer:
     def class_calback(self, data):
 
         print(data.data)
-
+        self.classification = data.data
         self.is_graph_outdated = True
 
     def update_graph(self):
@@ -124,7 +124,7 @@ class ActionVisualizer:
         self.ax[2].set_ylim((-10, 10))
         self.ax[2].set_xlim((start_time, timestamp + 2))
 
-        self.fig.suptitle("Predicted Action: " + self.classification)
+        self.fig.suptitle("Predicted Action: " + self.classification, fontsize=20)
 
 
 if __name__ == '__main__':

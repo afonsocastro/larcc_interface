@@ -94,6 +94,17 @@ def calc_data_mean(data):
     return np.mean(values)
 
 
+def get_statistics(data_list):
+    data_list_mean = np.mean(np.array(data_list))
+
+    summ = 0
+    for x in data_list:
+        summ += (x-data_list_mean)**2
+
+    data_list_var = math.sqrt(summ/len(data_list))
+    return data_list_mean, data_list_var
+
+
 if __name__ == '__main__':
 
     # ---------------------------------------------------------------------------------------------
@@ -173,13 +184,13 @@ if __name__ == '__main__':
 
     list_calibration = []
 
-    print("Calculating rest state variables...")
-
-    for i in range(0, 99):
-        list_calibration.append(calc_data_mean(data_for_learning))
-        time.sleep(0.01)
-
-    rest_state_mean = np.mean(np.array(list_calibration))
+    # print("Calculating rest state variables...")
+    #
+    # for i in range(0, 99):
+    #     list_calibration.append(calc_data_mean(data_for_learning))
+    #     time.sleep(0.005)
+    #
+    # rest_state_mean = np.mean(np.array(list_calibration))
 
     limit = int(storage_config["time"] * storage_config["rate"])
 
@@ -188,10 +199,26 @@ if __name__ == '__main__':
     sequential_actions = False
     first_time_stamp_show = None
     vector_data_show = np.empty((0, 0))
+    rest_state_mean = 0
 
     while not rospy.is_shutdown():
 
         if not sequential_actions:
+            while not rospy.is_shutdown():
+                print("Calculating rest state variables...")
+                list_calibration = []
+                for i in range(0, 99):
+                    list_calibration.append(calc_data_mean(data_for_learning))
+                    add_to_vector(data_for_learning, vector_data_show, None, pub_vector)
+                    time.sleep(0.01)
+
+                rest_state_mean, rest_state_var = get_statistics(list_calibration)
+                print(rest_state_mean)
+                print(rest_state_var)
+
+                if rest_state_var < 0.02:
+                    break
+
             print(f"Waiting for action to initiate prediction ...")
 
         while not rospy.is_shutdown():
@@ -258,11 +285,11 @@ if __name__ == '__main__':
             max_idx = np.argmax(list(predictions))
 
             predicted_label = labels[int(max_idx)]
-
+            print(predictions)
             pub_class.publish(predicted_label)
 
             print("-----------------------------------------------------------")
-            print_tabulate(list(predictions), predicted_label)
+            print_tabulate(predicted_label, predictions)
             print("-----------------------------------------------------------")
 
     del data_for_learning, arm_gripper_comm
