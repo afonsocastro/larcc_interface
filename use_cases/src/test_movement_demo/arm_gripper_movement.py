@@ -3,6 +3,7 @@ import argparse
 import json
 import os
 
+from config.definitions import ROOT_DIR
 from lib.src.ArmGripperComm import ArmGripperComm
 import rospy
 import time
@@ -13,7 +14,7 @@ parser.add_argument("-m", "--movement", type=str, default="",
 
 args = vars(parser.parse_args())
 
-path = "../../config/"
+path = ROOT_DIR + "/use_cases/config/"
 
 if args['movement'] == "":
     res = os.listdir(path)

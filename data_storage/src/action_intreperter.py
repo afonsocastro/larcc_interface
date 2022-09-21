@@ -335,10 +335,12 @@ if __name__ == '__main__':
 
             labels = storage_config["action_classes"]
             max_idx = np.argmax(list(predictions))
-
-            predicted_label = labels[int(max_idx)]
+            print(max_idx)
+            print(predictions[0][int(max_idx)])
             print(predictions)
-            pub_class.publish(predicted_label)
+            predicted_label = labels[int(max_idx)]
+
+            pub_class.publish(predicted_label + " " + str(round(float(predictions[0][int(max_idx)] * 100), 2)) + "%")
 
             print("-----------------------------------------------------------")
             print_tabulate(predicted_label, predictions)
