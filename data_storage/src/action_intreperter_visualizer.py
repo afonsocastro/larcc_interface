@@ -42,7 +42,7 @@ class ActionVisualizer:
 
             self.fig.canvas.draw()
             self.fig.canvas.flush_events()
-            time.sleep(0.01)
+            time.sleep(0.001)
 
     def forces_calback(self, data):
 
@@ -124,7 +124,10 @@ class ActionVisualizer:
         self.ax[2].set_ylim((-10, 10))
         self.ax[2].set_xlim((start_time, timestamp + 2))
 
-        self.fig.suptitle("Predicted Action: " + self.classification, fontsize=20)
+        if self.classification == "Calibrating":
+            self.fig.suptitle("CALIBRATING SENSORS", fontsize=40)
+        else:
+            self.fig.suptitle("Predicted Action: " + self.classification, fontsize=40)
 
 
 if __name__ == '__main__':

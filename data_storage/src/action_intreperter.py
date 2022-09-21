@@ -1,12 +1,14 @@
 #!/usr/bin/env python3
 import argparse
 import json
+import math
 import os
 import time
 
 from colorama import Fore
+from matplotlib import pyplot as plt
 from tensorflow import keras
-
+from std_msgs.msg import String, Float64MultiArray, MultiArrayDimension
 from data_storage.src.data_aquisition_node import DataForLearning
 import numpy as np
 import rospy
@@ -21,12 +23,9 @@ from config.definitions import ROOT_DIR
 from config.definitions import NN_DIR
 
 
-def print_tabulate(real_time_predictions, config):
+def print_tabulate(label, real_time_predictions):
 
-    labels = config["action_classes"]
-    max_idx = np.argmax(real_time_predictions)
-
-    result = pyfiglet.figlet_format(labels[max_idx], font="space_op", width=500)
+    result = pyfiglet.figlet_format(label, font="space_op", width=500)
 
     print(Fore.LIGHTBLUE_EX + result + Fore.RESET)
 
@@ -62,30 +61,43 @@ def normalize_data(vector, measurements, train_config):
 
 
 # def add_to_vector(data, vector, first_timestamp, list_idx):
-def add_to_vector(data, vector, first_timestamp):
+def add_to_vector(data, vector, func_first_timestamp, dic_offset,pub_data):
 
-    if first_time_stamp is None:
-        first_timestamp = data.timestamp()
+    msg = Float64MultiArray()
+
+    if func_first_timestamp is None:
+        func_first_timestamp = data.timestamp()
         timestamp = 0.0
     else:
-        timestamp = data.timestamp() - first_timestamp
+        timestamp = data.timestamp() - func_first_timestamp
+    #
+    # new_data = [timestamp, data.joints_effort[0], data.joints_effort[1], data.joints_effort[2],
+    #             data.joints_effort[3], data.joints_effort[4], data.joints_effort[5],
+    #             data.wrench_force_torque.force.x, data.wrench_force_torque.force.y,
+    #             data.wrench_force_torque.force.z, data.wrench_force_torque.torque.x,
+    #             data.wrench_force_torque.torque.y, data.wrench_force_torque.torque.z]
 
-    # new_data = np.array([timestamp, data.joints_effort[0], data.joints_effort[1], data.joints_effort[2],
-    #                      data.joints_effort[3], data.joints_effort[4], data.joints_effort[5],
-    #                      data.wrench_force_torque.force.x, data.wrench_force_torque.force.y,
-    #                      data.wrench_force_torque.force.z, data.wrench_force_torque.torque.x,
-    #                      data.wrench_force_torque.torque.y, data.wrench_force_torque.torque.z])
-    new_data = [timestamp, data.joints_effort[0], data.joints_effort[1], data.joints_effort[2],
-                data.joints_effort[3], data.joints_effort[4], data.joints_effort[5],
-                data.wrench_force_torque.force.x, data.wrench_force_torque.force.y,
-                data.wrench_force_torque.force.z, data.wrench_force_torque.torque.x,
-                data.wrench_force_torque.torque.y, data.wrench_force_torque.torque.z]
+    new_data = np.array([timestamp, data.joints_effort[0] - dic_offset["j0"],
+                         data.joints_effort[1] - dic_offset["j1"],
+                         data.joints_effort[2] - dic_offset["j2"],
+                         data.joints_effort[3] - dic_offset["j3"],
+                         data.joints_effort[4] - dic_offset["j4"],
+                         data.joints_effort[5] - dic_offset["j5"],
+                         data.wrench_force_torque.force.x - dic_offset["fx"],
+                         data.wrench_force_torque.force.y - dic_offset["fy"],
+                         data.wrench_force_torque.force.z - dic_offset["fz"],
+                         data.wrench_force_torque.torque.x - dic_offset["mx"],
+                         data.wrench_force_torque.torque.y - dic_offset["my"],
+                         data.wrench_force_torque.torque.z - - dic_offset["mz"]])
 
-    # new_data_filtered = []
-    # for idx in list_idx:
-    #     new_data_filtered.append(new_data[idx])
+    # dim = []
+    # msg.layout.data_offset = 0
+    # dim.append(MultiArrayDimension("line", 1, 13))
+    # msg.layout.dim = dim
+    msg.data = new_data
+    pub_data.publish(msg)
 
-    return np.append(vector, new_data), first_timestamp
+    return np.append(vector, new_data), func_first_timestamp
 
 
 def calc_data_mean(data):
@@ -93,6 +105,28 @@ def calc_data_mean(data):
                        data.wrench_force_torque.torque.y, data.wrench_force_torque.torque.z])
 
     return np.mean(values)
+
+
+def get_statistics(data_list):
+    data_list_mean = np.mean(np.array(data_list))
+
+    summ = 0
+    for x in data_list:
+        summ += (x-data_list_mean)**2
+
+    data_list_var = math.sqrt(summ/len(data_list))
+    return data_list_mean, data_list_var
+
+
+def offset_calculation(dic):
+
+    dic_offset_mean = {}
+
+    for key in dic:
+
+        dic_offset_mean[key] = np.mean(dic[key])
+
+    return dic_offset_mean
 
 
 if __name__ == '__main__':
@@ -108,6 +142,8 @@ if __name__ == '__main__':
                         help="If argmument is present, activates gripper")
     parser.add_argument("-c", "--config_file", type=str, default="data_storage_config",
                         help="If argmument is present, activates gripper")
+    parser.add_argument("-gui", "--gui_active", action="store_true", default=False,
+                        help="If argmument is present, activates gripper")
 
     args = vars(parser.parse_args())
 
@@ -117,20 +153,12 @@ if __name__ == '__main__':
 
     f.close()
 
-    f = open(ROOT_DIR + '/data_storage/config/trainning_config.json')
+    f = open(ROOT_DIR + '/data_storage/config/training_config.json')
 
     trainning_config = json.load(f)
 
     f.close()
 
-    # list_filter_idx = []
-    # for filtered in config["data_filtered"]:
-    #     list_filter_idx.append(config["data"].index(filtered))
-
-    # model_path = "../../neural_networks/keras"
-    # model_path = ROOT_DIR + "/neural_networks/keras"
-
-    # model = keras.models.load_model(ROOT_DIR + "/neural_networks/keras/myModel")
     model = keras.models.load_model(NN_DIR + "/keras/myModel")
 
     # ---------------------------------------------------------------------------------------------
@@ -138,6 +166,9 @@ if __name__ == '__main__':
     # ---------------------------------------------------------------------------------------------
 
     rospy.init_node("action_intreperter", anonymous=True)
+
+    pub_vector = rospy.Publisher("learning_data", Float64MultiArray, queue_size=10)
+    pub_class = rospy.Publisher("classification", String, queue_size=10)
 
     data_for_learning = DataForLearning()
     arm_gripper_comm = ArmGripperComm()
@@ -149,6 +180,11 @@ if __name__ == '__main__':
     # ---------------------------------------------------------------------------------------------
     # -------------------------------INITIATE ROBOT------------------------------------------------
     # ---------------------------------------------------------------------------------------------
+    if args["gui_active"]:
+        plt.ion()
+        fig, axs = plt.subplots(3, 1)
+        lines = []
+        plt.show()
 
     try:
         if args["move_arm_to_inicial_position"]:
@@ -171,29 +207,76 @@ if __name__ == '__main__':
         print("ctrl+C pressed")
 
     list_calibration = []
+    dic_offset_calibration = {"fx": [], "fy": [], "fz": [], "mx": [],
+                              "my": [], "mz": [], "j0": [], "j1": [],
+                              "j2": [], "j3": [], "j4": [], "j5": []}
+    dic_variable_offset = None
 
-    print("Calculating rest state variables...")
-
-    for i in range(0, 99):
-        list_calibration.append(calc_data_mean(data_for_learning))
-        time.sleep(0.01)
-
-    rest_state_mean = np.mean(np.array(list_calibration))
+    # print("Calculating rest state variables...")
+    #
+    # for i in range(0, 99):
+    #     list_calibration.append(calc_data_mean(data_for_learning))
+    #     time.sleep(0.005)
+    #
+    # rest_state_mean = np.mean(np.array(list_calibration))
 
     limit = int(storage_config["time"] * storage_config["rate"])
 
     trainning_data_array = np.empty((0, limit * len(storage_config["data"])))
 
     sequential_actions = False
+    first_time_stamp_show = None
+    vector_data_show = np.empty((0, 0))
+    rest_state_mean = 0
 
     while not rospy.is_shutdown():
 
         if not sequential_actions:
+            while not rospy.is_shutdown():
+                print("Calculating rest state variables...")
+                list_calibration = []
+                dic_offset_calibration = {"fx": [], "fy": [], "fz": [], "mx": [],
+                                          "my": [], "mz": [], "j0": [], "j1": [],
+                                          "j2": [], "j3": [], "j4": [], "j5": []}
+
+                pub_class.publish("Calibrating")
+                for i in range(0, 99):
+                    list_calibration.append(calc_data_mean(data_for_learning))
+                    if dic_variable_offset is not None:
+                        add_to_vector(data_for_learning, vector_data_show, None, dic_variable_offset, pub_vector)
+
+                    dic_offset_calibration["fx"].append(data_for_learning.wrench_force_torque.force.x)
+                    dic_offset_calibration["fy"].append(data_for_learning.wrench_force_torque.force.y)
+                    dic_offset_calibration["fz"].append(data_for_learning.wrench_force_torque.force.z)
+                    dic_offset_calibration["mx"].append(data_for_learning.wrench_force_torque.torque.x)
+                    dic_offset_calibration["my"].append(data_for_learning.wrench_force_torque.torque.y)
+                    dic_offset_calibration["mz"].append(data_for_learning.wrench_force_torque.torque.z)
+
+                    dic_offset_calibration["j0"].append(data_for_learning.joints_effort[0])
+                    dic_offset_calibration["j1"].append(data_for_learning.joints_effort[1])
+                    dic_offset_calibration["j2"].append(data_for_learning.joints_effort[2])
+                    dic_offset_calibration["j3"].append(data_for_learning.joints_effort[3])
+                    dic_offset_calibration["j4"].append(data_for_learning.joints_effort[4])
+                    dic_offset_calibration["j5"].append(data_for_learning.joints_effort[5])
+
+                    time.sleep(0.01)
+
+                pub_class.publish("None")
+                rest_state_mean, rest_state_var = get_statistics(list_calibration)
+                dic_variable_offset = offset_calculation(dic_offset_calibration)
+                print(rest_state_mean)
+                print(rest_state_var)
+
+                if rest_state_var < 0.02:
+                    break
+
             print(f"Waiting for action to initiate prediction ...")
 
         while not rospy.is_shutdown():
             data_mean = calc_data_mean(data_for_learning)
             variance = data_mean - rest_state_mean
+
+            add_to_vector(data_for_learning, vector_data_show, None, dic_variable_offset, pub_vector)
 
             if abs(variance) > storage_config["force_threshold_start"]:
                 break
@@ -220,7 +303,8 @@ if __name__ == '__main__':
 
                 i += 1
                 # print(data_for_learning)
-                vector_data, first_time_stamp = add_to_vector(data_for_learning, vector_data, first_time_stamp)
+                vector_data, first_time_stamp = add_to_vector(data_for_learning,
+                                                              vector_data, first_time_stamp, dic_variable_offset,pub_vector)
                 # vector_data, first_time_stamp = add_to_vector(data_for_learning, vector_data, first_time_stamp,
                 #                                               list_filter_idx)
 
@@ -242,13 +326,22 @@ if __name__ == '__main__':
         if end_experiment:
             sequential_actions = False
             print("\nNot enough for prediction\n")
+            pub_class.publish("None")
         else:
             sequential_actions = True
             vector_norm = normalize_data(vector_data, limit, trainning_config)
-            print("-----------------------------------------------------------")
+
             predictions = model.predict(x=vector_norm, verbose=2)
-            print_tabulate(list(predictions), storage_config)
+
+            labels = storage_config["action_classes"]
+            max_idx = np.argmax(list(predictions))
+
+            predicted_label = labels[int(max_idx)]
+            print(predictions)
+            pub_class.publish(predicted_label)
+
+            print("-----------------------------------------------------------")
+            print_tabulate(predicted_label, predictions)
             print("-----------------------------------------------------------")
 
     del data_for_learning, arm_gripper_comm
-
