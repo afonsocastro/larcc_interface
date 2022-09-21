@@ -117,6 +117,7 @@ class SortedDataForLearning:
 
         np.save("/tmp/training_data.npy", self.trainning_data)
         np.save("/tmp/test_data.npy", self.test_data)
+        # np.save(ROOT_DIR + "/data_storage/data/processed_learning_data/Maf_learning_data_5.npy", self.test_data)
 
         print("<======================================================>")
         print("Learning data shape: " + str(self.trainning_data.shape))
