@@ -12,6 +12,7 @@ from larcc_classes.gripper.GripperStatusDTO import GripperStatusDTO
 # RobotiqHand class for python 2.7
 # ------------------------------------------------------------------------------
 
+
 def byte2bits(byte):
     new_format = "{0:08b}".format(byte)
     bits_list = [int(i) for i in new_format]
