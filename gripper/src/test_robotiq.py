@@ -3,7 +3,7 @@
 
 import time
 import signal
-from RobotiqHand import RobotiqHand
+from larcc_classes.gripper.RobotiqHand import RobotiqHand
 
 #------------------------------------------------------------------------------
 # test_robotiq.py

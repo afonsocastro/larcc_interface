@@ -2,15 +2,14 @@
 
 from tensorflow.keras.optimizers import Adam, SGD, Nadam, RMSprop
 from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import Activation, Dense, Dropout
-import numpy as np
+from tensorflow.keras.layers import Dense, Dropout
 import time
 from tensorflow import keras
 from tabulate import tabulate
 import itertools
 import json
 from statistics import mean
-from data_storage.src.trainning_data_preparetion import SortedDataForLearning
+from larcc_classes.data_storage.SortedDataForLearning import SortedDataForLearning
 
 # batch_size_options = [32, 64, 96, 192, 256]
 batch_size_options = [96]

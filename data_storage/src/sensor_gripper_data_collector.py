@@ -2,8 +2,7 @@ import json
 import os
 import time
 import rospy
-from data_storage.src.data_aquisition_node import DataForLearning
-import numpy as np
+from larcc_classes.data_storage.DataForLearning import DataForLearning
 from matplotlib import pyplot as plt
 
 

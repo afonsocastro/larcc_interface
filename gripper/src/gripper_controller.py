@@ -1,9 +1,8 @@
 #!/usr/bin/env python3
-import time
 
 import rospy
 from std_msgs.msg import String
-from RobotiqHand import RobotiqHand
+from larcc_classes.gripper.RobotiqHand import RobotiqHand
 import json
 
 # -*- coding: utf-8 -*-

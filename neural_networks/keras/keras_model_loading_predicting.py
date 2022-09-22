@@ -9,7 +9,6 @@ import matplotlib.pyplot as plt
 from config.definitions import ROOT_DIR
 from tabulate import tabulate
 from colorama import Fore
-from data_storage.src.trainning_data_preparetion import SortedDataForLearning
 
 
 def save_txt_file(matrix, action, output):

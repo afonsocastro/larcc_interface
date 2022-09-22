@@ -2,22 +2,18 @@
 import argparse
 import json
 import math
-import os
 import time
 
 from colorama import Fore
 from matplotlib import pyplot as plt
 from tensorflow import keras
-from std_msgs.msg import String, Float64MultiArray, MultiArrayDimension
-from data_storage.src.data_aquisition_node import DataForLearning
+from std_msgs.msg import String, Float64MultiArray
+from larcc_classes.data_storage.DataForLearning import DataForLearning
 import numpy as np
 import rospy
-from sklearn.preprocessing import normalize
 from lib.src.ArmGripperComm import ArmGripperComm
 from tabulate import tabulate
 import pyfiglet
-from config.definitions import ROOT_DIR
-
 
 from config.definitions import ROOT_DIR
 from config.definitions import NN_DIR

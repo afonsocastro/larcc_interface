@@ -81,7 +81,7 @@ class SortedDataForLearning:
             # np.save("/tmp/training_data.npy", self.trainning_data)
             # np.save("/tmp/test_data.npy", self.test_data)
             #
-            # print("<======================================================>")
+            # print("<===============================================test_data=======>")
             # print("Learning data shape: " + str(self.trainning_data.shape))
             # print("Testing data shape: " + str(self.test_data.shape))
             # print("<======================================================>")

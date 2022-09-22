@@ -1,6 +1,6 @@
 #! /usr/bin/python3
 
-from MoveGroupPythonInterface import MoveGroupPythonInterface
+from larcc_classes.arm.UR10eArm import UR10eArm
 import rospy
 
 if __name__ == '__main__':
@@ -8,7 +8,7 @@ if __name__ == '__main__':
     # --------------------------------------------------------------------
     # -------------------------initialization-----------------------------
     # --------------------------------------------------------------------
-    tutorial = MoveGroupPythonInterface()
+    tutorial = UR10eArm()
     move_group = tutorial.move_group
 
     current_pose = move_group.get_current_pose().pose

@@ -4,10 +4,9 @@ from datetime import datetime
 import json
 import os
 import time
-from data_storage.src.data_aquisition_node import DataForLearning
+from larcc_classes.data_storage.DataForLearning import DataForLearning
 import numpy as np
 import rospy
-from sklearn.preprocessing import normalize
 from lib.src.ArmGripperComm import ArmGripperComm
 
 

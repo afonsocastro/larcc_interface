@@ -1,8 +1,7 @@
 #!/usr/bin/env python3
 
-import time
 import signal
-from RobotiqHand import RobotiqHand
+from larcc_classes.gripper.RobotiqHand import RobotiqHand
 
 HOST = "192.168.56.2"
 PORT = 54321

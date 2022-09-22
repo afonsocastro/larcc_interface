@@ -52,11 +52,11 @@ def all_close(goal, actual, tolerance):
     return True
 
 
-class MoveGroupPythonInterface(object):
-    """MoveGroupPythonInterface"""
+class UR10eArm(object):
+    """UR10eArm"""
 
     def __init__(self):
-        super(MoveGroupPythonInterface, self).__init__()
+        super(UR10eArm, self).__init__()
 
         ## BEGIN_SUB_TUTORIAL setup
         ##

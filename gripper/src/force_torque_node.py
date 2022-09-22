@@ -6,7 +6,7 @@ import signal
 from sensor_msgs.msg import JointState
 from geometry_msgs.msg import WrenchStamped
 from gripper.msg import ForceTorque
-from RobotiqHand import RobotiqHand
+from larcc_classes.gripper.RobotiqHand import RobotiqHand
 
 HOST = "192.168.56.2"
 PORT = 54321

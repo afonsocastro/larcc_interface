@@ -1,13 +1,11 @@
 #!/usr/bin/env python3
 
 from tensorflow import keras
-from tensorflow.keras import layers
 from tensorflow.keras.optimizers import Adam, SGD, Nadam, RMSprop
-from tensorflow.keras.metrics import categorical_crossentropy
 from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import Activation, Dense, Dropout
+from tensorflow.keras.layers import Dense, Dropout
 import matplotlib.pyplot as plt
-from data_storage.src.trainning_data_preparetion import SortedDataForLearning
+from larcc_classes.data_storage.SortedDataForLearning import SortedDataForLearning
 import json
 from config.definitions import ROOT_DIR
 

@@ -1,6 +1,6 @@
 #! /usr/bin/python3
 
-from MoveGroupPythonInterface import MoveGroupPythonInterface
+from larcc_classes.arm.UR10eArm import UR10eArm
 import rospy
 from std_msgs.msg import String
 import json
@@ -8,7 +8,7 @@ import json
 # --------------------------------------------------------------------
 # -------------------------Initialization-----------------------------
 # --------------------------------------------------------------------
-arm = MoveGroupPythonInterface()
+arm = UR10eArm()
 
 
 def request_arm_callback(data):
