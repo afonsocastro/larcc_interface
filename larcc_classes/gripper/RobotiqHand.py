@@ -5,7 +5,7 @@ import time
 import sys
 import struct
 import threading
-from GripperStatusDTO import GripperStatusDTO
+from larcc_classes.gripper.GripperStatusDTO import GripperStatusDTO
 
 
 # ------------------------------------------------------------------------------
