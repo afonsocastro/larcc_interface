@@ -4,7 +4,7 @@ import json
 import os
 
 from config.definitions import ROOT_DIR
-from lib.src.ArmGripperComm import ArmGripperComm
+from larcc_classes.ur10e_control.ArmGripperComm import ArmGripperComm
 import rospy
 import time
 

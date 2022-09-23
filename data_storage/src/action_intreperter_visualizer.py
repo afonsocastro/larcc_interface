@@ -76,7 +76,7 @@ class ActionVisualizer:
 
         data_array = self.data_array
         graph_color = ["-r", "-g", "-b", "-y", "-k", "-m", "-r", "-g", "-b", "-r", "-g", "-b"]
-        self.lines = []
+        # self.lines = []
 
         last_timestamp = data_array[:, 0][-1]
         self.graph_layout(last_timestamp)
@@ -125,7 +125,7 @@ class ActionVisualizer:
         self.ax[2].set_xlim((start_time, timestamp + 2))
 
         if self.classification == "Calibrating":
-            self.fig.suptitle("CALIBRATING SENSORS", fontsize=40)
+            self.fig.suptitle("CALIBRATING SENSORS", fontsize=40, color='red')
         else:
             self.fig.suptitle("Predicted Action: " + self.classification, fontsize=40)
 

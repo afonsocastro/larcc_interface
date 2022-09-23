@@ -7,11 +7,11 @@ import time
 from colorama import Fore
 from matplotlib import pyplot as plt
 from tensorflow import keras
-from std_msgs.msg import String, Float64MultiArray
+from std_msgs.msg import String, Float64MultiArray, Float64, Bool
 from larcc_classes.data_storage.DataForLearning import DataForLearning
 import numpy as np
 import rospy
-from lib.src.ArmGripperComm import ArmGripperComm
+
 from tabulate import tabulate
 import pyfiglet
 
@@ -96,11 +96,15 @@ def add_to_vector(data, vector, func_first_timestamp, dic_offset,pub_data):
     return np.append(vector, new_data), func_first_timestamp
 
 
-def calc_data_mean(data):
+def calc_data_mean(data, pub):
     values = np.array([data.wrench_force_torque.force.z/10, data.wrench_force_torque.torque.x,
                        data.wrench_force_torque.torque.y, data.wrench_force_torque.torque.z])
 
-    return np.mean(values)
+    mean_value = np.mean(values)
+
+    pub.publish(mean_value)
+
+    return mean_value
 
 
 def get_statistics(data_list):
@@ -132,13 +136,7 @@ if __name__ == '__main__':
     # ---------------------------------------------------------------------------------------------
 
     parser = argparse.ArgumentParser(description="Arguments for trainning script")
-    parser.add_argument("-ag", "--activate_gripper", action="store_true",
-                        help="If argmument is present, activates gripper")
-    parser.add_argument("-maip", "--move_arm_to_inicial_position", action="store_true",
-                        help="If argmument is present, activates gripper")
     parser.add_argument("-c", "--config_file", type=str, default="data_storage_config",
-                        help="If argmument is present, activates gripper")
-    parser.add_argument("-gui", "--gui_active", action="store_true", default=False,
                         help="If argmument is present, activates gripper")
 
     args = vars(parser.parse_args())
@@ -163,11 +161,17 @@ if __name__ == '__main__':
 
     rospy.init_node("action_intreperter", anonymous=True)
 
+    # For force/torque GUI
     pub_vector = rospy.Publisher("learning_data", Float64MultiArray, queue_size=10)
     pub_class = rospy.Publisher("classification", String, queue_size=10)
 
+    # For trigger GUI
+    pub_trigger = rospy.Publisher("trigger_data", Float64, queue_size=10)
+    pub_calibration = rospy.Publisher("calibration", Float64, queue_size=10)
+    pub_force_detection = rospy.Publisher("force_detection", Bool, queue_size=10)
+
     data_for_learning = DataForLearning()
-    arm_gripper_comm = ArmGripperComm()
+    # arm_gripper_comm = ArmGripperComm()
 
     rate = rospy.Rate(storage_config["rate"])
 
@@ -176,31 +180,26 @@ if __name__ == '__main__':
     # ---------------------------------------------------------------------------------------------
     # -------------------------------INITIATE ROBOT------------------------------------------------
     # ---------------------------------------------------------------------------------------------
-    if args["gui_active"]:
-        plt.ion()
-        fig, axs = plt.subplots(3, 1)
-        lines = []
-        plt.show()
-
-    try:
-        if args["move_arm_to_inicial_position"]:
-            arm_gripper_comm.move_arm_to_initial_pose()
-
-        if args["activate_gripper"]:
-            input("Press ENTER to activate gripper in 3 secs")
-            for i in range(0, 3):
-                print(i + 1)
-                time.sleep(1)
-
-            arm_gripper_comm.gripper_init()
-            time.sleep(1.5)
-
-            arm_gripper_comm.gripper_close_fast()
-            time.sleep(0.5)
-
-            arm_gripper_comm.gripper_disconnect()
-    except:
-        print("ctrl+C pressed")
+    #
+    # try:
+    #     if args["move_arm_to_inicial_position"]:
+    #         arm_gripper_comm.move_arm_to_initial_pose()
+    #
+    #     if args["activate_gripper"]:
+    #         input("Press ENTER to activate gripper in 3 secs")
+    #         for i in range(0, 3):
+    #             print(i + 1)
+    #             time.sleep(1)
+    #
+    #         arm_gripper_comm.gripper_init()
+    #         time.sleep(1.5)
+    #
+    #         arm_gripper_comm.gripper_close_fast()
+    #         time.sleep(0.5)
+    #
+    #         arm_gripper_comm.gripper_disconnect()
+    # except:
+    #     print("ctrl+C pressed")
 
     list_calibration = []
     dic_offset_calibration = {"fx": [], "fy": [], "fz": [], "mx": [],
@@ -224,11 +223,12 @@ if __name__ == '__main__':
     first_time_stamp_show = None
     vector_data_show = np.empty((0, 0))
     rest_state_mean = 0
+    pub_force_detection.publish(False)
 
-    while not rospy.is_shutdown():
+    while not rospy.is_shutdown(): # This is the data acquisition cycle
 
         if not sequential_actions:
-            while not rospy.is_shutdown():
+            while not rospy.is_shutdown(): # This is the calibration cycle
                 print("Calculating rest state variables...")
                 list_calibration = []
                 dic_offset_calibration = {"fx": [], "fy": [], "fz": [], "mx": [],
@@ -237,7 +237,7 @@ if __name__ == '__main__':
 
                 pub_class.publish("Calibrating")
                 for i in range(0, 99):
-                    list_calibration.append(calc_data_mean(data_for_learning))
+                    list_calibration.append(calc_data_mean(data_for_learning, pub_trigger))
                     if dic_variable_offset is not None:
                         add_to_vector(data_for_learning, vector_data_show, None, dic_variable_offset, pub_vector)
 
@@ -260,6 +260,7 @@ if __name__ == '__main__':
                 pub_class.publish("None")
                 rest_state_mean, rest_state_var = get_statistics(list_calibration)
                 dic_variable_offset = offset_calculation(dic_offset_calibration)
+                pub_calibration.publish(rest_state_mean)
                 print(rest_state_mean)
                 print(rest_state_var)
 
@@ -268,16 +269,19 @@ if __name__ == '__main__':
 
             print(f"Waiting for action to initiate prediction ...")
 
-        while not rospy.is_shutdown():
-            data_mean = calc_data_mean(data_for_learning)
-            variance = data_mean - rest_state_mean
+            while not rospy.is_shutdown(): # This cycle waits for the external force to start storing data
+                data_mean = calc_data_mean(data_for_learning, pub_trigger)
+                variance = data_mean - rest_state_mean
 
-            add_to_vector(data_for_learning, vector_data_show, None, dic_variable_offset, pub_vector)
+                add_to_vector(data_for_learning, vector_data_show, None, dic_variable_offset, pub_vector)
 
-            if abs(variance) > storage_config["force_threshold_start"]:
-                break
+                pub_calibration.publish(rest_state_mean)
 
-            time.sleep(0.1)
+                if abs(variance) > storage_config["force_threshold_start"]:
+                    pub_force_detection.publish(True)
+                    break
+
+                time.sleep(0.1)
 
         time.sleep(storage_config["waiting_offset"]) # time waiting to initiate the experiment
 
@@ -295,22 +299,23 @@ if __name__ == '__main__':
         rate.sleep()  # The first time rate sleep was used it was giving problems (would not wait the right amout of time)
 
         try:
-            while not rospy.is_shutdown() and i < limit:
-
+            while not rospy.is_shutdown() and i < limit: # This cycle stores data for a fixed amount of time
+                pub_calibration.publish(rest_state_mean)
                 i += 1
                 # print(data_for_learning)
                 vector_data, first_time_stamp = add_to_vector(data_for_learning,
-                                                              vector_data, first_time_stamp, dic_variable_offset,pub_vector)
+                                                              vector_data, first_time_stamp, dic_variable_offset, pub_vector)
                 # vector_data, first_time_stamp = add_to_vector(data_for_learning, vector_data, first_time_stamp,
                 #                                               list_filter_idx)
 
-                data_mean = calc_data_mean(data_for_learning)
+                data_mean = calc_data_mean(data_for_learning, pub_trigger)
                 variance = data_mean - rest_state_mean
 
                 if abs(variance) < storage_config["force_threshold_end"]:
                     treshold_counter += 1
                     if treshold_counter >= storage_config["threshold_counter_limit"]:
                         end_experiment = True
+                        pub_force_detection.publish(False)
                         break
                 else:
                     treshold_counter = 0
@@ -342,4 +347,4 @@ if __name__ == '__main__':
             print_tabulate(predicted_label, predictions)
             print("-----------------------------------------------------------")
 
-    del data_for_learning, arm_gripper_comm
+    del data_for_learning
