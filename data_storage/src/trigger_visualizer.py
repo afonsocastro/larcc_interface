@@ -30,7 +30,8 @@ class TriggerVisualizer:
         self.config = json.load(f)
         f.close()
 
-        self.threshold = self.config["force_threshold_start"]
+        self.threshold_start = self.config["force_threshold_start"]
+        self.threshold_end = self.config["force_threshold_end"]
 
         rospy.Subscriber("trigger_data", Float64, self.forces_callback)
         rospy.Subscriber("classification", String, self.class_callback)
@@ -88,8 +89,11 @@ class TriggerVisualizer:
 
         line = self.ax.plot(time_vector, trigger_vector, "-r")
 
-        self.ax.axhline(y=self.calibration + self.threshold, color='k', linestyle='-')
-        self.ax.axhline(y=self.calibration - self.threshold, color='k', linestyle='-')
+        self.ax.axhline(y=self.calibration + self.threshold_end, color='y', linestyle='-')
+        self.ax.axhline(y=self.calibration - self.threshold_end, color='y', linestyle='-')
+
+        self.ax.axhline(y=self.calibration + self.threshold_start, color='k', linestyle='-')
+        self.ax.axhline(y=self.calibration - self.threshold_start, color='k', linestyle='-')
 
         self.is_graph_outdated = False
 

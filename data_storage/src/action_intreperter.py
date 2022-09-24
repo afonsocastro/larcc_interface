@@ -228,6 +228,7 @@ if __name__ == '__main__':
     while not rospy.is_shutdown(): # This is the data acquisition cycle
 
         if not sequential_actions:
+            st = time.time()
             while not rospy.is_shutdown(): # This is the calibration cycle
                 print("Calculating rest state variables...")
                 list_calibration = []
@@ -236,7 +237,8 @@ if __name__ == '__main__':
                                           "j2": [], "j3": [], "j4": [], "j5": []}
 
                 pub_class.publish("Calibrating")
-                for i in range(0, 99):
+
+                for i in range(0, 49):
                     list_calibration.append(calc_data_mean(data_for_learning, pub_trigger))
                     if dic_variable_offset is not None:
                         add_to_vector(data_for_learning, vector_data_show, None, dic_variable_offset, pub_vector)
@@ -255,7 +257,7 @@ if __name__ == '__main__':
                     dic_offset_calibration["j4"].append(data_for_learning.joints_effort[4])
                     dic_offset_calibration["j5"].append(data_for_learning.joints_effort[5])
 
-                    time.sleep(0.01)
+                    time.sleep(0.005)
 
                 pub_class.publish("None")
                 rest_state_mean, rest_state_var = get_statistics(list_calibration)
@@ -264,9 +266,9 @@ if __name__ == '__main__':
                 print(rest_state_mean)
                 print(rest_state_var)
 
-                if rest_state_var < 0.02:
+                if rest_state_var < 0.03:
                     break
-
+            print("Calibration time: " + str(time.time() - st))
             print(f"Waiting for action to initiate prediction ...")
 
             while not rospy.is_shutdown(): # This cycle waits for the external force to start storing data
@@ -277,7 +279,7 @@ if __name__ == '__main__':
 
                 pub_calibration.publish(rest_state_mean)
 
-                if abs(variance) > storage_config["force_threshold_start"]:
+                if abs(variance) > trainning_config["force_threshold_start"]:
                     pub_force_detection.publish(True)
                     break
 
@@ -311,9 +313,9 @@ if __name__ == '__main__':
                 data_mean = calc_data_mean(data_for_learning, pub_trigger)
                 variance = data_mean - rest_state_mean
 
-                if abs(variance) < storage_config["force_threshold_end"]:
+                if abs(variance) < trainning_config["force_threshold_end"]:
                     treshold_counter += 1
-                    if treshold_counter >= storage_config["threshold_counter_limit"]:
+                    if treshold_counter >= trainning_config["threshold_counter_limit"]:
                         end_experiment = True
                         pub_force_detection.publish(False)
                         break
