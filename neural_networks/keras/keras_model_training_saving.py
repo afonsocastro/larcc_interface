@@ -55,7 +55,7 @@ if __name__ == '__main__':
 
     model_config = json.load(open('model_config_optimized_' + str(output_neurons) + '_outputs.json'))
 
-    model = create_model_from_json(input_shape=650, model_config = model_config, output_shape=output_neurons)
+    model = create_model_from_json(input_shape=650, model_config=model_config, output_shape=output_neurons)
 
     sorted_data_for_learning = SortedDataForLearning(path=ROOT_DIR + "/data_storage/data/raw_learning_data/user_splitted_data/")
 

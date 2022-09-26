@@ -38,14 +38,14 @@ class SortedDataForLearning:
         # for file in files:
         #     if file.find(data_file) != -1:
         #         file_exist = True
-        print("os.path.isdir(path)")
-        print(os.path.isdir(path))
-        print("path")
-        print(path)
-        print("data_file")
-        print(data_file)
-        print("config_file")
-        print(config_file)
+        # print("os.path.isdir(path)")
+        # print(os.path.isdir(path))
+        # print("path")
+        # print(path)
+        # print("data_file")
+        # print(data_file)
+        # print("config_file")
+        # print(config_file)
         if os.path.isfile(path + data_file):
             self.experiment_data = np.load(path + data_file)
 
@@ -100,8 +100,8 @@ class SortedDataForLearning:
                     if user in file:
                         self.raw_test_data = np.append(self.raw_test_data, new_array, axis=0)
 
-            print(self.raw_training_data.shape)
-            print(self.raw_test_data.shape)
+            # print(self.raw_training_data.shape)
+            # print(self.raw_test_data.shape)
             print("========================================")
             self.experiment_data = self.raw_training_data
             self.process_data()
