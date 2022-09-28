@@ -160,6 +160,7 @@ if __name__ == '__main__':
     pdf.add_page()
     pdf.set_font("Times", size=10)
 
+
     pdf.create_table(table_data=data, title='I\'m the first title', cell_width='even')
     pdf.ln()
 
