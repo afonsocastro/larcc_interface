@@ -1,5 +1,5 @@
 from fpdf import FPDF
-# You need to run "pip intall fpdf2"
+# You need to run "pip install fpdf2"
 
 
 class PDF(FPDF):

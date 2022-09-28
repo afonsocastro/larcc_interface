@@ -6,6 +6,7 @@ from config.definitions import ROOT_DIR
 from itertools import product
 import numpy as np
 from larcc_classes.documentation.PDF import PDF
+import statistics
 
 
 def plot_confusion_matrix_percentage(confusion_matrix, display_labels=None, cmap="viridis",
@@ -71,6 +72,20 @@ def group_classification(origin_dict, dest_dict):
     dest_dict["true_positive"].append(len(origin_dict["true_positive"]))
     dest_dict["false_positive"].append(len(origin_dict["false_positive"]))
     dest_dict["false_negative"].append(len(origin_dict["false_negative"]))
+
+
+def filling_table(dict, header):
+    data = [
+        [header, "Mean", "Std Dev", "Max", "Min", ],
+        ["True Positive", str(round(statistics.mean(dict["true_positive"]), 2)), str(round(statistics.stdev(dict["true_positive"]), 2)),
+         str(max(dict["true_positive"])), str(min(dict["true_positive"])), ],
+        ["False Positive", str(round(statistics.mean(dict["false_positive"]), 2)), str(round(statistics.stdev(dict["false_positive"]), 2)),
+         str(max(dict["false_positive"])), str(min(dict["false_positive"])), ],
+        ["False Negative", str(round(statistics.mean(dict["false_negative"]), 2)), str(round(statistics.stdev(dict["false_negative"]), 2)),
+         str(max(dict["false_negative"])), str(min(dict["false_negative"])), ],
+    ]
+
+    return data
 
 
 if __name__ == '__main__':
@@ -142,44 +157,37 @@ if __name__ == '__main__':
         group_classification(origin_dict=dt["shake"], dest_dict=shake)
         group_classification(origin_dict=dt["twist"], dest_dict=twist)
 
+    # -------------------------------------------------------------------------------------------------------------
+    # OUTPUT CONFIDENCES-----------------------------------------------------------------------------------------
+    # -------------------------------------------------------------------------------------------------------------
 
+    total_pull = sum(training_test_list[0]["test"]["cm"][0])
+    total_push = sum(training_test_list[0]["test"]["cm"][1])
+    total_shake = sum(training_test_list[0]["test"]["cm"][2])
+    total_twist = sum(training_test_list[0]["test"]["cm"][3])
 
-    data = [
-        ["First name", "Last name", "Age", "City", ],  # 'testing','size'],
-        ["Jules", "Smith", "34", "San Juan", ],  # 'testing','size'],
-        ["Mary", "Ramos", "45", "Orlando", ],  # 'testing','size'],
-        ["Carlson", "Banks", "19", "Los Angeles", ],  # 'testing','size'],
-        ["Lucas", "Cimon", "31", "Saint-Mahturin-sur-Loire", ],  # 'testing','size'],
-    ]
-
-    data_as_dict = {"First name": ["Jules", "Mary", "Carlson", "Lucas"],
-                    "Last name": ["Smith", "Ramos", "Banks", "Cimon"],
-                    "Age": [34, '45', '19', '31']}
+    data_pull = filling_table(dict=pull, header="%d" % total_pull)
+    data_push = filling_table(dict=push, header="%d" % total_push)
+    data_shake = filling_table(dict=shake, header="%d" % total_shake)
+    data_twist = filling_table(dict=twist, header="%d" % total_twist)
 
     pdf = PDF()
     pdf.add_page()
     pdf.set_font("Times", size=10)
 
-
-    pdf.create_table(table_data=data, title='I\'m the first title', cell_width='even')
+    pdf.create_table(table_data=data_pull, title='PULL', cell_width='uneven', x_start=25)
     pdf.ln()
 
-    pdf.create_table(table_data=data, title='I start at 25', cell_width='uneven', x_start=25)
+    pdf.create_table(table_data=data_push, title='PUSH', cell_width='uneven', x_start=25)
     pdf.ln()
 
-    pdf.create_table(table_data=data, title="I'm in the middle", cell_width=22, x_start='C')
+    pdf.create_table(table_data=data_shake, title='SHAKE', cell_width='uneven', x_start=25)
     pdf.ln()
 
-    pdf.create_table(table_data=data_as_dict, title='Is my text red', align_header='R', align_data='R',
-                     cell_width=[15, 15, 10, 45, ], x_start='C', emphasize_data=['45', 'Jules'], emphasize_style='BIU',
-                     emphasize_color=(255, 0, 0))
+    pdf.create_table(table_data=data_twist, title='TWIST', cell_width='uneven', x_start=25)
     pdf.ln()
 
     pdf.output('table_class.pdf')
-
-    exit(0)
-    # with open("just.json", "w") as write_file:
-    #     json.dump(loss, write_file)
 
     # -------------------------------------------------------------------------------------------------------------
     # TRAINING CURVES-----------------------------------------------------------------------------------------
@@ -202,11 +210,12 @@ if __name__ == '__main__':
     plt.subplot(1, 2, 1)
     plt.plot(mean_accuracy)
     plt.plot(mean_val_accuracy)
-    plt.plot(contribution_list)
+    # plt.plot(contribution_list)
     plt.title('model accuracy')
     plt.ylabel('accuracy')
     plt.xlabel('epoch')
-    plt.legend(['train', 'val', 'attendance'], loc='upper left')
+    plt.legend(['train', 'val'], loc='upper left')
+    # plt.legend(['train', 'val', 'attendance'], loc='upper left')
 
     plt.subplot(1, 2, 2)
     plt.plot(mean_loss)
@@ -230,11 +239,6 @@ if __name__ == '__main__':
             cm_mean[i][j] = cm_cumulative_percentage[i][j] / n_times
 
     cm_mean = cm_mean*100
-    # print("cm_mean")
-    # print(cm_mean)
-    #
-    # print("cm_cumulative")
-    # print(cm_cumulative)
 
     plot_confusion_matrix_percentage(confusion_matrix=cm_mean, display_labels=labels, cmap=blues,
                                      title="Mean Percentage CM (%)", decimals=.2)

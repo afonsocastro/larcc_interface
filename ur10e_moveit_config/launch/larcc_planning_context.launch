@@ -8,8 +8,10 @@
   <!-- Load universal robot description format (URDF) -->
 <!--  <param if="$(arg load_robot_description)" name="$(arg robot_description)" command="xacro  '$(find ur_description)/urdf/ur10e.xacro'"/> -->
   <param if="$(arg load_robot_description)" name="$(arg robot_description)" command="xacro  '$(find larcc_cell_description)/urdf/larcc_cell.xacro'"/>
-
-  <!-- The semantic description that corresponds to the URDF -->
+<!--  <param if="$(arg load_robot_description)" name="$(arg robot_description)" command="xacro  '$(find larcc_description)/urdf/presentation_20220928/larcc_uncalibrated.urdf.xacro'"/>-->
+<!--<param if="$(arg load_robot_description)" name="$(arg robot_description)" command="xacro  '$(find larcc_description)/urdf/presentation_20220928/larcc_initial_estimate.urdf.xacro'"/>-->
+<!-- <param if="$(arg load_robot_description)" name="$(arg robot_description)" command="xacro  '$(find larcc_description)/urdf/presentation_20220928/larcc_calibrated2.urdf.xacro'"/>-->
+<!--   The semantic description that corresponds to the URDF-->
 <!--  <param name="$(arg robot_description)_semantic" textfile="$(find ur10e_moveit_config)/config/ur10e.srdf" />-->
   <param name="$(arg robot_description)_semantic" textfile="$(find ur10e_moveit_config)/config/larcc_ur10e.srdf" />
 

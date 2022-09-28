@@ -92,8 +92,8 @@ def prediction_classification(cla, true_out, dec_pred, dictionary, pred):
 
 if __name__ == '__main__':
 
-    n_times = 8
-    # n_times = 100
+    # n_times = 50
+    n_times = 100
 
     output_neurons = 4
     validation_split = 0.3
