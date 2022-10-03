@@ -93,6 +93,7 @@ def metrics_calc(origin, metrics_dest, number):
 
 
 def filling_metrics_table(pull_metrics, push_metrics, shake_metrics, twist_metrics):
+
     data = [
         ["", "Mean Accuracy", "Mean Precision", "Mean Recall", "Mean F1", ],
         ["PULL", str(round(statistics.mean(pull_metrics["accuracy"]), 4)),
