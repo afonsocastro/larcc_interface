@@ -88,6 +88,8 @@ def prediction_classification(cla, true_out, dec_pred, dictionary, pred):
         dictionary["false_positive"] = np.append(dictionary["false_positive"], pred, axis=0)
     elif true_out == cla and dec_pred != cla:
         dictionary["false_negative"] = np.append(dictionary["false_negative"], pred, axis=0)
+    elif true_out != cla and dec_pred != cla:
+        dictionary["true_negative"] = np.append(dictionary["true_negative"], pred, axis=0)
 
 
 if __name__ == '__main__':
@@ -150,13 +152,13 @@ if __name__ == '__main__':
         col = test_data.shape[1]
 
         pull = {"true_positive": np.empty((0, n_labels)), "false_positive": np.empty((0, n_labels)),
-                "false_negative": np.empty((0, n_labels))}
+                "false_negative": np.empty((0, n_labels)), "true_negative": np.empty((0, n_labels))}
         push = {"true_positive": np.empty((0, n_labels)), "false_positive": np.empty((0, n_labels)),
-                "false_negative": np.empty((0, n_labels))}
+                "false_negative": np.empty((0, n_labels)), "true_negative": np.empty((0, n_labels))}
         shake = {"true_positive": np.empty((0, n_labels)), "false_positive": np.empty((0, n_labels)),
-                 "false_negative": np.empty((0, n_labels))}
+                 "false_negative": np.empty((0, n_labels)), "true_negative": np.empty((0, n_labels))}
         twist = {"true_positive": np.empty((0, n_labels)), "false_positive": np.empty((0, n_labels)),
-                 "false_negative": np.empty((0, n_labels))}
+                 "false_negative": np.empty((0, n_labels)), "true_negative": np.empty((0, n_labels))}
 
         for i in range(0, len(test_data)):
             prediction = model.predict(x=test_data[i:i + 1, :-1], verbose=0)

@@ -72,6 +72,61 @@ def group_classification(origin_dict, dest_dict):
     dest_dict["true_positive"].append(len(origin_dict["true_positive"]))
     dest_dict["false_positive"].append(len(origin_dict["false_positive"]))
     dest_dict["false_negative"].append(len(origin_dict["false_negative"]))
+    dest_dict["true_negative"].append(len(origin_dict["true_negative"]))
+
+
+def metrics_calc(origin, metrics_dest, number):
+    tp = origin["true_positive"][number]
+    fp = origin["false_positive"][number]
+    fn = origin["false_negative"][number]
+    tn = origin["true_negative"][number]
+
+    metric_accuracy = (tp + tn) / (fp + fn + tp + tn)
+    metric_recall = tp / (fn + tp)
+    metric_precision = tp / (fp + tp)
+    metric_f1 = 2 * (metric_precision * metric_recall) / (metric_precision + metric_recall)
+
+    metrics_dest["accuracy"].append(metric_accuracy)
+    metrics_dest["recall"].append(metric_recall)
+    metrics_dest["precision"].append(metric_precision)
+    metrics_dest["f1"].append(metric_f1)
+
+
+def filling_metrics_table(pull_metrics, push_metrics, shake_metrics, twist_metrics):
+    data = [
+        ["", "Mean Accuracy", "Mean Precision", "Mean Recall", "Mean F1", ],
+        ["PULL", str(round(statistics.mean(pull_metrics["accuracy"]), 4)),
+         str(round(statistics.mean(pull_metrics["precision"]), 4)),
+         str(round(statistics.mean(pull_metrics["recall"]), 4)), str(round(statistics.mean(pull_metrics["f1"]), 4)), ],
+        ["PUSH", str(round(statistics.mean(push_metrics["accuracy"]), 4)),
+         str(round(statistics.mean(push_metrics["precision"]), 4)),
+         str(round(statistics.mean(push_metrics["recall"]), 4)), str(round(statistics.mean(push_metrics["f1"]), 4)), ],
+        ["SHAKE", str(round(statistics.mean(shake_metrics["accuracy"]), 4)),
+         str(round(statistics.mean(shake_metrics["precision"]), 4)),
+         str(round(statistics.mean(shake_metrics["recall"]), 4)), str(round(statistics.mean(shake_metrics["f1"]), 4)), ],
+        ["TWIST", str(round(statistics.mean(twist_metrics["accuracy"]), 4)),
+         str(round(statistics.mean(twist_metrics["precision"]), 4)),
+         str(round(statistics.mean(twist_metrics["recall"]), 4)), str(round(statistics.mean(twist_metrics["f1"]), 4)), ],
+    ]
+
+    return data
+
+
+def filling_metrics_table_n(pull_metrics, push_metrics, shake_metrics, twist_metrics, n):
+    data = [
+        ["test " + str(n), "Accuracy", "Precision", "Recall", "F1", ],
+        ["PULL", str(round(pull_metrics["accuracy"][n], 4)), str(round(pull_metrics["precision"][n], 4)),
+         str(round(pull_metrics["recall"][n], 4)), str(round(pull_metrics["f1"][n], 4)), ],
+        ["PUSH", str(round(push_metrics["accuracy"][n], 4)), str(round(push_metrics["precision"][n], 4)),
+         str(round(push_metrics["recall"][n], 4)), str(round(push_metrics["f1"][n], 4)), ],
+        ["SHAKE", str(round(shake_metrics["accuracy"][n], 4)), str(round(shake_metrics["precision"][n], 4)),
+         str(round(shake_metrics["recall"][n], 4)), str(round(shake_metrics["f1"][n], 4)), ],
+        ["TWIST", str(round(twist_metrics["accuracy"][n], 4)), str(round(twist_metrics["precision"][n], 4)),
+         str(round(twist_metrics["recall"][n], 4)), str(round(twist_metrics["f1"][n], 4)), ],
+
+    ]
+
+    return data
 
 
 def filling_table(dict, header):
@@ -83,6 +138,8 @@ def filling_table(dict, header):
          str(max(dict["false_positive"])), str(min(dict["false_positive"])), ],
         ["False Negative", str(round(statistics.mean(dict["false_negative"]), 2)), str(round(statistics.stdev(dict["false_negative"]), 2)),
          str(max(dict["false_negative"])), str(min(dict["false_negative"])), ],
+        # ["True Negative", str(round(statistics.mean(dict["true_negative"]), 2)), str(round(statistics.stdev(dict["true_negative"]), 2)),
+        #  str(max(dict["true_negative"])), str(min(dict["true_negative"])), ],
     ]
 
     return data
@@ -97,7 +154,6 @@ if __name__ == '__main__':
 
     model_config = json.load(open('model_config_optimized_' + str(output_neurons) + '_outputs.json'))
     max_epochs = model_config["epochs"]
-
 
     # # test_dict = {"cm_true": cm_true, "pull": pull, "push": push, "shake": shake, "twist": twist}
     # # training_test_dict = {"training": fit_history.history, "test": test_dict}
@@ -123,10 +179,10 @@ if __name__ == '__main__':
     accuracy = {"accumulated": [0] * max_epochs, "number": [0] * max_epochs}
     val_accuracy = {"accumulated": [0] * max_epochs, "number": [0] * max_epochs}
 
-    pull = {"true_positive": [], "false_positive": [], "false_negative": []}
-    push = {"true_positive": [], "false_positive": [], "false_negative": []}
-    shake = {"true_positive": [], "false_positive": [], "false_negative": []}
-    twist = {"true_positive": [], "false_positive": [], "false_negative": []}
+    pull = {"true_positive": [], "false_positive": [], "false_negative": [], "true_negative": []}
+    push = {"true_positive": [], "false_positive": [], "false_negative": [], "true_negative": []}
+    shake = {"true_positive": [], "false_positive": [], "false_negative": [], "true_negative": []}
+    twist = {"true_positive": [], "false_positive": [], "false_negative": [], "true_negative": []}
 
     for n_test in range(0, len(training_test_list)):
 
@@ -156,6 +212,37 @@ if __name__ == '__main__':
         group_classification(origin_dict=dt["push"], dest_dict=push)
         group_classification(origin_dict=dt["shake"], dest_dict=shake)
         group_classification(origin_dict=dt["twist"], dest_dict=twist)
+
+    # -------------------------------------------------------------------------------------------------------------
+    # METRICS-----------------------------------------------------------------------------------------
+    # -------------------------------------------------------------------------------------------------------------
+    metrics_pull = {"accuracy": [], "recall": [], "precision": [], "f1": []}
+    metrics_push = {"accuracy": [], "recall": [], "precision": [], "f1": []}
+    metrics_shake = {"accuracy": [], "recall": [], "precision": [], "f1": []}
+    metrics_twist = {"accuracy": [], "recall": [], "precision": [], "f1": []}
+
+    for l in range(0, len(pull["true_positive"])):
+        metrics_calc(pull, metrics_pull, l)
+        metrics_calc(push, metrics_push, l)
+        metrics_calc(shake, metrics_shake, l)
+        metrics_calc(twist, metrics_twist, l)
+
+    data_metrics = filling_metrics_table(pull_metrics=metrics_pull, push_metrics=metrics_push,
+                                         shake_metrics=metrics_shake, twist_metrics=metrics_twist)
+
+    data_metrics_n = filling_metrics_table_n(pull_metrics=metrics_pull, push_metrics=metrics_push,
+                                             shake_metrics=metrics_shake, twist_metrics=metrics_twist, n=0)
+    pdf = PDF()
+    pdf.add_page()
+    pdf.set_font("Times", size=10)
+
+    pdf.create_table(table_data=data_metrics_n, title='Metrics for one test', cell_width='uneven', x_start=25)
+    pdf.ln()
+
+    pdf.create_table(table_data=data_metrics, title='Mean Metrics', cell_width='uneven', x_start=25)
+    pdf.ln()
+
+    pdf.output('metrics_table.pdf')
 
     # -------------------------------------------------------------------------------------------------------------
     # OUTPUT CONFIDENCES-----------------------------------------------------------------------------------------
@@ -210,12 +297,12 @@ if __name__ == '__main__':
     plt.subplot(1, 2, 1)
     plt.plot(mean_accuracy)
     plt.plot(mean_val_accuracy)
-    # plt.plot(contribution_list)
+    plt.plot(contribution_list)
     plt.title('model accuracy')
     plt.ylabel('accuracy')
     plt.xlabel('epoch')
-    plt.legend(['train', 'val'], loc='upper left')
-    # plt.legend(['train', 'val', 'attendance'], loc='upper left')
+    # plt.legend(['train', 'val'], loc='upper left')
+    plt.legend(['train', 'val', 'attendance'], loc='upper left')
 
     plt.subplot(1, 2, 2)
     plt.plot(mean_loss)
@@ -225,9 +312,9 @@ if __name__ == '__main__':
     plt.xlabel('epoch')
     plt.legend(['train', 'val'], loc='upper left')
 
-    # plt.show()
-    plt.savefig(ROOT_DIR + "/neural_networks/keras/training_testing_n_times/training_curves_mean.png",
-                bbox_inches='tight')
+    plt.show()
+    # plt.savefig(ROOT_DIR + "/neural_networks/keras/training_testing_n_times/training_curves_mean.png",
+    #             bbox_inches='tight')
 
     # -------------------------------------------------------------------------------------------------------------
     # CONFUSION MATRIX-----------------------------------------------------------------------------------------
@@ -241,7 +328,7 @@ if __name__ == '__main__':
     cm_mean = cm_mean*100
 
     plot_confusion_matrix_percentage(confusion_matrix=cm_mean, display_labels=labels, cmap=blues,
-                                     title="Mean Percentage CM (%)", decimals=.2)
+                                     title="Mean Percentage CM (%d times)" % n_times, decimals=.2)
     plt.savefig(ROOT_DIR + "/neural_networks/keras/training_testing_n_times/confusion_matrix_mean_percentage.png",
                 bbox_inches='tight')
 
