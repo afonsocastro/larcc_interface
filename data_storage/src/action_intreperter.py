@@ -224,6 +224,8 @@ if __name__ == '__main__':
     vector_data_show = np.empty((0, 0))
     rest_state_mean = 0
     pub_force_detection.publish(False)
+    predicted_data_saved = np.empty((0, 651))
+    predictions_saved = np.empty((0, 4))
 
     while not rospy.is_shutdown(): # This is the data acquisition cycle
 
@@ -285,7 +287,7 @@ if __name__ == '__main__':
 
                 time.sleep(0.1)
 
-        time.sleep(storage_config["waiting_offset"]) # time waiting to initiate the experiment
+            time.sleep(storage_config["waiting_offset"]) # time waiting to initiate the experiment
 
         # ---------------------------------------------------------------------------------------------
         # -------------------------------------GET DATA------------------------------------------------
@@ -326,27 +328,43 @@ if __name__ == '__main__':
         except:
             print("ctrl+C pressed")
 
-        if end_experiment:
-            sequential_actions = False
-            print("\nNot enough for prediction\n")
-            pub_class.publish("None")
-        else:
-            sequential_actions = True
-            vector_norm = normalize_data(vector_data, limit, trainning_config)
+        try:
+            if end_experiment:
+                sequential_actions = False
+                print("\nNot enough for prediction\n")
+                pub_class.publish("None")
+            else:
+                sequential_actions = True
+                # print(vector_data)
+                vector_norm = normalize_data(vector_data, limit, trainning_config)
 
-            predictions = model.predict(x=vector_norm, verbose=2)
+                predictions = model.predict(x=vector_norm, verbose=2)
 
-            labels = storage_config["action_classes"]
-            max_idx = np.argmax(list(predictions))
-            print(max_idx)
-            print(predictions[0][int(max_idx)])
-            print(predictions)
-            predicted_label = labels[int(max_idx)]
+                labels = storage_config["action_classes"]
+                max_idx = np.argmax(list(predictions))
+                print(max_idx)
+                print(predictions[0][int(max_idx)])
+                print(predictions)
+                predicted_label = labels[int(max_idx)]
 
-            pub_class.publish(predicted_label + " " + str(round(float(predictions[0][int(max_idx)] * 100), 2)) + "%")
+                vector_data = np.append(vector_data, max_idx)
+                predicted_data_saved = np.append(predicted_data_saved, [vector_data], axis=0)
+                predictions_saved = np.append(predictions_saved, predictions, axis=0)
+                # print(predicted_data_saved.shape)
+                # print(predictions_saved.shape)
 
-            print("-----------------------------------------------------------")
-            print_tabulate(predicted_label, predictions)
-            print("-----------------------------------------------------------")
+                pub_class.publish(predicted_label + " " + str(round(float(predictions[0][int(max_idx)] * 100), 2)) + "%")
+
+                print("-----------------------------------------------------------")
+                print_tabulate(predicted_label, predictions)
+                print("-----------------------------------------------------------")
+        except:
+            print("ctrl+C pressed")
+
+    data_save_dic = {"data_predicted": predicted_data_saved.tolist(),
+                     "predictions_confidence": predictions_saved.tolist()}
+    json_object = json.dumps(data_save_dic)
+    with open(ROOT_DIR + "/data_storage/data/predicted_learning_data/multi_class_sample.json", "w") as outfile:
+        outfile.write(json_object)
 
     del data_for_learning

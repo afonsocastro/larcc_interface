@@ -121,7 +121,7 @@ if axis[2]:
     ax.legend([linesfz], ['Axis - Z'])
 
 if axis[0] and axis[1] and axis[2]:
-    ax.legend([linesfx, linesfy, linesfz], ['Axis - X', 'Axis - Y', 'Axis - Z'])
+    ax.legend([linesfx, linesfy, linesfz], ['Fx', 'Fy', 'Fz'])
 
 ax.set_xlabel('Time [s]')
 fig.canvas.set_window_title(res[int(idx)])
