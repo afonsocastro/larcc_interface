@@ -6,16 +6,20 @@ import numpy as np
 
 from config.definitions import ROOT_DIR
 
-file = ROOT_DIR + "/data_storage/data/predicted_learning_data/multi_class_sample_1.json"
+# file = ROOT_DIR + "/data_storage/data/predicted_learning_data/multi_class_sample_1.json"
 
+file = ROOT_DIR + "/data_storage/data/raw_learning_data/user_splitted_data/Ru_learning_data_4.npy"
+#
+# f = open(file)
+#
+# json_file = json.load(f)
+#
+# f.close()
+#
+# data = np.array(json_file["data_predicted"])[:, :-1]
 
-f = open(file)
-
-json_file = json.load(f)
-
-f.close()
-
-data = np.array(json_file["data_predicted"])[:, :-1]
+data_file = np.load(file)
+data = data_file[:, :-1]
 
 time_max_prev = 0
 
@@ -38,51 +42,53 @@ j5 = []
 
 time_divisions = []
 
-for i in range(data.shape[0]):
-    data_vector = data[i, :]
-    data_array = np.reshape(data_vector, (50, int(len(data_vector) / 50)))
-    print(i)
+i = 164
+# for i in range(data.shape[0]):
 
-    new_time = data_array[:, 0] + [time_max_prev] * 50
+data_vector = data[i, :]
+data_array = np.reshape(data_vector, (50, int(len(data_vector) / 50)))
+print(i)
 
-    time.extend(new_time)
+new_time = data_array[:, 0] + [time_max_prev] * 50
 
-    time_max_prev = time[-1]
-    time_divisions.append(time_max_prev)
+time.extend(new_time)
 
-    j0.extend(data_array[:, 1])
-    j1.extend(data_array[:, 2])
-    j2.extend(data_array[:, 3])
-    j3.extend(data_array[:, 4])
-    j4.extend(data_array[:, 5])
-    j5.extend(data_array[:, 6])
+time_max_prev = time[-1]
+time_divisions.append(time_max_prev)
 
-    fx.extend(data_array[:, 7])
-    fy.extend(data_array[:, 8])
-    fz.extend(data_array[:, 9])
+j0.extend(data_array[:, 1])
+j1.extend(data_array[:, 2])
+j2.extend(data_array[:, 3])
+j3.extend(data_array[:, 4])
+j4.extend(data_array[:, 5])
+j5.extend(data_array[:, 6])
 
-    mx.extend(data_array[:, 10])
-    my.extend(data_array[:, 11])
-    mz.extend(data_array[:, 12])
+fx.extend(data_array[:, 7])
+fy.extend(data_array[:, 8])
+fz.extend(data_array[:, 9])
+
+mx.extend(data_array[:, 10])
+my.extend(data_array[:, 11])
+mz.extend(data_array[:, 12])
 
 print(time_divisions)
 
 save_path = ROOT_DIR + "/data_storage/data/predicted_learning_data/"
 
-np.savetxt(save_path + 'fx_predicted.dat', np.column_stack((time, fx)), fmt=['%.3f', '%.3f'])
-np.savetxt(save_path + 'fy_predicted.dat', np.column_stack((time, fy)), fmt=['%.3f', '%.3f'])
-np.savetxt(save_path + 'fz_predicted.dat', np.column_stack((time, fz)), fmt=['%.3f', '%.3f'])
+np.savetxt(save_path + 'fx_normal.dat', np.column_stack((time, fx)), fmt=['%.3f', '%.3f'])
+np.savetxt(save_path + 'fy_normal.dat', np.column_stack((time, fy)), fmt=['%.3f', '%.3f'])
+np.savetxt(save_path + 'fz_normal.dat', np.column_stack((time, fz)), fmt=['%.3f', '%.3f'])
 
-np.savetxt(save_path + 'mx_predicted.dat', np.column_stack((time, mx)), fmt=['%.3f', '%.3f'])
-np.savetxt(save_path + 'my_predicted.dat', np.column_stack((time, my)), fmt=['%.3f', '%.3f'])
-np.savetxt(save_path + 'mz_predicted.dat', np.column_stack((time, mz)), fmt=['%.3f', '%.3f'])
+np.savetxt(save_path + 'mx_normal.dat', np.column_stack((time, mx)), fmt=['%.3f', '%.3f'])
+np.savetxt(save_path + 'my_normal.dat', np.column_stack((time, my)), fmt=['%.3f', '%.3f'])
+np.savetxt(save_path + 'mz_normal.dat', np.column_stack((time, mz)), fmt=['%.3f', '%.3f'])
 
-np.savetxt(save_path + 'j1_predicted.dat', np.column_stack((time, j0)), fmt=['%.3f', '%.3f'])
-np.savetxt(save_path + 'j2_predicted.dat', np.column_stack((time, j1)), fmt=['%.3f', '%.3f'])
-np.savetxt(save_path + 'j3_predicted.dat', np.column_stack((time, j2)), fmt=['%.3f', '%.3f'])
-np.savetxt(save_path + 'j4_predicted.dat', np.column_stack((time, j3)), fmt=['%.3f', '%.3f'])
-np.savetxt(save_path + 'j5_predicted.dat', np.column_stack((time, j4)), fmt=['%.3f', '%.3f'])
-np.savetxt(save_path + 'j6_predicted.dat', np.column_stack((time, j5)), fmt=['%.3f', '%.3f'])
+np.savetxt(save_path + 'j1_normal.dat', np.column_stack((time, j0)), fmt=['%.3f', '%.3f'])
+np.savetxt(save_path + 'j2_normal.dat', np.column_stack((time, j1)), fmt=['%.3f', '%.3f'])
+np.savetxt(save_path + 'j3_normal.dat', np.column_stack((time, j2)), fmt=['%.3f', '%.3f'])
+np.savetxt(save_path + 'j4_normal.dat', np.column_stack((time, j3)), fmt=['%.3f', '%.3f'])
+np.savetxt(save_path + 'j5_normal.dat', np.column_stack((time, j4)), fmt=['%.3f', '%.3f'])
+np.savetxt(save_path + 'j6_normal.dat', np.column_stack((time, j5)), fmt=['%.3f', '%.3f'])
 
 
 

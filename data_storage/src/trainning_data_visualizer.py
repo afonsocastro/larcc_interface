@@ -38,8 +38,10 @@ class DataVisualizer:
             if classification in self.file_name:
                 self.prediction = classification
 
-        self.outputs = np.load(ROOT_DIR + '/neural_networks/keras/predicted_data/output_predicted_' + self.prediction
-                               + '.npy', mmap_mode=None, allow_pickle=False, fix_imports=True, encoding='ASCII')
+        # self.outputs = np.load(ROOT_DIR + '/neural_networks/keras/predicted_data/output_predicted_' + self.prediction
+        #                        + '.npy', mmap_mode=None, allow_pickle=False, fix_imports=True, encoding='ASCII')
+
+        self.outputs = None
 
         self.measurements = int(self.config["time"] * self.config["rate"])
         self.n_variables = len(self.config["data"])
@@ -216,11 +218,16 @@ class DataVisualizer:
         else:
             outcome = "Fail"
 
+        # self.fig.suptitle("Predicted=" + self.prediction + ", True=" +
+        #                   true_classification + ", " + outcome +
+        #                   ", " + str(self.idx) + " => [" + str(round(self.outputs[self.idx][0], 3)) + ", " +
+        #                   str(round(self.outputs[self.idx][1], 3)) + ", " + str(round(self.outputs[self.idx][2], 3))
+        #                   + ", " + str(round(self.outputs[self.idx][3], 3)) + "]", fontsize=20)
+
         self.fig.suptitle("Predicted=" + self.prediction + ", True=" +
                           true_classification + ", " + outcome +
-                          ", " + str(self.idx) + " => [" + str(round(self.outputs[self.idx][0], 3)) + ", " +
-                          str(round(self.outputs[self.idx][1], 3)) + ", " + str(round(self.outputs[self.idx][2], 3))
-                          + ", " + str(round(self.outputs[self.idx][3], 3)) + "]", fontsize=20)
+                          ", " + str(self.idx), fontsize=20)
+
 
         self.is_graph_outdated = False
 
@@ -245,7 +252,9 @@ if __name__ == "__main__":
 
     args = vars(parser.parse_args())
 
-    data_vis = DataVisualizer(path=ROOT_DIR + "/neural_networks/keras/predicted_data/",
+    data_vis = DataVisualizer(path=ROOT_DIR + "/data_storage/data/raw_learning_data/user_splitted_data/",
                               config_file=args["config_file"])
+    # data_vis = DataVisualizer(path=ROOT_DIR + "/neural_networks/keras/predicted_data/",
+    #                           config_file=args["config_file"])
 
 
