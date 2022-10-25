@@ -7,15 +7,18 @@ import numpy as np
 from config.definitions import ROOT_DIR
 
 
-with open(ROOT_DIR + "/neural_networks/keras/training_testing_n_times/training_testing_n_times.json") as file:
-    total_data = json.load(file)[0]
+with open(ROOT_DIR + "/neural_networks/keras/training_testing_n_times/training_curves_mean.json") as file:
+    total_data = json.load(file)
 
-indices = list(range(0, len(total_data["training"]["loss"])))
+# for key, value in total_data.items():
+#     print(key)
 
-loss = total_data["training"]["loss"]
-accuracy = total_data["training"]["accuracy"]
-val_loss = total_data["training"]["val_loss"]
-val_accuracy = total_data["training"]["val_accuracy"]
+indices = list(range(0, len(total_data["loss"])))
+
+loss = total_data["loss"]
+accuracy = total_data["accuracy"]
+val_loss = total_data["val_loss"]
+val_accuracy = total_data["val_accuracy"]
 
 save_path = ROOT_DIR + "/neural_networks/keras/training_testing_n_times/"
 

@@ -7,6 +7,14 @@ from itertools import product
 import numpy as np
 from larcc_classes.documentation.PDF import PDF
 import statistics
+from json import JSONEncoder
+
+
+class NumpyArrayEncoder(JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, np.ndarray):
+            return obj.tolist()
+        return JSONEncoder.default(self, obj)
 
 
 def plot_confusion_matrix_percentage(confusion_matrix, display_labels=None, cmap="viridis",
@@ -314,6 +322,13 @@ if __name__ == '__main__':
     plt.legend(['train', 'val'], loc='upper left')
 
     plt.show()
+
+    training_curves_mean_dict = {"loss": mean_loss, "accuracy": mean_accuracy, "val_loss": mean_val_loss,
+                                 "val_accuracy": mean_val_accuracy}
+
+    with open("training_testing_n_times/training_curves_mean.json", "w") as write_file:
+        json.dump(training_curves_mean_dict, write_file, cls=NumpyArrayEncoder)
+
     # plt.savefig(ROOT_DIR + "/neural_networks/keras/training_testing_n_times/training_curves_mean.png",
     #             bbox_inches='tight')
 
