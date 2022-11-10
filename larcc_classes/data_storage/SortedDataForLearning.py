@@ -20,7 +20,7 @@ class SortedDataForLearning:
         self.data_filtered = np.empty((0, 0))
         self.data_classes_filtered = np.empty((0, 0))
 
-        self.trainning_data = np.empty((0, 0))
+        self.training_data = np.empty((0, 0))
         self.test_data = np.empty((0, 0))
 
         f = open(ROOT_DIR + '/data_storage/config/data_storage_config.json')
@@ -75,14 +75,14 @@ class SortedDataForLearning:
 
             div_idx = int(div * self.data_norm.shape[0])
 
-            self.trainning_data = self.data_norm[:div_idx]
+            self.training_data = self.data_norm[:div_idx]
             self.test_data = self.data_norm[div_idx:]
 
-            # np.save("/tmp/training_data.npy", self.trainning_data)
+            # np.save("/tmp/training_data.npy", self.training_data)
             # np.save("/tmp/test_data.npy", self.test_data)
             #
             # print("<===============================================test_data=======>")
-            # print("Learning data shape: " + str(self.trainning_data.shape))
+            # print("Learning data shape: " + str(self.training_data.shape))
             # print("Testing data shape: " + str(self.test_data.shape))
             # print("<======================================================>")
         elif os.path.isdir(path):
@@ -105,7 +105,7 @@ class SortedDataForLearning:
             print("========================================")
             self.experiment_data = self.raw_training_data
             self.process_data()
-            self.trainning_data = self.data_norm
+            self.training_data = self.data_norm
 
             print("========================================")
             self.experiment_data = self.raw_test_data
@@ -115,12 +115,12 @@ class SortedDataForLearning:
         else:
             print("Could not find learning data file")
 
-        np.save("/tmp/training_data.npy", self.trainning_data)
+        np.save("/tmp/training_data.npy", self.training_data)
         np.save("/tmp/test_data.npy", self.test_data)
         # np.save(ROOT_DIR + "/data_storage/data/processed_learning_data/Maf_learning_data_5.npy", self.test_data)
 
         print("<======================================================>")
-        print("Learning data shape: " + str(self.trainning_data.shape))
+        print("Learning data shape: " + str(self.training_data.shape))
         print("Testing data shape: " + str(self.test_data.shape))
         print("<======================================================>")
         print("Script lasted for: " + str(round((time.time() - st), 2)) + " seconds")
@@ -269,7 +269,7 @@ if __name__ == '__main__':
     parser.add_argument("-f", "--file", type=str, default="raw_learning_data.npy",
                         help="The name of the .npy file")
     parser.add_argument("-d", "--div", type=float, default=0.7,
-                        help="Percentage of samples that will be used for trainning and validation (0 to 1). The rest "
+                        help="Percentage of samples that will be used for training and validation (0 to 1). The rest "
                              "will be used for tests")
     parser.add_argument("-c", "--config_file", type=str, default="training_config",
                         help="If argmument is present, activates gripper")

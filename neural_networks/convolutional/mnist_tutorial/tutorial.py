@@ -18,6 +18,14 @@ if __name__ == '__main__':
     #
     # # check image shape
     # print(X_train[0].shape)
+    print("type(X_train)")
+    print(type(X_train))
+    print("X_train.shape")
+    print(X_train.shape)
+    print("X_test.shape")
+    print(X_test.shape)
+    print("type(X_test)")
+    print(type(X_test))
 
     # reshape data to fit model
     X_train = X_train.reshape(60000, 28, 28, 1)
@@ -37,3 +45,9 @@ if __name__ == '__main__':
 
     # train the model
     model.fit(X_train, y_train, validation_data=(X_test, y_test), epochs=3)
+
+    # predict first 4 images in the test set
+    print(model.predict(X_test[:4]))
+
+    # actual results for first 4 images in test set
+    print(y_test[:4])
