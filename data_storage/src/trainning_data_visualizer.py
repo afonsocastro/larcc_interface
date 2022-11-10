@@ -38,7 +38,7 @@ class DataVisualizer:
             if classification in self.file_name:
                 self.prediction = classification
 
-        # self.outputs = np.load(ROOT_DIR + '/neural_networks/keras/predicted_data/output_predicted_' + self.prediction
+        # self.outputs = np.load(ROOT_DIR + '/neural_networks/feedforward/predicted_data/output_predicted_' + self.prediction
         #                        + '.npy', mmap_mode=None, allow_pickle=False, fix_imports=True, encoding='ASCII')
 
         self.outputs = None
@@ -254,7 +254,7 @@ if __name__ == "__main__":
 
     data_vis = DataVisualizer(path=ROOT_DIR + "/data_storage/data/raw_learning_data/user_splitted_data/",
                               config_file=args["config_file"])
-    # data_vis = DataVisualizer(path=ROOT_DIR + "/neural_networks/keras/predicted_data/",
+    # data_vis = DataVisualizer(path=ROOT_DIR + "/neural_networks/feedforward/predicted_data/",
     #                           config_file=args["config_file"])
 
 

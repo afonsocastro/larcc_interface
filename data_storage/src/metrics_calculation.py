@@ -1,10 +1,10 @@
 from config.definitions import ROOT_DIR
 import numpy as np
 
-predicted_pull = np.load(ROOT_DIR + "/neural_networks/keras/predicted_data/predicted_pull.npy")
-predicted_push = np.load(ROOT_DIR + "/neural_networks/keras/predicted_data/predicted_push.npy")
-predicted_shake = np.load(ROOT_DIR + "/neural_networks/keras/predicted_data/predicted_shake.npy")
-predicted_twist = np.load(ROOT_DIR + "/neural_networks/keras/predicted_data/predicted_twist.npy")
+predicted_pull = np.load(ROOT_DIR + "/neural_networks/feedforward/predicted_data/predicted_pull.npy")
+predicted_push = np.load(ROOT_DIR + "/neural_networks/feedforward/predicted_data/predicted_push.npy")
+predicted_shake = np.load(ROOT_DIR + "/neural_networks/feedforward/predicted_data/predicted_shake.npy")
+predicted_twist = np.load(ROOT_DIR + "/neural_networks/feedforward/predicted_data/predicted_twist.npy")
 
 pull_struct = {"name": "pull", "TP": 0, "FN": 0, "FP": 0}
 push_struct = {"name": "push", "TP": 0, "FN": 0, "FP": 0}
