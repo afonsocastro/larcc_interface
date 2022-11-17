@@ -345,7 +345,7 @@ if __name__ == '__main__':
 
     plot_confusion_matrix_percentage(confusion_matrix=cm_mean, display_labels=labels, cmap=blues,
                                      title="Mean Percentage CM (%d times)" % n_times, decimals=.2)
-    plt.show()
+    # plt.show()
     plt.savefig(ROOT_DIR + "/neural_networks/feedforward/training_testing_n_times/confusion_matrix_mean_percentage.png",
                 bbox_inches='tight')
 
