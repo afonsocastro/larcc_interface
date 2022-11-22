@@ -167,17 +167,17 @@ class SortedDataForLearning:
 
             c = vector[-1]
 
-            while True:
-                if idx_end > measurements:
-                    break
+            # while True:
+            #     if idx_end > measurements:
+            #         break
+            #
+            #     data_array[idx_start:idx_end, 0] = data_array[idx_start:idx_end, 0] - data_array[idx_start:idx_end, 0][0]
 
-                data_array[idx_start:idx_end, 0] = data_array[idx_start:idx_end, 0] - data_array[idx_start:idx_end, 0][0]
-
-                vector_shortened = np.reshape(data_array[idx_start:idx_end, :], (1, array_shortened.shape[1]))
-                array_shortened = np.append(array_shortened, vector_shortened, axis=0)
-                classification.append(c)
-                idx_start += int(new_measurements)
-                idx_end += int(new_measurements)
+            vector_shortened = np.reshape(data_array[idx_start:idx_end, :], (1, array_shortened.shape[1]))
+            array_shortened = np.append(array_shortened, vector_shortened, axis=0)
+            classification.append(c)
+            idx_start += int(new_measurements)
+            idx_end += int(new_measurements)
 
         array_shortened = np.append(array_shortened, np.reshape([classification], (-1, 1)), axis=1)
         self.data_shortened = array_shortened

@@ -1,0 +1,16 @@
+{
+  "action_classes": ["pull", "push", "shake", "twist"],
+  "force_threshold_start": 0.2,
+  "force_threshold_end": 0.075,
+  "threshold_counter_limit": 4,
+  "time": 0.1,
+  "rate": 100.0,
+  "waiting_offset": 0.2,
+  "data" : ["timestamp", "joint_ef0", "jointe_ef1", "joint_ef2", "jointe_ef3",
+    "joint_ef4", "jointe_ef5", "gripper_fx", "gripper_fy", "gripper_fz", "gripper_mx",
+    "gripper_my", "gripper_mz"],
+  "normalization_clusters": [1, 6, 3, 3],
+  "initial_pose": [-0.08442861238588506, -0.9531238240054627, 1.1278675238238733, -2.4318977795042933, -1.5508225599872034, 0.026221752166748047],
+  "training_users": [0, 1, 2, 3],
+  "test_users": [4, 5]
+}

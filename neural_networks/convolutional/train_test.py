@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 
-from keras.datasets import mnist
 import matplotlib.pyplot as plt
 from keras.utils import to_categorical  # one-hot encode target column
 from keras.models import Sequential
@@ -17,37 +16,26 @@ if __name__ == '__main__':
     sorted_data_for_learning = SortedDataForLearning(
         path=ROOT_DIR + "/data_storage/data/raw_learning_data/user_splitted_data/")
 
-    n_train = 1425
-
     training_data = sorted_data_for_learning.training_data
     test_data = sorted_data_for_learning.test_data
-
-    n_val = training_data.shape[0] - n_train
+    validation_split = 0.7
+    n_train = len(training_data) * validation_split
+    n_val = len(training_data) * (1-validation_split)
     n_test = test_data.shape[0]
-
-    # reshape data to fit model
-    # x_train = training_data[0:n_train, :-1]
-    # y_train = training_data[0:n_train, -1]
-
     x_train = training_data[:, :-1]
     y_train = training_data[:, -1]
-
-    # x_val = training_data[n_train:, :-1]
-    # y_val = training_data[n_train:, -1]
-
     x_train = np.reshape(x_train, (training_data.shape[0], 50, 13, 1))
-    # x_val = np.reshape(x_val, (n_val, 50, 13, 1))
-
     y_train = to_categorical(y_train)
-    # y_val = to_categorical(y_val)
 
     # Create model
     model = Sequential()
-    model.add(Conv2D(64, kernel_size=(50, 1), activation="relu", input_shape=(50, 13, 1)))
-    # model.add(MaxPooling2D((1, 1)))
+    # model.add(Conv2D(64, kernel_size=(50, 1), activation="relu", input_shape=(50, 13, 1)))
+    model.add(Conv2D(64, kernel_size=(13, 1), activation="relu", input_shape=(50, 13, 1)))
+    model.add(MaxPooling2D((2, 1)))
 
-    model.add(Conv2D(32, kernel_size=1, activation="relu"))
-    # model.add(MaxPooling2D((1, 1)))
+    model.add(Conv2D(32, kernel_size=(4, 1), activation="relu"))
+    model.add(MaxPooling2D((2, 1)))
+
     # model.add(Dropout(0.1))
     model.add(Flatten())
     # model.add(Dropout(0.1))
@@ -56,17 +44,11 @@ if __name__ == '__main__':
     # compile model using accuracy to measure model performance
     model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
 
-    # train the model
-    # fit_history = model.fit(x=x_train, y=y_train, validation_data=(x_val, y_val), epochs=100, verbose=2)
-    fit_history = model.fit(x=x_train, y=y_train, validation_split=0.7, epochs=50, verbose=2, batch_size=64,
-                            shuffle=True)
+    print(model.summary())
 
-    # print("fit_history.history['accuracy'][-1]")
-    # print(fit_history.history['accuracy'][-1])
-    # print("fit_history.history['val_accuracy'][-1]")
-    # print(fit_history.history['val_accuracy'][-1])
-    #
-    # exit(0)
+    # train the model
+    fit_history = model.fit(x=x_train, y=y_train, validation_split=validation_split, epochs=50, verbose=2, batch_size=64,
+                            shuffle=True)
 
     fig = plt.figure()
 
@@ -97,9 +79,6 @@ if __name__ == '__main__':
     x_test = np.reshape(test_data[:, :-1], (n_test, 50, 13, 1))
     predicted_values = model.predict(x=x_test, verbose=2)
 
-    labels = ['PULL', 'PUSH', 'SHAKE', 'TWIST']
-    n_labels = len(labels)
-
     # Reverse to_categorical from keras utils
     predicted_values = np.argmax(predicted_values, axis=1, out=None)
 
@@ -107,6 +86,8 @@ if __name__ == '__main__':
 
     cm = confusion_matrix(y_true=true_values, y_pred=predicted_values)
 
+    labels = ['PULL', 'PUSH', 'SHAKE', 'TWIST']
+    n_labels = len(labels)
     blues = plt.cm.Blues
     disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=labels)
     disp.plot(cmap=blues)
@@ -120,7 +101,3 @@ if __name__ == '__main__':
                                      title="Confusion Matrix (%) - CONVOLUTIONAL")
     # plt.show()
     plt.savefig(ROOT_DIR + "/neural_networks/convolutional/predicted_data/confusion_matrix_true.png", bbox_inches='tight')
-
-
-
-

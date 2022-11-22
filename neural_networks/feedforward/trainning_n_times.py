@@ -8,15 +8,8 @@ from larcc_classes.data_storage.SortedDataForLearning import SortedDataForLearni
 from config.definitions import ROOT_DIR
 from sklearn.metrics import confusion_matrix
 import numpy as np
-from json import JSONEncoder
+from neural_networks.utils import NumpyArrayEncoder, prediction_classification
 import json
-
-
-class NumpyArrayEncoder(JSONEncoder):
-    def default(self, obj):
-        if isinstance(obj, np.ndarray):
-            return obj.tolist()
-        return JSONEncoder.default(self, obj)
 
 
 def create_model_from_json(input_shape, model_config, output_shape):
@@ -56,40 +49,6 @@ def create_model_from_json(input_shape, model_config, output_shape):
                       metrics=['accuracy'])
 
     return model
-
-
-# Print iterations progress
-def printProgressBar(iteration, total, prefix='', suffix='', decimals=1, length=100, fill='█', printEnd="\r"):
-    """
-    Call in a loop to create terminal progress bar
-    @params:
-        iteration   - Required  : current iteration (Int)
-        total       - Required  : total iterations (Int)
-        prefix      - Optional  : prefix string (Str)
-        suffix      - Optional  : suffix string (Str)
-        decimals    - Optional  : positive number of decimals in percent complete (Int)
-        length      - Optional  : character length of bar (Int)
-        fill        - Optional  : bar fill character (Str)
-        printEnd    - Optional  : end character (e.g. "\r", "\r\n") (Str)
-    """
-    percent = ("{0:." + str(decimals) + "f}").format(100 * (iteration / float(total)))
-    filledLength = int(length * iteration // total)
-    bar = fill * filledLength + '-' * (length - filledLength)
-    print(f'\r{prefix} |{bar}| {iteration} out of {total} Training & Test | ({percent}% {suffix})', end=printEnd)
-    # Print New Line on Complete
-    if iteration == total:
-        print()
-
-
-def prediction_classification(cla, true_out, dec_pred, dictionary, pred):
-    if true_out == cla and dec_pred == cla:
-        dictionary["true_positive"] = np.append(dictionary["true_positive"], pred, axis=0)
-    elif true_out != cla and dec_pred == cla:
-        dictionary["false_positive"] = np.append(dictionary["false_positive"], pred, axis=0)
-    elif true_out == cla and dec_pred != cla:
-        dictionary["false_negative"] = np.append(dictionary["false_negative"], pred, axis=0)
-    elif true_out != cla and dec_pred != cla:
-        dictionary["true_negative"] = np.append(dictionary["true_negative"], pred, axis=0)
 
 
 if __name__ == '__main__':
@@ -148,8 +107,6 @@ if __name__ == '__main__':
         print("\n")
 
         predictions_list = []
-
-        col = test_data.shape[1]
 
         pull = {"true_positive": np.empty((0, n_labels)), "false_positive": np.empty((0, n_labels)),
                 "false_negative": np.empty((0, n_labels)), "true_negative": np.empty((0, n_labels))}
