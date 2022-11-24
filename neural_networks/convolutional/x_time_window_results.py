@@ -5,8 +5,8 @@ import json
 from config.definitions import ROOT_DIR
 import numpy as np
 import glob, os
-import re, statistics
 from larcc_classes.documentation.PDF import PDF
+import statistics
 from neural_networks.utils import NumpyArrayEncoder, plot_confusion_matrix_percentage, values_contabilization, \
     group_classification, mean_calc, filling_metrics_table_n, filling_metrics_table, metrics_calc, filling_table
 
@@ -14,21 +14,19 @@ from neural_networks.utils import NumpyArrayEncoder, plot_confusion_matrix_perce
 def create_grouped_bar_chart(labels, global_mean_metrics, title, ylabel):
     # plt.close("all")  # this is the line to be added
 
-    cnn0 = [float(global_mean_metrics[1][1]), float(global_mean_metrics[1][2]), float(global_mean_metrics[1][3]), float(global_mean_metrics[1][4])]
-    cnn1 = [float(global_mean_metrics[2][1]), float(global_mean_metrics[2][2]), float(global_mean_metrics[2][3]), float(global_mean_metrics[2][4])]
-    cnn2 = [float(global_mean_metrics[3][1]), float(global_mean_metrics[3][2]), float(global_mean_metrics[3][3]), float(global_mean_metrics[3][4])]
-    cnn3 = [float(global_mean_metrics[4][1]), float(global_mean_metrics[4][2]), float(global_mean_metrics[4][3]), float(global_mean_metrics[4][4])]
-    cnn4 = [float(global_mean_metrics[5][1]), float(global_mean_metrics[5][2]), float(global_mean_metrics[5][3]), float(global_mean_metrics[5][4])]
+    t1 = [float(global_mean_metrics[1][1]), float(global_mean_metrics[1][2]), float(global_mean_metrics[1][3]), float(global_mean_metrics[1][4])]
+    t2 = [float(global_mean_metrics[2][1]), float(global_mean_metrics[2][2]), float(global_mean_metrics[2][3]), float(global_mean_metrics[2][4])]
+    t3 = [float(global_mean_metrics[3][1]), float(global_mean_metrics[3][2]), float(global_mean_metrics[3][3]), float(global_mean_metrics[3][4])]
+    t4 = [float(global_mean_metrics[4][1]), float(global_mean_metrics[4][2]), float(global_mean_metrics[4][3]), float(global_mean_metrics[4][4])]
 
     x = np.arange(len(labels))  # the label locations
-    width = 0.17  # the width of the bars
+    width = 0.2  # the width of the bars
 
     fig, ax = plt.subplots()
-    rects_cnn0 = ax.bar(x - (2*width), cnn0, width, label='CNN 0', color="#8f9bff", edgecolor="white", linewidth=2)
-    rects_cnn1 = ax.bar(x - width, cnn1, width, label='CNN 1', color="#47cd4d", edgecolor="white", linewidth=2)
-    rects_cnn2 = ax.bar(x, cnn2, width, label='CNN 2', color="#fe8281", edgecolor="white", linewidth=2)
-    rects_cnn3 = ax.bar(x + width, cnn3, width, label='CNN 3', color="#edac5a", edgecolor="white", linewidth=2)
-    rects_cnn4 = ax.bar(x + (2*width), cnn4, width, label='CNN 4', color="#e466ff", edgecolor="white", linewidth=2)
+    rects_t1 = ax.bar(x - (3*width/2), t1, width, label='0.1 s', color="#8f9bff", edgecolor="white", linewidth=2)
+    rects_t2 = ax.bar(x - width/2, t2, width, label='0.2 s', color="#47cd4d", edgecolor="white", linewidth=2)
+    rects_t3 = ax.bar(x + width/2, t3, width, label='0.3 s', color="#fe8281", edgecolor="white", linewidth=2)
+    rects_t4 = ax.bar(x + (3*width/2), t4, width, label='0.4 s', color="#edac5a", edgecolor="white", linewidth=2)
 
     # Add some text for labels, title and custom x-axis tick labels, etc.
     ax.set_ylabel(ylabel)
@@ -37,17 +35,16 @@ def create_grouped_bar_chart(labels, global_mean_metrics, title, ylabel):
     ax.set_xticks(x, labels)
     ax.legend()
 
-    ax.bar_label(rects_cnn0, padding=3)
-    ax.bar_label(rects_cnn1, padding=3)
-    ax.bar_label(rects_cnn2, padding=3)
-    ax.bar_label(rects_cnn3, padding=3)
-    ax.bar_label(rects_cnn4, padding=3)
+    ax.bar_label(rects_t1, padding=3)
+    ax.bar_label(rects_t2, padding=3)
+    ax.bar_label(rects_t3, padding=3)
+    ax.bar_label(rects_t4, padding=3)
 
     fig.tight_layout()
-    plt.ylim([min(cnn0 + cnn1 + cnn2 + cnn3 + cnn4) - 0.01, max(cnn0 + cnn1 + cnn2 + cnn3 + cnn4) + 0.01])
+    plt.ylim([min(t1 + t2 + t3 + t4) - 0.01, max(t1 + t2 + t3 + t4) + 0.01])
     # plt.show()
 
-    plt.savefig(ROOT_DIR + "/neural_networks/convolutional/n_times_results/mean_results_" + str(
+    plt.savefig(ROOT_DIR + "/neural_networks/convolutional/x_time_window_results/mean_results_" + str(
         ylabel) + ".png")
 
 
@@ -55,52 +52,43 @@ def create_global_grouped_bar_chart(accuracy, precision, recall, f1, title):
     # plt.close("all")  # this is the line to be added
     labels=["Accuracy", "Precision", "Recall", "F1 Score"]
 
-    cnn0 = [statistics.mean([float(accuracy[1][1]), float(accuracy[1][2]), float(accuracy[1][3]), float(accuracy[1][4])]),
+    t1 = [statistics.mean([float(accuracy[1][1]), float(accuracy[1][2]), float(accuracy[1][3]), float(accuracy[1][4])]),
           statistics.mean(
               [float(precision[1][1]), float(precision[1][2]), float(precision[1][3]), float(precision[1][4])]),
           statistics.mean([float(recall[1][1]), float(recall[1][2]), float(recall[1][3]), float(recall[1][4])]),
           statistics.mean([float(f1[1][1]), float(f1[1][2]), float(f1[1][3]), float(f1[1][4])])]
 
-    cnn1 = [statistics.mean([float(accuracy[2][1]), float(accuracy[2][2]), float(accuracy[2][3]), float(accuracy[2][4])]),
+    t2 = [statistics.mean([float(accuracy[2][1]), float(accuracy[2][2]), float(accuracy[2][3]), float(accuracy[2][4])]),
           statistics.mean(
               [float(precision[2][1]), float(precision[2][2]), float(precision[2][3]), float(precision[2][4])]),
           statistics.mean([float(recall[2][1]), float(recall[2][2]), float(recall[2][3]), float(recall[2][4])]),
           statistics.mean([float(f1[2][1]), float(f1[2][2]), float(f1[2][3]), float(f1[2][4])])]
 
-    cnn2 = [statistics.mean([float(accuracy[3][1]), float(accuracy[3][2]), float(accuracy[3][3]), float(accuracy[3][4])]),
+    t3 = [statistics.mean([float(accuracy[3][1]), float(accuracy[3][2]), float(accuracy[3][3]), float(accuracy[3][4])]),
           statistics.mean(
               [float(precision[3][1]), float(precision[3][2]), float(precision[3][3]), float(precision[3][4])]),
           statistics.mean([float(recall[3][1]), float(recall[3][2]), float(recall[3][3]), float(recall[3][4])]),
           statistics.mean([float(f1[3][1]), float(f1[3][2]), float(f1[3][3]), float(f1[3][4])])]
 
-    cnn3 = [statistics.mean([float(accuracy[4][1]), float(accuracy[4][2]), float(accuracy[4][3]), float(accuracy[4][4])]),
+    t4 = [statistics.mean([float(accuracy[4][1]), float(accuracy[4][2]), float(accuracy[4][3]), float(accuracy[4][4])]),
           statistics.mean(
               [float(precision[4][1]), float(precision[4][2]), float(precision[4][3]), float(precision[4][4])]),
           statistics.mean([float(recall[4][1]), float(recall[4][2]), float(recall[4][3]), float(recall[4][4])]),
           statistics.mean([float(f1[4][1]), float(f1[4][2]), float(f1[4][3]), float(f1[4][4])])]
 
-    cnn4 = [
-        statistics.mean([float(accuracy[5][1]), float(accuracy[5][2]), float(accuracy[5][3]), float(accuracy[5][4])]),
-        statistics.mean(
-            [float(precision[5][1]), float(precision[5][2]), float(precision[5][3]), float(precision[5][4])]),
-        statistics.mean([float(recall[5][1]), float(recall[5][2]), float(recall[5][3]), float(recall[5][4])]),
-        statistics.mean([float(f1[5][1]), float(f1[5][2]), float(f1[5][3]), float(f1[5][4])])]
-
-    cnn0 = [round(item, 4) for item in cnn0]
-    cnn1 = [round(item, 4) for item in cnn1]
-    cnn2 = [round(item, 4) for item in cnn2]
-    cnn3 = [round(item, 4) for item in cnn3]
-    cnn4 = [round(item, 4) for item in cnn4]
+    t1 = [round(item, 4) for item in t1]
+    t2 = [round(item, 4) for item in t2]
+    t3 = [round(item, 4) for item in t3]
+    t4 = [round(item, 4) for item in t4]
 
     x = np.arange(len(labels))  # the label locations
-    width = 0.17  # the width of the bars
+    width = 0.2  # the width of the bars
 
     fig, ax = plt.subplots()
-    rects_cnn0 = ax.bar(x - (2 * width), cnn0, width, label='CNN 0', color="#8f9bff", edgecolor="white", linewidth=2)
-    rects_cnn1 = ax.bar(x - width, cnn1, width, label='CNN 1', color="#47cd4d", edgecolor="white", linewidth=2)
-    rects_cnn2 = ax.bar(x, cnn2, width, label='CNN 2', color="#fe8281", edgecolor="white", linewidth=2)
-    rects_cnn3 = ax.bar(x + width, cnn3, width, label='CNN 3', color="#edac5a", edgecolor="white", linewidth=2)
-    rects_cnn4 = ax.bar(x + (2 * width), cnn4, width, label='CNN 4', color="#e466ff", edgecolor="white", linewidth=2)
+    rects_t1 = ax.bar(x - (3*width/2), t1, width, label='0.1 s', color="#8f9bff", edgecolor="white", linewidth=2)
+    rects_t2 = ax.bar(x - width/2, t2, width, label='0.2 s', color="#47cd4d", edgecolor="white", linewidth=2)
+    rects_t3 = ax.bar(x + width/2, t3, width, label='0.3 s', color="#fe8281", edgecolor="white", linewidth=2)
+    rects_t4 = ax.bar(x + (3*width/2), t4, width, label='0.4 s', color="#edac5a", edgecolor="white", linewidth=2)
 
     # Add some text for labels, title and custom x-axis tick labels, etc.
     # ax.set_ylabel(ylabel)
@@ -109,17 +97,16 @@ def create_global_grouped_bar_chart(accuracy, precision, recall, f1, title):
     ax.set_xticks(x, labels)
     ax.legend()
 
-    ax.bar_label(rects_cnn0, padding=3)
-    ax.bar_label(rects_cnn1, padding=3)
-    ax.bar_label(rects_cnn2, padding=3)
-    ax.bar_label(rects_cnn3, padding=3)
-    ax.bar_label(rects_cnn4, padding=3)
+    ax.bar_label(rects_t1, padding=3)
+    ax.bar_label(rects_t2, padding=3)
+    ax.bar_label(rects_t3, padding=3)
+    ax.bar_label(rects_t4, padding=3)
 
     fig.tight_layout()
-    plt.ylim([min(cnn0 + cnn1 + cnn2 + cnn3 + cnn4) - 0.005, max(cnn0 + cnn1 + cnn2 + cnn3 + cnn4) + 0.005])
+    plt.ylim([min(t1 + t2 + t3 + t4) - 0.005, max(t1 + t2 + t3 + t4) + 0.005])
     # plt.show()
 
-    plt.savefig(ROOT_DIR + "/neural_networks/convolutional/n_times_results/mean_GLOBAL_results.png")
+    plt.savefig(ROOT_DIR + "/neural_networks/convolutional/x_time_window_results/mean_GLOBAL_results.png")
 
 
 if __name__ == '__main__':
@@ -127,17 +114,16 @@ if __name__ == '__main__':
     labels = ['PULL', 'PUSH', 'SHAKE', 'TWIST']
     n_labels = len(labels)
 
-    metrics_per_nn = []
+    metrics_per_time_window = []
 
-    for infile in sorted(glob.glob('n_times_train_test/*.json')):
+    for infile in sorted(glob.glob('x_time_window_train_test/*.json')):
         print("Current File Being Processed is: " + infile)
 
         if os.path.isfile(infile):
-            n_model = int(re.findall(r'\d+', infile)[0])
-
             with open(infile, "r") as read_file:
                 main_dict = json.load(read_file)
 
+            time_window = main_dict["time_window"]
             training_test_list = main_dict["train_test_list"]
             n_times = len(training_test_list)
             epochs = len(training_test_list[0]["training"]["loss"])
@@ -208,7 +194,7 @@ if __name__ == '__main__':
             data_metrics = filling_metrics_table(pull_metrics=metrics_pull, push_metrics=metrics_push,
                                                  shake_metrics=metrics_shake, twist_metrics=metrics_twist)
 
-            metrics_per_nn.append({"model": n_model, "metrics": data_metrics})
+            metrics_per_time_window.append({"time_window": time_window, "metrics": data_metrics})
 
             data_metrics_n = filling_metrics_table_n(pull_metrics=metrics_pull, push_metrics=metrics_push,
                                                      shake_metrics=metrics_shake, twist_metrics=metrics_twist, n=0)
@@ -222,7 +208,7 @@ if __name__ == '__main__':
             pdf.create_table(table_data=data_metrics, title='Mean Metrics', cell_width='uneven', x_start=25)
             pdf.ln()
 
-            pdf.output('n_times_results/convo_metrics_table_' + str(n_model) + '.pdf')
+            pdf.output('x_time_window_results/convo_metrics_table_' + str(time_window) + '.pdf')
 
             # -------------------------------------------------------------------------------------------------------------
             # OUTPUT CONFIDENCES---------------------------------------------------------------------------------------
@@ -256,7 +242,7 @@ if __name__ == '__main__':
             pdf.create_table(table_data=data_twist, title='TWIST', cell_width='uneven', x_start=25)
             pdf.ln()
 
-            pdf.output('n_times_results/convo_output_table_' + str(n_model) + '.pdf')
+            pdf.output('x_time_window_results/convo_output_table_' + str(time_window) + '.pdf')
 
             # -------------------------------------------------------------------------------------------------------------
             # TRAINING CURVES-----------------------------------------------------------------------------------------
@@ -303,8 +289,8 @@ if __name__ == '__main__':
             # with open("training_testing_n_times/training_curves_mean.json", "w") as write_file:
             #     json.dump(training_curves_mean_dict, write_file, cls=NumpyArrayEncoder)
 
-            plt.savefig(ROOT_DIR + "/neural_networks/convolutional/n_times_results/training_curves_mean" + str(
-                n_model) + ".png")
+            plt.savefig(ROOT_DIR + "/neural_networks/convolutional/x_time_window_results/training_curves_mean" + str(
+                time_window) + ".png")
             # bbox_inches = 'tight'
 
             # -------------------------------------------------------------------------------------------------------------
@@ -318,22 +304,22 @@ if __name__ == '__main__':
 
             cm_mean = cm_mean * 100
             title = "Confusion Matrix (%) - Mean (" + str(
-                n_times) + " times) \n CONVOLUTIONAL NN_" + str(n_model)
+                n_times) + " times) \n CONVOLUTIONAL - 0." + str(time_window) + "s time window"
             plot_confusion_matrix_percentage(confusion_matrix=cm_mean, display_labels=labels, cmap=blues,
                                              title=title, decimals=.2)
 
             # plt.show()
             plt.savefig(
-                ROOT_DIR + "/neural_networks/convolutional/n_times_results/confusion_matrix_mean_percentage_" + str(
-                    n_model) + ".png", bbox_inches='tight')
+                ROOT_DIR + "/neural_networks/convolutional/x_time_window_results/confusion_matrix_mean_percentage_" + str(
+                    time_window) + ".png", bbox_inches='tight')
 
-            title = "Confusion Matrix - Cumulative (" + str(n_times) + " times) \n CONVOLUTIONAL NN_" + str(n_model)
+            title = "Confusion Matrix - Cumulative (" + str(n_times) + " times) \n CONVOLUTIONAL - 0." + str(time_window) + "s time window"
 
             plot_confusion_matrix_percentage(confusion_matrix=cm_cumulative, display_labels=labels, cmap=blues,
                                              title=title, decimals=.0)
 
-            plt.savefig(ROOT_DIR + "/neural_networks/convolutional/n_times_results/confusion_matrix_cumulative_" + str(
-                n_model) + ".png", bbox_inches='tight')
+            plt.savefig(ROOT_DIR + "/neural_networks/convolutional/x_time_window_results/confusion_matrix_cumulative_" + str(
+                time_window) + ".png", bbox_inches='tight')
             # -------------------------------------------------------------------------------------------------------------
 
     # For every file (Global evaluation)
@@ -342,22 +328,22 @@ if __name__ == '__main__':
     global_mean_metrics_recall = [[str(n_times) + " times", "PULL", "PUSH", "SHAKE", "TWIST", ], ]
     global_mean_metrics_f1 = [[str(n_times) + " times", "PULL", "PUSH", "SHAKE", "TWIST", ], ]
 
-    for mm in metrics_per_nn:
+    for mm in metrics_per_time_window:
 
         global_mean_metrics_accuracy.append(
-            ["CNN " + str(mm["model"]), mm["metrics"][1][1], mm["metrics"][2][1], mm["metrics"][3][1],
+            ["0." + str(mm["time_window"]) + " s", mm["metrics"][1][1], mm["metrics"][2][1], mm["metrics"][3][1],
              mm["metrics"][4][1], ])
 
         global_mean_metrics_precision.append(
-            ["CNN " + str(mm["model"]), mm["metrics"][1][2], mm["metrics"][2][2], mm["metrics"][3][2],
+            ["0." + str(mm["time_window"]) + " s", mm["metrics"][1][2], mm["metrics"][2][2], mm["metrics"][3][2],
              mm["metrics"][4][2], ])
 
         global_mean_metrics_recall.append(
-            ["CNN " + str(mm["model"]), mm["metrics"][1][3], mm["metrics"][2][3], mm["metrics"][3][3],
+            ["0." + str(mm["time_window"]) + " s", mm["metrics"][1][3], mm["metrics"][2][3], mm["metrics"][3][3],
              mm["metrics"][4][3], ])
 
         global_mean_metrics_f1.append(
-            ["CNN " + str(mm["model"]), mm["metrics"][1][4], mm["metrics"][2][4], mm["metrics"][3][4],
+            ["0." + str(mm["time_window"]) + " s", mm["metrics"][1][4], mm["metrics"][2][4], mm["metrics"][3][4],
              mm["metrics"][4][4], ])
 
     pdf = PDF()
@@ -377,7 +363,7 @@ if __name__ == '__main__':
     pdf.create_table(table_data=global_mean_metrics_f1, title='Mean F1 Score', cell_width='uneven', x_start=25)
     pdf.ln()
 
-    pdf.output('n_times_results/evaluation_per_NN.pdf')
+    pdf.output('x_time_window_results/evaluation_per_time_window.pdf')
 
     create_grouped_bar_chart(labels, global_mean_metrics_accuracy, title="Mean Accuracy (100 times)", ylabel="accuracy")
     create_grouped_bar_chart(labels, global_mean_metrics_precision, title="Mean Precision (100 times)", ylabel="precision")
@@ -386,5 +372,5 @@ if __name__ == '__main__':
 
     create_global_grouped_bar_chart(global_mean_metrics_accuracy, global_mean_metrics_precision,
                                     global_mean_metrics_recall, global_mean_metrics_f1,
-                                    title="Mean Score per metric per CNN\n(4 primitives - 100 times)")
+                                    title="Mean Score per metric per time window\n(4 primitives - 100 times)")
 
