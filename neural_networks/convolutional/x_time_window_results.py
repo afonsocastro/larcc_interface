@@ -12,7 +12,7 @@ from neural_networks.utils import NumpyArrayEncoder, plot_confusion_matrix_perce
 
 
 def create_grouped_bar_chart(labels, global_mean_metrics, title, ylabel):
-    # plt.close("all")  # this is the line to be added
+    plt.close("all")  # this is the line to be added
 
     t1 = [float(global_mean_metrics[1][1]), float(global_mean_metrics[1][2]), float(global_mean_metrics[1][3]), float(global_mean_metrics[1][4])]
     t2 = [float(global_mean_metrics[2][1]), float(global_mean_metrics[2][2]), float(global_mean_metrics[2][3]), float(global_mean_metrics[2][4])]
@@ -42,10 +42,10 @@ def create_grouped_bar_chart(labels, global_mean_metrics, title, ylabel):
 
     fig.tight_layout()
     plt.ylim([min(t1 + t2 + t3 + t4) - 0.01, max(t1 + t2 + t3 + t4) + 0.01])
-    # plt.show()
+    plt.show()
 
-    plt.savefig(ROOT_DIR + "/neural_networks/convolutional/x_time_window_results/mean_results_" + str(
-        ylabel) + ".png")
+    # plt.savefig(ROOT_DIR + "/neural_networks/convolutional/x_time_window_results/mean_results_" + str(
+    #     ylabel) + ".png")
 
 
 def create_global_grouped_bar_chart(accuracy, precision, recall, f1, title):
@@ -104,9 +104,9 @@ def create_global_grouped_bar_chart(accuracy, precision, recall, f1, title):
 
     fig.tight_layout()
     plt.ylim([min(t1 + t2 + t3 + t4) - 0.005, max(t1 + t2 + t3 + t4) + 0.005])
-    # plt.show()
+    plt.show()
 
-    plt.savefig(ROOT_DIR + "/neural_networks/convolutional/x_time_window_results/mean_GLOBAL_results.png")
+    # plt.savefig(ROOT_DIR + "/neural_networks/convolutional/x_time_window_results/mean_GLOBAL_results.png")
 
 
 if __name__ == '__main__':
