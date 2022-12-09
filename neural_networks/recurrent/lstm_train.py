@@ -3,6 +3,7 @@
 import matplotlib.pyplot as plt
 from keras.utils import to_categorical  # one-hot encode target column
 from keras.models import Sequential
+from keras.callbacks import EarlyStopping
 from keras.layers import Dense, LSTM, GRU, Dropout # create model
 from sklearn.metrics import ConfusionMatrixDisplay
 from sklearn.metrics import confusion_matrix
@@ -15,6 +16,8 @@ import tensorflow as tf
 from neural_networks.utils import plot_confusion_matrix_percentage
 
 if __name__ == '__main__':
+    include_time = False
+
     sorted_data_for_learning = SortedDataForLearning(
         path=ROOT_DIR + "/data_storage/data/raw_learning_data/user_splitted_data/")
 
@@ -24,30 +27,27 @@ if __name__ == '__main__':
     n_train = len(training_data) * validation_split
     n_val = len(training_data) * (1 - validation_split)
     n_test = test_data.shape[0]
-    x_train = training_data[:, :-1]
-    y_train = training_data[:, -1]
 
-    x_train = np.reshape(x_train, (training_data.shape[0], 50, 13))
-    y_train = to_categorical(y_train)
-
+    x_train = np.reshape(training_data[:, :-1], (training_data.shape[0], 50, 13))
+    y_train = to_categorical(training_data[:, -1])
     x_test = np.reshape(test_data[:, :-1], (n_test, 50, 13))
     y_test = to_categorical(test_data[:, -1])
+
+    params = 13
+    if not include_time:
+        x_train = x_train[:, :, 1:]
+        x_test = x_test[:, :, 1:]
+        params = 12
 
     print(x_train.shape)
     print(x_test.shape)
     print(y_train.shape)
     print(y_test.shape)
 
-    print(type(x_train))
-    print(type(x_test))
-    print(type(y_train))
-    print(type(y_test))
-
     model = Sequential()
-    model.add(LSTM(64, input_shape=(50, 13), return_sequences=True))
+    model.add(LSTM(64, input_shape=(50, params), return_sequences=True))
     # model.add(LSTM(64, input_shape=(50, 13)))
-    # Dropout(0.2)
-    # model.add(Dense(64))
+    Dropout(0.2)
     model.add(LSTM(64))
     model.add(Dense(4, activation="softmax"))
 
@@ -56,16 +56,10 @@ if __name__ == '__main__':
 
     model.summary()
 
-    print(x_train.shape)
-    print(y_train.shape)
+    callback = EarlyStopping(monitor='val_loss', patience=10)
 
-    # fit_history = model.fit(x=x_train, y=y_train, validation_data=(x_test, y_test), epochs=25, batch_size=32)
-
-    fit_history = model.fit(x=x_train, y=y_train, validation_split=validation_split, epochs=50, shuffle=True)
-
-    # fit_history = model.fit(x=x_train, y=y_train, validation_split=0.7, epochs=25, batch_size=32)
-    # fit_history = model.fit(x=x_train, y=y_train, validation_split=0.7, epochs=25)
-    # fit_history = model.fit(x=x_train, y=y_train, validation_split=0.3, epochs=50, verbose=2)
+    fit_history = model.fit(x=x_train, y=y_train, validation_split=validation_split, epochs=40, shuffle=True,
+                            callbacks=[callback])
 
     fig = plt.figure()
 
