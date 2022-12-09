@@ -3,7 +3,7 @@
 import matplotlib.pyplot as plt
 from keras.utils import to_categorical  # one-hot encode target column
 from keras.models import Sequential
-from keras.layers import Dense, LSTM, Flatten, MaxPooling2D, Dropout # create model
+from keras.layers import Dense, LSTM, GRU, Dropout # create model
 from sklearn.metrics import ConfusionMatrixDisplay
 from sklearn.metrics import confusion_matrix
 from sklearn.model_selection import train_test_split
@@ -20,7 +20,7 @@ if __name__ == '__main__':
 
     training_data = sorted_data_for_learning.training_data
     test_data = sorted_data_for_learning.test_data
-    validation_split = 0.7
+    validation_split = 0.3
     n_train = len(training_data) * validation_split
     n_val = len(training_data) * (1 - validation_split)
     n_test = test_data.shape[0]
@@ -45,7 +45,9 @@ if __name__ == '__main__':
 
     model = Sequential()
     model.add(LSTM(64, input_shape=(50, 13), return_sequences=True))
-    Dropout(0.2)
+    # model.add(LSTM(64, input_shape=(50, 13)))
+    # Dropout(0.2)
+    # model.add(Dense(64))
     model.add(LSTM(64))
     model.add(Dense(4, activation="softmax"))
 
@@ -59,8 +61,7 @@ if __name__ == '__main__':
 
     # fit_history = model.fit(x=x_train, y=y_train, validation_data=(x_test, y_test), epochs=25, batch_size=32)
 
-    fit_history = model.fit(x=x_train, y=y_train, validation_split=validation_split, epochs=50, verbose=2,
-                            batch_size=64, shuffle=True)
+    fit_history = model.fit(x=x_train, y=y_train, validation_split=validation_split, epochs=50, shuffle=True)
 
     # fit_history = model.fit(x=x_train, y=y_train, validation_split=0.7, epochs=25, batch_size=32)
     # fit_history = model.fit(x=x_train, y=y_train, validation_split=0.7, epochs=25)
@@ -85,3 +86,16 @@ if __name__ == '__main__':
     plt.legend(['train', 'val'], loc='upper left')
 
     plt.show()
+
+    predicted_values = model.predict(x_test)
+
+    results = np.argmax(predicted_values, axis=1, out=None)
+    y_results = np.argmax(y_test, axis=1, out=None)
+
+    # plt.scatter(range(results.shape[0]), results, color='r')
+    # plt.scatter(range(results.shape[0]), y_results, color='g')
+    # plt.show()
+
+    cm = confusion_matrix(y_true=y_results, y_pred=results)
+    print("cm")
+    print(cm)
