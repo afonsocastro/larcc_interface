@@ -15,14 +15,15 @@ def create_grouped_bar_chart(labels, global_mean_metrics, title, ylabel):
     plt.close("all")  # this is the line to be added
 
     lstm = [float(global_mean_metrics[1][1]), float(global_mean_metrics[1][2]), float(global_mean_metrics[1][3]), float(global_mean_metrics[1][4])]
+    gru = [float(global_mean_metrics[2][1]), float(global_mean_metrics[2][2]), float(global_mean_metrics[2][3]), float(global_mean_metrics[2][4])]
 
     x = np.arange(len(labels))  # the label locations
-    width = 0.25  # the width of the bars
+    width = 0.4  # the width of the bars
 
     fig, ax = plt.subplots()
 
-    rects_lstm = ax.bar(x, lstm, width, label='LSTM', color="#fe8281", edgecolor="white", linewidth=2)
-
+    rects_lstm = ax.bar(x - width/2, lstm, width, label='LSTM', color="#47cd4d", edgecolor="white", linewidth=2)
+    rects_gru = ax.bar(x + width/2, gru, width, label='GRU', color="#8f9bff", edgecolor="white", linewidth=2)
 
     # Add some text for labels, title and custom x-axis tick labels, etc.
     ax.set_ylabel(ylabel)
@@ -31,11 +32,11 @@ def create_grouped_bar_chart(labels, global_mean_metrics, title, ylabel):
     ax.set_xticks(x, labels)
     ax.legend()
 
-    # ax.bar_label(rects_lstm, padding=3)
-
+    ax.bar_label(rects_lstm, padding=3)
+    ax.bar_label(rects_gru, padding=3)
 
     fig.tight_layout()
-    plt.ylim([min(lstm) - 0.01, max(lstm) + 0.01])
+    plt.ylim([min(lstm + gru) - 0.01, max(lstm + gru) + 0.01])
     plt.show()
 
     # plt.savefig(ROOT_DIR + "/neural_networks/convolutional/n_times_results/mean_results_" + str(
@@ -46,52 +47,32 @@ def create_global_grouped_bar_chart(accuracy, precision, recall, f1, title):
     # plt.close("all")  # this is the line to be added
     labels=["Accuracy", "Precision", "Recall", "F1 Score"]
 
-    cnn0 = [statistics.mean([float(accuracy[1][1]), float(accuracy[1][2]), float(accuracy[1][3]), float(accuracy[1][4])]),
+    lstm = [statistics.mean([float(accuracy[1][1]), float(accuracy[1][2]), float(accuracy[1][3]), float(accuracy[1][4])]),
           statistics.mean(
               [float(precision[1][1]), float(precision[1][2]), float(precision[1][3]), float(precision[1][4])]),
           statistics.mean([float(recall[1][1]), float(recall[1][2]), float(recall[1][3]), float(recall[1][4])]),
           statistics.mean([float(f1[1][1]), float(f1[1][2]), float(f1[1][3]), float(f1[1][4])])]
 
-    cnn1 = [statistics.mean([float(accuracy[2][1]), float(accuracy[2][2]), float(accuracy[2][3]), float(accuracy[2][4])]),
-          statistics.mean(
-              [float(precision[2][1]), float(precision[2][2]), float(precision[2][3]), float(precision[2][4])]),
-          statistics.mean([float(recall[2][1]), float(recall[2][2]), float(recall[2][3]), float(recall[2][4])]),
-          statistics.mean([float(f1[2][1]), float(f1[2][2]), float(f1[2][3]), float(f1[2][4])])]
-
-    cnn2 = [statistics.mean([float(accuracy[3][1]), float(accuracy[3][2]), float(accuracy[3][3]), float(accuracy[3][4])]),
-          statistics.mean(
-              [float(precision[3][1]), float(precision[3][2]), float(precision[3][3]), float(precision[3][4])]),
-          statistics.mean([float(recall[3][1]), float(recall[3][2]), float(recall[3][3]), float(recall[3][4])]),
-          statistics.mean([float(f1[3][1]), float(f1[3][2]), float(f1[3][3]), float(f1[3][4])])]
-
-    cnn3 = [statistics.mean([float(accuracy[4][1]), float(accuracy[4][2]), float(accuracy[4][3]), float(accuracy[4][4])]),
-          statistics.mean(
-              [float(precision[4][1]), float(precision[4][2]), float(precision[4][3]), float(precision[4][4])]),
-          statistics.mean([float(recall[4][1]), float(recall[4][2]), float(recall[4][3]), float(recall[4][4])]),
-          statistics.mean([float(f1[4][1]), float(f1[4][2]), float(f1[4][3]), float(f1[4][4])])]
-
-    cnn4 = [
-        statistics.mean([float(accuracy[5][1]), float(accuracy[5][2]), float(accuracy[5][3]), float(accuracy[5][4])]),
+    gru = [
+        statistics.mean([float(accuracy[2][1]), float(accuracy[2][2]), float(accuracy[2][3]), float(accuracy[2][4])]),
         statistics.mean(
-            [float(precision[5][1]), float(precision[5][2]), float(precision[5][3]), float(precision[5][4])]),
-        statistics.mean([float(recall[5][1]), float(recall[5][2]), float(recall[5][3]), float(recall[5][4])]),
-        statistics.mean([float(f1[5][1]), float(f1[5][2]), float(f1[5][3]), float(f1[5][4])])]
+            [float(precision[2][1]), float(precision[2][2]), float(precision[2][3]), float(precision[2][4])]),
+        statistics.mean([float(recall[2][1]), float(recall[2][2]), float(recall[2][3]), float(recall[2][4])]),
+        statistics.mean([float(f1[2][1]), float(f1[2][2]), float(f1[2][3]), float(f1[2][4])])]
 
-    cnn0 = [round(item, 4) for item in cnn0]
-    cnn1 = [round(item, 4) for item in cnn1]
-    cnn2 = [round(item, 4) for item in cnn2]
-    cnn3 = [round(item, 4) for item in cnn3]
-    cnn4 = [round(item, 4) for item in cnn4]
+    lstm = [round(item, 4) for item in lstm]
+    gru = [round(item, 4) for item in gru]
 
     x = np.arange(len(labels))  # the label locations
-    width = 0.17  # the width of the bars
+    width = 0.4  # the width of the bars
 
     fig, ax = plt.subplots()
-    rects_cnn0 = ax.bar(x - (2 * width), cnn0, width, label='CNN 0', color="#8f9bff", edgecolor="white", linewidth=2)
-    rects_cnn1 = ax.bar(x - width, cnn1, width, label='CNN 1', color="#47cd4d", edgecolor="white", linewidth=2)
-    rects_cnn2 = ax.bar(x, cnn2, width, label='CNN 2', color="#fe8281", edgecolor="white", linewidth=2)
-    rects_cnn3 = ax.bar(x + width, cnn3, width, label='CNN 3', color="#edac5a", edgecolor="white", linewidth=2)
-    rects_cnn4 = ax.bar(x + (2 * width), cnn4, width, label='CNN 4', color="#e466ff", edgecolor="white", linewidth=2)
+    # rects_cnn0 = ax.bar(x - (2 * width), cnn0, width, label='CNN 0', color="#8f9bff", edgecolor="white", linewidth=2)
+    # rects_cnn1 = ax.bar(x - width, cnn1, width, label='CNN 1', color="#47cd4d", edgecolor="white", linewidth=2)
+    rects_lstm = ax.bar(x - width/2, lstm, width, label='LSTM', color="#47cd4d", edgecolor="white", linewidth=2)
+    rects_gru = ax.bar(x + width/2, gru, width, label='GRU', color="#8f9bff", edgecolor="white", linewidth=2)
+    # rects_cnn3 = ax.bar(x + width, cnn3, width, label='CNN 3', color="#edac5a", edgecolor="white", linewidth=2)
+    # rects_cnn4 = ax.bar(x + (2 * width), cnn4, width, label='CNN 4', color="#e466ff", edgecolor="white", linewidth=2)
 
     # Add some text for labels, title and custom x-axis tick labels, etc.
     # ax.set_ylabel(ylabel)
@@ -100,14 +81,11 @@ def create_global_grouped_bar_chart(accuracy, precision, recall, f1, title):
     ax.set_xticks(x, labels)
     ax.legend()
 
-    ax.bar_label(rects_cnn0, padding=3)
-    ax.bar_label(rects_cnn1, padding=3)
-    ax.bar_label(rects_cnn2, padding=3)
-    ax.bar_label(rects_cnn3, padding=3)
-    ax.bar_label(rects_cnn4, padding=3)
+    ax.bar_label(rects_lstm, padding=3)
+    ax.bar_label(rects_gru, padding=3)
 
     fig.tight_layout()
-    plt.ylim([min(cnn0 + cnn1 + cnn2 + cnn3 + cnn4) - 0.005, max(cnn0 + cnn1 + cnn2 + cnn3 + cnn4) + 0.005])
+    plt.ylim([min(lstm + gru) - 0.005, max(lstm + gru) + 0.005])
     plt.show()
 
     # plt.savefig(ROOT_DIR + "/neural_networks/convolutional/n_times_results/mean_GLOBAL_results.png")
@@ -127,7 +105,6 @@ if __name__ == '__main__':
             training_test_list = json.load(read_file)
 
         n_times = len(training_test_list)
-        epochs = len(training_test_list[0]["training"]["loss"])
 
         print("n_times")
         print(n_times)
@@ -139,11 +116,6 @@ if __name__ == '__main__':
         cm_cumulative_percentage = np.zeros((n_labels, n_labels))
         cm_cumulative = np.zeros((n_labels, n_labels))
 
-        loss = {"accumulated": [0] * epochs, "number": [0] * epochs}
-        val_loss = {"accumulated": [0] * epochs, "number": [0] * epochs}
-        accuracy = {"accumulated": [0] * epochs, "number": [0] * epochs}
-        val_accuracy = {"accumulated": [0] * epochs, "number": [0] * epochs}
-
         pull = {"true_positive": [], "false_positive": [], "false_negative": [], "true_negative": []}
         push = {"true_positive": [], "false_positive": [], "false_negative": [], "true_negative": []}
         shake = {"true_positive": [], "false_positive": [], "false_negative": [], "true_negative": []}
@@ -151,14 +123,20 @@ if __name__ == '__main__':
 
         for n_test in range(0, n_times):
 
-            # -------------------------------------------------------------------------------------------------------------
-            # TRAINING CURVES--------------------------------------------------------------------------------------
-            # -------------------------------------------------------------------------------------------------------------
-            d = training_test_list[n_test]["training"]
-            values_contabilization(origin_dict=d["loss"], dest_dict=loss)
-            values_contabilization(origin_dict=d["val_loss"], dest_dict=val_loss)
-            values_contabilization(origin_dict=d["accuracy"], dest_dict=accuracy)
-            values_contabilization(origin_dict=d["val_accuracy"], dest_dict=val_accuracy)
+            # # -------------------------------------------------------------------------------------------------------------
+            # # TRAINING CURVES--------------------------------------------------------------------------------------
+            # # -------------------------------------------------------------------------------------------------------------
+            # d = training_test_list[n_test]["training"]
+            # epochs = len(d["training"]["loss"])
+            #
+            # loss = {"accumulated": [0] * epochs, "number": [0] * epochs}
+            # val_loss = {"accumulated": [0] * epochs, "number": [0] * epochs}
+            # accuracy = {"accumulated": [0] * epochs, "number": [0] * epochs}
+            # val_accuracy = {"accumulated": [0] * epochs, "number": [0] * epochs}
+            # values_contabilization(origin_dict=d["loss"], dest_dict=loss)
+            # values_contabilization(origin_dict=d["val_loss"], dest_dict=val_loss)
+            # values_contabilization(origin_dict=d["accuracy"], dest_dict=accuracy)
+            # values_contabilization(origin_dict=d["val_accuracy"], dest_dict=val_accuracy)
 
             # -------------------------------------------------------------------------------------------------------------
             # CONFUSION MATRIX-------------------------------------------------------------------------------------
@@ -253,35 +231,35 @@ if __name__ == '__main__':
         mean_accuracy = []
         mean_val_accuracy = []
 
-        for j in range(0, epochs):
-            mean_calc(origin_dict=loss, dest_list=mean_loss, ind=j)
-            mean_calc(origin_dict=val_loss, dest_list=mean_val_loss, ind=j)
-            mean_calc(origin_dict=accuracy, dest_list=mean_accuracy, ind=j)
-            mean_calc(origin_dict=val_accuracy, dest_list=mean_val_accuracy, ind=j)
+        # for j in range(0, epochs):
+        #     mean_calc(origin_dict=loss, dest_list=mean_loss, ind=j)
+        #     mean_calc(origin_dict=val_loss, dest_list=mean_val_loss, ind=j)
+        #     mean_calc(origin_dict=accuracy, dest_list=mean_accuracy, ind=j)
+        #     mean_calc(origin_dict=val_accuracy, dest_list=mean_val_accuracy, ind=j)
 
-        contribution_list = [x / len(training_test_list) for x in loss["number"]]
+        # contribution_list = [x / len(training_test_list) for x in loss["number"]]
 
-        fig = plt.figure()
-
-        plt.subplot(1, 2, 1)
-        plt.plot(mean_accuracy)
-        plt.plot(mean_val_accuracy)
-        plt.plot(contribution_list)
-        plt.title('model accuracy')
-        plt.ylabel('accuracy')
-        plt.xlabel('epoch')
+        # fig = plt.figure()
+        #
+        # plt.subplot(1, 2, 1)
+        # plt.plot(mean_accuracy)
+        # plt.plot(mean_val_accuracy)
+        # plt.plot(contribution_list)
+        # plt.title('model accuracy')
+        # plt.ylabel('accuracy')
+        # plt.xlabel('epoch')
+        # # plt.legend(['train', 'val'], loc='upper left')
+        # plt.legend(['train', 'val', 'attendance'], loc='upper left')
+        #
+        # plt.subplot(1, 2, 2)
+        # plt.plot(mean_loss)
+        # plt.plot(mean_val_loss)
+        # plt.title('model loss')
+        # plt.ylabel('loss')
+        # plt.xlabel('epoch')
         # plt.legend(['train', 'val'], loc='upper left')
-        plt.legend(['train', 'val', 'attendance'], loc='upper left')
-
-        plt.subplot(1, 2, 2)
-        plt.plot(mean_loss)
-        plt.plot(mean_val_loss)
-        plt.title('model loss')
-        plt.ylabel('loss')
-        plt.xlabel('epoch')
-        plt.legend(['train', 'val'], loc='upper left')
-
-        plt.show()
+        #
+        # plt.show()
 
         # training curves data for tickz
         # training_curves_mean_dict = {"loss": mean_loss, "accuracy": mean_accuracy, "val_loss": mean_val_loss,
@@ -331,14 +309,23 @@ if __name__ == '__main__':
 
     global_mean_metrics_accuracy.append(
         ["LSTM", total_metrics[0][1][1], total_metrics[0][2][1], total_metrics[0][3][1], total_metrics[0][4][1], ])
+    global_mean_metrics_accuracy.append(
+        ["GRU", total_metrics[1][1][1], total_metrics[1][2][1], total_metrics[1][3][1], total_metrics[1][4][1], ])
+
     global_mean_metrics_precision.append(
         ["LSTM", total_metrics[0][1][2], total_metrics[0][2][2], total_metrics[0][3][2], total_metrics[0][4][2], ])
+    global_mean_metrics_precision.append(
+        ["GRU", total_metrics[1][1][2], total_metrics[1][2][2], total_metrics[1][3][2], total_metrics[1][4][2], ])
 
     global_mean_metrics_recall.append(
         ["LSTM", total_metrics[0][1][3], total_metrics[0][2][3], total_metrics[0][3][3], total_metrics[0][4][3], ])
+    global_mean_metrics_recall.append(
+        ["GRU", total_metrics[1][1][3], total_metrics[1][2][3], total_metrics[1][3][3], total_metrics[1][4][3], ])
 
     global_mean_metrics_f1.append(
         ["LSTM", total_metrics[0][1][4], total_metrics[0][2][4], total_metrics[0][3][4], total_metrics[0][4][4], ])
+    global_mean_metrics_f1.append(
+        ["GRU", total_metrics[1][1][4], total_metrics[1][2][4], total_metrics[1][3][4], total_metrics[1][4][4], ])
 
     pdf = PDF()
     pdf.add_page()
@@ -366,5 +353,5 @@ if __name__ == '__main__':
 
     create_global_grouped_bar_chart(global_mean_metrics_accuracy, global_mean_metrics_precision,
                                     global_mean_metrics_recall, global_mean_metrics_f1,
-                                    title="Mean Score per metric per CNN\n(4 primitives - 100 times)")
+                                    title="Mean Score per metric per RNN\n(4 primitives - 100 times)")
 

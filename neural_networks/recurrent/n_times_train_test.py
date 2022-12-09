@@ -51,10 +51,10 @@ if __name__ == '__main__':
         print(y_test.shape)
 
         model = Sequential()
-        model.add(LSTM(64, input_shape=(50, params), return_sequences=True))
+        model.add(GRU(64, input_shape=(50, params), return_sequences=True))
         # model.add(LSTM(64, input_shape=(50, 13)))
         Dropout(0.2)
-        model.add(LSTM(64))
+        model.add(GRU(64))
         model.add(Dense(4, activation="softmax"))
 
         model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
@@ -119,6 +119,6 @@ if __name__ == '__main__':
         training_test_dict = {"training": fit_history.history, "test": test_dict}
         training_test_list.append(training_test_dict)
 
-    with open("n_times_train_test/n_times_train_test_LSTM.json", "w") as write_file:
+    with open("n_times_train_test/n_times_train_test_GRU.json", "w") as write_file:
         json.dump(training_test_list, write_file, cls=NumpyArrayEncoder)
 
