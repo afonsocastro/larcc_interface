@@ -7,6 +7,7 @@ from keras.layers import Dense, LSTM, GRU, Dropout  # create model
 from sklearn.metrics import ConfusionMatrixDisplay
 from sklearn.metrics import confusion_matrix
 from sklearn.model_selection import train_test_split
+from keras.callbacks import EarlyStopping
 
 from config.definitions import ROOT_DIR
 from larcc_classes.data_storage.SortedDataForLearning import SortedDataForLearning
@@ -32,6 +33,8 @@ def create_model():
 
 
 if __name__ == '__main__':
+
+    # times =
     sorted_data_for_learning = SortedDataForLearning(
         path=ROOT_DIR + "/data_storage/data/raw_learning_data/user_splitted_data/")
 
@@ -57,24 +60,26 @@ if __name__ == '__main__':
 
     final_y_test = []
     final_y_train = []
-
-    for n in range(5, 7):
+    # total_fit_history = []
+    for n in range(5, 50):
         x_train = x_train_original[:, 0:n, :]
         x_test = x_test_original[:, 0:n, :]
-
-        y_train = y_train_original[:, :]
-        y_test = y_test_original[:, :]
-
-        final_x_train.append(x_train)
+        callback = EarlyStopping(monitor='val_loss', patience=10)
+        fit_history = model.fit(x=x_train, y=y_train_original, validation_split=validation_split, epochs=100,
+                                shuffle=True)
+        print("fit_history.history['accuracy']")
+        print(type(fit_history.history['accuracy']))
         final_x_test.append(x_test)
+        final_y_test.append(y_test_original)
+        # total_fit_history.append(fit_history)
 
-        final_y_train.append(y_train)
-        final_y_test.append(y_test)
+    model.save("myModel")
 
-    print(final_x_train)
-    print(final_x_test)
-    print(final_y_train)
-    print(final_y_test)
-
-    fit_history = model.fit(x=final_x_train, y=final_y_train, validation_split=validation_split, epochs=50,
-                            shuffle=True)
+    # for test in range(0, len(final_y_test)):
+    #     predicted_values = model.predict(final_x_test[test])
+    #     results = np.argmax(predicted_values, axis=1, out=None)
+    #     y_results = np.argmax(final_y_test[test], axis=1, out=None)
+    #
+    #     cm = confusion_matrix(y_true=y_results, y_pred=results)
+    #     print("cm")
+    #     print(cm)

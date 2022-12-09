@@ -45,10 +45,10 @@ if __name__ == '__main__':
     print(y_test.shape)
 
     model = Sequential()
-    model.add(LSTM(64, input_shape=(50, params), return_sequences=True))
+    model.add(GRU(64, input_shape=(50, params), return_sequences=True))
     # model.add(LSTM(64, input_shape=(50, 13)))
     Dropout(0.2)
-    model.add(LSTM(64))
+    model.add(GRU(64))
     model.add(Dense(4, activation="softmax"))
 
     model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
