@@ -220,7 +220,8 @@ class SortedDataForLearning:
 
         measurements = int(store_config["rate"] * train_config["time"])
         data = store_config["data"]
-        data_filtered = train_config["data_filtered"]
+        # data_filtered = train_config["data_filtered"]
+        data_filtered = train_config["data"]
 
         list_idx = []
         for filtered in data_filtered:
