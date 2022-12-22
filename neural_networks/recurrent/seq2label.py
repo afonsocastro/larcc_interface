@@ -7,6 +7,7 @@ from keras.callbacks import EarlyStopping
 from keras.layers import Dense, LSTM, GRU, Dropout # create model
 from sklearn.metrics import ConfusionMatrixDisplay
 from sklearn.metrics import confusion_matrix
+from keras.utils.vis_utils import plot_model
 from sklearn.model_selection import train_test_split
 
 from config.definitions import ROOT_DIR
@@ -17,6 +18,10 @@ from neural_networks.utils import plot_confusion_matrix_percentage
 
 if __name__ == '__main__':
     include_time = False
+    params = 12
+    time_steps = 50
+    batch_size = 64
+    epochs = 40
 
     sorted_data_for_learning = SortedDataForLearning(
         path=ROOT_DIR + "/data_storage/data/raw_learning_data/user_splitted_data/")
@@ -33,11 +38,8 @@ if __name__ == '__main__':
     x_test = np.reshape(test_data[:, :-1], (n_test, 50, 13))
     y_test = to_categorical(test_data[:, -1])
 
-    params = 13
-    if not include_time:
-        x_train = x_train[:, :, 1:]
-        x_test = x_test[:, :, 1:]
-        params = 12
+    x_train = x_train[:, :, 1:]
+    x_test = x_test[:, :, 1:]
 
     print(x_train.shape)
     print(x_test.shape)
@@ -45,21 +47,22 @@ if __name__ == '__main__':
     print(y_test.shape)
 
     model = Sequential()
-    model.add(GRU(64, input_shape=(50, params), return_sequences=True))
+    model.add(LSTM(16, input_shape=(time_steps, params), return_sequences=True))
     # model.add(LSTM(64, input_shape=(50, 13)))
-    Dropout(0.2)
-    model.add(GRU(64))
+    # Dropout(0.2)
+    model.add(LSTM(16))
     model.add(Dense(4, activation="softmax"))
 
     model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
     # model.compile(optimizer='adam', loss='mean_absolute_error', metrics=['accuracy'])
 
     model.summary()
+    plot_model(model, to_file="seq2label/model.png", show_shapes=True)
 
     callback = EarlyStopping(monitor='val_loss', patience=10)
 
-    fit_history = model.fit(x=x_train, y=y_train, validation_split=validation_split, epochs=40, shuffle=True,
-                            callbacks=[callback])
+    fit_history = model.fit(x=x_train, y=y_train, validation_split=validation_split, batch_size=batch_size, epochs=epochs,
+                            shuffle=True, callbacks=[callback], verbose=2)
 
     fig = plt.figure()
 
@@ -80,15 +83,12 @@ if __name__ == '__main__':
     plt.legend(['train', 'val'], loc='upper left')
 
     plt.show()
+    plt.savefig(ROOT_DIR + "/neural_networks/recurrent/seq2label/training_curves.png", bbox_inches='tight')
 
     predicted_values = model.predict(x_test)
 
     results = np.argmax(predicted_values, axis=1, out=None)
     y_results = np.argmax(y_test, axis=1, out=None)
-
-    # plt.scatter(range(results.shape[0]), results, color='r')
-    # plt.scatter(range(results.shape[0]), y_results, color='g')
-    # plt.show()
 
     print("y_results")
     print(y_results)
@@ -98,3 +98,20 @@ if __name__ == '__main__':
     cm = confusion_matrix(y_true=y_results, y_pred=results)
     print("cm")
     print(cm)
+
+    labels = ['PULL', 'PUSH', 'SHAKE', 'TWIST']
+    n_labels = len(labels)
+    blues = plt.cm.Blues
+    disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=labels)
+    disp.plot(cmap=blues)
+
+    # plt.show()
+    plt.savefig(ROOT_DIR + "/neural_networks/recurrent/seq2label/confusion_matrix.png", bbox_inches='tight')
+    # soma = (cm.astype(float).sum(axis=1)).all()
+    # if soma != 0:
+    cm_true = cm / cm.astype(float).sum(axis=1)
+    cm_true_percentage = cm_true * 100
+    plot_confusion_matrix_percentage(confusion_matrix=cm_true_percentage, display_labels=labels, cmap=blues,
+                                     title="Confusion Matrix (%) - Seq-To-Label")
+    # plt.show()
+    plt.savefig(ROOT_DIR + "/neural_networks/recurrent/seq2label/confusion_matrix_true.png", bbox_inches='tight')

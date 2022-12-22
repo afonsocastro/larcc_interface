@@ -53,6 +53,8 @@ def decode_sequence(input_seq, sn, output_dim, o_labels, ei, es, di, dlstm, dd):
 
     encoder_model = Model(ei, es)
 
+    plot_model(encoder_model, to_file="seq2seq/testing_model_1.png", show_shapes=True)
+
     decoder_state_input_h = Input(shape=(output_dim,))
     decoder_state_input_c = Input(shape=(output_dim,))
     decoder_states_inputs = [decoder_state_input_h, decoder_state_input_c]
@@ -61,6 +63,7 @@ def decode_sequence(input_seq, sn, output_dim, o_labels, ei, es, di, dlstm, dd):
     decoder_states = [state_h, state_c]
     decoder_outputs = dd(decoder_outputs)
     decoder_model = Model([di] + decoder_states_inputs, [decoder_outputs] + decoder_states)
+    plot_model(decoder_model, to_file="seq2seq/testing_model_2.png", show_shapes=True)
 
     # Encode the input as state vectors.
     states_value = encoder_model.predict(input_seq)
@@ -116,7 +119,7 @@ if __name__ == '__main__':
     params = 12
     labels = 4
     start_number = 17
-    epochs = 30
+    epochs = 40
 
     # sorted_data_for_learning = SortedDataForLearning(
     #     path=ROOT_DIR + "/data_storage/data/raw_learning_data/user_splitted_data/", config_file="training_config_rnn")
@@ -154,14 +157,14 @@ if __name__ == '__main__':
 
     training_model, e_inputs, e_states, d_inputs, d_lstm, d_dense = training_encoder_decoder(neurons, params, labels)
     training_model.summary()
-    plot_model(training_model, to_file="training_model.png", show_shapes=True)
+    plot_model(training_model, to_file="seq2seq/model.png", show_shapes=True)
 
     print(x_train.shape)
     print(x_train_decoder.shape)
     print(y_train_final.shape)
-
+    callback = EarlyStopping(monitor='val_loss', patience=10)
     fit_history = training_model.fit([x_train, x_train_decoder], y_train_final, batch_size=batch_size, epochs=epochs,
-                                     validation_split=validation_split, verbose=2)
+                                     validation_split=validation_split, shuffle=True, verbose=2, callbacks=[callback])
 
     fig = plt.figure()
 
@@ -181,9 +184,9 @@ if __name__ == '__main__':
     plt.xlabel('epoch')
     plt.legend(['train', 'val'], loc='upper left')
     #
-    # plt.show()
+    plt.show()
 
-    plt.savefig(ROOT_DIR + "/neural_networks/recurrent/training_curves.png", bbox_inches='tight')
+    plt.savefig(ROOT_DIR + "/neural_networks/recurrent/seq2seq/training_curves.png", bbox_inches='tight')
 
     x_test = np.reshape(test_data[:, :-1], (n_test, time_steps, 13))
     y_test = test_data[:, -1]
@@ -228,14 +231,18 @@ if __name__ == '__main__':
     disp.plot(cmap=blues)
 
     # plt.show()
-    plt.savefig(ROOT_DIR + "/neural_networks/recurrent/confusion_matrix.png", bbox_inches='tight')
+    plt.savefig(ROOT_DIR + "/neural_networks/recurrent/seq2seq/confusion_matrix.png", bbox_inches='tight')
     # soma = (cm.astype(float).sum(axis=1)).all()
     # if soma != 0:
     cm_true = cm / cm.astype(float).sum(axis=1)
     cm_true_percentage = cm_true * 100
     plot_confusion_matrix_percentage(confusion_matrix=cm_true_percentage, display_labels=labels, cmap=blues,
-                                     title="Confusion Matrix (%) - CONVOLUTIONAL")
+                                     title="Confusion Matrix (%) - Seq-To-Seq")
     # plt.show()
-    plt.savefig(ROOT_DIR + "/neural_networks/recurrent/confusion_matrix_true.png", bbox_inches='tight')
+    plt.savefig(ROOT_DIR + "/neural_networks/recurrent/seq2seq/confusion_matrix_true.png", bbox_inches='tight')
 
 
+    # metric_accuracy = (tp + tn) / (fp + fn + tp + tn)
+    # metric_recall = tp / (fn + tp)
+    # metric_precision = tp / (fp + tp)
+    # metric_f1 = 2 * (metric_precision * metric_recall) / (metric_precision + metric_recall)
