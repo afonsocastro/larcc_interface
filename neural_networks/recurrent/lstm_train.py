@@ -90,6 +90,11 @@ if __name__ == '__main__':
     # plt.scatter(range(results.shape[0]), y_results, color='g')
     # plt.show()
 
+    print("y_results")
+    print(y_results)
+    print("results")
+    print(results)
+
     cm = confusion_matrix(y_true=y_results, y_pred=results)
     print("cm")
     print(cm)
