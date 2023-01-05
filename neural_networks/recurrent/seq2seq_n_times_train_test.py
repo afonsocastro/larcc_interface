@@ -4,7 +4,7 @@ from keras import Input, Model
 from keras.callbacks import EarlyStopping
 from tensorflow.keras.utils import to_categorical  # one-hot encode target column
 from keras.layers import Dense, LSTM, Flatten, MaxPooling2D, Dropout, Lambda  # create model
-from keras.utils.vis_utils import plot_model
+# from keras.utils.vis_utils import plot_model
 from sklearn.metrics import confusion_matrix
 from config.definitions import ROOT_DIR
 from larcc_classes.data_storage.SortedDataForLearning import SortedDataForLearning
@@ -45,7 +45,7 @@ def decode_sequence(input_seq, sn, output_dim, o_labels, ei, es, di, dlstm, dd):
 
     encoder_model = Model(ei, es)
 
-    plot_model(encoder_model, to_file="seq2seq/testing_model_1.png", show_shapes=True)
+    # plot_model(encoder_model, to_file="seq2seq/testing_model_1.png", show_shapes=True)
 
     decoder_state_input_h = Input(shape=(output_dim,))
     decoder_state_input_c = Input(shape=(output_dim,))
@@ -55,7 +55,7 @@ def decode_sequence(input_seq, sn, output_dim, o_labels, ei, es, di, dlstm, dd):
     decoder_states = [state_h, state_c]
     decoder_outputs = dd(decoder_outputs)
     decoder_model = Model([di] + decoder_states_inputs, [decoder_outputs] + decoder_states)
-    plot_model(decoder_model, to_file="seq2seq/testing_model_2.png", show_shapes=True)
+    # plot_model(decoder_model, to_file="seq2seq/testing_model_2.png", show_shapes=True)
 
     # Encode the input as state vectors.
     states_value = encoder_model.predict(input_seq, verbose=0)
@@ -157,7 +157,7 @@ if __name__ == '__main__':
 
         training_model, e_inputs, e_states, d_inputs, d_lstm, d_dense = training_encoder_decoder(neurons, params, n_labels)
         training_model.summary()
-        plot_model(training_model, to_file="seq2seq/model.png", show_shapes=True)
+        # plot_model(training_model, to_file="seq2seq/model.png", show_shapes=True)
 
         callback = EarlyStopping(monitor='val_loss', patience=10)
         fit_history = training_model.fit([x_train, x_train_decoder], y_train_final, batch_size=batch_size, epochs=epochs,
