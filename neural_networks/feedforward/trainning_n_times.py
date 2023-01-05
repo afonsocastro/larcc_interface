@@ -129,6 +129,8 @@ if __name__ == '__main__':
             print(prediction)
             print("prediction.shape")
             print(prediction.shape)
+            print("type(prediction)")
+            print(type(prediction))
 
             prediction_classification(cla=0, true_out=true, dec_pred=decoded_prediction, dictionary=pull,
                                       pred=prediction)
