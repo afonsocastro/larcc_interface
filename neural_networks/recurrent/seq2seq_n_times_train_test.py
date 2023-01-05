@@ -2,7 +2,7 @@
 
 from keras import Input, Model
 from keras.callbacks import EarlyStopping
-from keras.utils import to_categorical  # one-hot encode target column
+from tensorflow.keras.utils import to_categorical  # one-hot encode target column
 from keras.layers import Dense, LSTM, Flatten, MaxPooling2D, Dropout, Lambda  # create model
 from keras.utils.vis_utils import plot_model
 from sklearn.metrics import confusion_matrix
