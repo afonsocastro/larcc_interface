@@ -106,7 +106,7 @@ def decode_sequence(input_seq, sn, output_dim, o_labels, ei, es, di, dlstm, dd):
 
 
 if __name__ == '__main__':
-    n_times = 2
+    n_times = 20
 
     validation_split = 0.3
     batch_size = 64
@@ -118,8 +118,6 @@ if __name__ == '__main__':
 
     labels = ['PULL', 'PUSH', 'SHAKE', 'TWIST']
     n_labels = len(labels)
-
-    final_dict = []
 
     training_test_list = []
     for n in progressbar(range(n_times), redirect_stdout=True):
