@@ -75,7 +75,7 @@ if __name__ == '__main__':
         sorted_data_for_learning = SortedDataForLearning(
             path=ROOT_DIR + "/data_storage/data/raw_learning_data/user_splitted_data/")
 
-        training_data = sorted_data_for_learning.trainning_data
+        training_data = sorted_data_for_learning.training_data
 
         test_data = sorted_data_for_learning.test_data
 
@@ -123,6 +123,12 @@ if __name__ == '__main__':
 
             decoded_prediction = np.argmax(prediction)
             true = test_data[i, -1]
+
+
+            print("prediction")
+            print(prediction)
+            print("prediction.shape")
+            print(prediction.shape)
 
             prediction_classification(cla=0, true_out=true, dec_pred=decoded_prediction, dictionary=pull,
                                       pred=prediction)

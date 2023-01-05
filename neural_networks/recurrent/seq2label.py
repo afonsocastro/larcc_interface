@@ -21,7 +21,7 @@ if __name__ == '__main__':
     params = 12
     time_steps = 50
     batch_size = 64
-    epochs = 40
+    epochs = 50
 
     sorted_data_for_learning = SortedDataForLearning(
         path=ROOT_DIR + "/data_storage/data/raw_learning_data/user_splitted_data/")
@@ -82,18 +82,13 @@ if __name__ == '__main__':
     plt.xlabel('epoch')
     plt.legend(['train', 'val'], loc='upper left')
 
-    plt.show()
+    # plt.show()
     plt.savefig(ROOT_DIR + "/neural_networks/recurrent/seq2label/training_curves.png", bbox_inches='tight')
 
     predicted_values = model.predict(x_test)
 
     results = np.argmax(predicted_values, axis=1, out=None)
     y_results = np.argmax(y_test, axis=1, out=None)
-
-    print("y_results")
-    print(y_results)
-    print("results")
-    print(results)
 
     cm = confusion_matrix(y_true=y_results, y_pred=results)
     print("cm")
@@ -107,8 +102,6 @@ if __name__ == '__main__':
 
     # plt.show()
     plt.savefig(ROOT_DIR + "/neural_networks/recurrent/seq2label/confusion_matrix.png", bbox_inches='tight')
-    # soma = (cm.astype(float).sum(axis=1)).all()
-    # if soma != 0:
     cm_true = cm / cm.astype(float).sum(axis=1)
     cm_true_percentage = cm_true * 100
     plot_confusion_matrix_percentage(confusion_matrix=cm_true_percentage, display_labels=labels, cmap=blues,

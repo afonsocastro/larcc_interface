@@ -119,7 +119,7 @@ if __name__ == '__main__':
     params = 12
     labels = 4
     start_number = 17
-    epochs = 40
+    epochs = 50
 
     # sorted_data_for_learning = SortedDataForLearning(
     #     path=ROOT_DIR + "/data_storage/data/raw_learning_data/user_splitted_data/", config_file="training_config_rnn")
@@ -184,7 +184,7 @@ if __name__ == '__main__':
     plt.xlabel('epoch')
     plt.legend(['train', 'val'], loc='upper left')
     #
-    plt.show()
+    # plt.show()
 
     plt.savefig(ROOT_DIR + "/neural_networks/recurrent/seq2seq/training_curves.png", bbox_inches='tight')
 
@@ -203,22 +203,10 @@ if __name__ == '__main__':
     predicted = list()
     n_test = 0
 
-    n_times = 30
-
-    # for t_indice in range(0, x_test.shape[0]):
-
     for n in progressbar(range(x_test.shape[0]), redirect_stdout=True):
-    # for n in progressbar(range(n_times), redirect_stdout=True):
         predicted += decode_sequence(x_test[n][np.newaxis, :, :], start_number, neurons, labels, e_inputs,
                                      e_states, d_inputs, d_lstm, d_dense)
         n_test += time_steps
-
-    # print("x_test[0:3]")
-    # print(x_test[0:3])
-    # print("predicted")
-    # print(predicted)
-    # print("y_test_final")
-    # print(y_test_final[0:n_test])
 
     cm = confusion_matrix(y_true=y_test_final[0:n_test], y_pred=predicted)
     print("cm")
@@ -232,8 +220,6 @@ if __name__ == '__main__':
 
     # plt.show()
     plt.savefig(ROOT_DIR + "/neural_networks/recurrent/seq2seq/confusion_matrix.png", bbox_inches='tight')
-    # soma = (cm.astype(float).sum(axis=1)).all()
-    # if soma != 0:
     cm_true = cm / cm.astype(float).sum(axis=1)
     cm_true_percentage = cm_true * 100
     plot_confusion_matrix_percentage(confusion_matrix=cm_true_percentage, display_labels=labels, cmap=blues,
