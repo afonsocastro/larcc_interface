@@ -89,8 +89,8 @@ def training_encoder_decoder(out_dim, input_params, out_labels, start_n, batch_s
     # that is, [1 0 0 0 0 0 0 0 0 0] is the first input for each loop
     # one-hot encoded zero(0) is the start symbol
 
-    inputs = np.zeros((None, 1, out_labels), dtype="float32")
-    inputs[:, :, :] = start_n
+    # inputs = np.zeros((None, 1, out_labels), dtype="float32")
+    # inputs[:, :, :] = start_n
 
     # 2 initial decoder's state
     # encoder's last hidden state + last cell state
@@ -105,6 +105,10 @@ def training_encoder_decoder(out_dim, input_params, out_labels, start_n, batch_s
         context_vector, attention_weights = attention(decoder_outputs, encoder_outputs)
 
         context_vector = tf.expand_dims(context_vector, 1)
+
+        if _ == 0:
+            inputs = np.zeros((context_vector.shape[0], 1, out_labels), dtype="float32")
+            inputs[:, :, :] = start_n
 
         # 4. concatenate the input + context vectore to find the next decoder's input
         inputs = tf.concat([context_vector, inputs], axis=-1)
