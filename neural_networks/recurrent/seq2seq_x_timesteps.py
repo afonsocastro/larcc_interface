@@ -224,18 +224,16 @@ if __name__ == '__main__':
     # print('expected: ',y_test[0])
     # print('predicted: ', pred[0])
 
-    callback = EarlyStopping(monitor='val_loss', patience=10)
-    fit_history = model_encoder_decoder_Bahdanau_Attention.fit(x_train[0:128], y_train_final[0:128], batch_size=batch_size,
-                                                               epochs=epochs, validation_split=validation_split,
-                                                               shuffle=True, verbose=2, callbacks=[callback])
-    exit(0)
     print("x_train.shape")
     print(x_train.shape)
-    print("x_train_decoder.shape")
-    print(x_train_decoder.shape)
     print("y_train_final.shape")
     print(y_train_final.shape)
 
+    callback = EarlyStopping(monitor='val_loss', patience=10)
+    fit_history = model_encoder_decoder_Bahdanau_Attention.fit(x_train, y_train_final, batch_size=batch_size,
+                                                               epochs=epochs, validation_split=validation_split,
+                                                               shuffle=True, verbose=2, callbacks=[callback])
+    exit(0)
     print("x_train_decoder[0, :, :]")
     print(x_train_decoder[0, :, :])
     print("y_train_final[0, :, :]")
