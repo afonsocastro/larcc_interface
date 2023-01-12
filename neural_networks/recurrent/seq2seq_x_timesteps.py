@@ -5,6 +5,7 @@ from keras import Input, Model
 import tensorflow as tf
 from keras.callbacks import EarlyStopping
 from keras.utils import to_categorical  # one-hot encode target column
+from tensorflow.keras.utils import to_categorical  # one-hot encode target column
 from keras.layers import Dense, LSTM, Layer
 from keras.utils.vis_utils import plot_model
 from sklearn.metrics import ConfusionMatrixDisplay
