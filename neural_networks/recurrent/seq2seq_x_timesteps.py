@@ -156,7 +156,7 @@ if __name__ == '__main__':
     params = 12
     labels = 4
     start_number = 17
-    epochs = 100
+    epochs = 2
     # epochs = 50
 
     sorted_data_for_learning = SortedDataForLearning(
@@ -175,61 +175,26 @@ if __name__ == '__main__':
     x_train = x_train[:, :, 1:]
 
     results = []
-    # encodeds = []
     y_train_final = []
-    # x_train_decoder = []
     for line in range(0, y_train.shape[0], 2):
 
         result1 = y_train[line, :]
         result2 = y_train[line+1, :]
 
         for i in range(0, int(x_train.shape[1] / 2)):
-            # if i == 0:
-            #     encoded1 = np.array([start_number, start_number, start_number, start_number], dtype=float)
-            # else:
-            #     encoded1 = result1
-
             results.append(result1)
-            # encodeds.append(encoded1)
 
         for i in range(int(x_train.shape[1] / 2), x_train.shape[1]):
-            # if i == int(x_train.shape[1] / 2):
-            #     encoded2 = encoded1
-            # else:
-            #     encoded2 = result2
             results.append(result2)
-            # encodeds.append(encoded2)
 
         y_train_final.append(results)
-        # x_train_decoder.append(encodeds)
         results = []
-        # encodeds = []
-
     y_train_final = np.array(y_train_final, dtype=float)
-    # x_train_decoder = np.array(x_train_decoder, dtype=float)
-    # x_train_decoder[:, 0, :] = start_number
 
-    # training_model, e_inputs, e_states, d_inputs, d_lstm, d_dense = training_encoder_decoder(neurons, params, labels)
     model_encoder_decoder_Bahdanau_Attention = training_encoder_decoder(neurons, params, labels, start_number, batch_size, time_steps)
     # model_encoder_decoder_Bahdanau_Attention.summary()
 
     # plot_model(model_encoder_decoder_Bahdanau_Attention, to_file="seq2seq/model.png", show_shapes=True)
-
-    x_test = np.reshape(test_data[:, :-1], (int(n_test / 2), time_steps, 13))
-    y_test = test_data[:, -1]
-    x_test = x_test[:, :, 1:]
-
-    # print("x_test.shape")
-    # print(x_test.shape)
-    # print("x_test[0].shape")
-    # print(x_test[0].shape)
-    # print("x_test[0]")
-    # print(x_test[0])
-    #
-    # pred = model_encoder_decoder_Bahdanau_Attention.predict(x_test[0].reshape(1, x_test[0].shape[0], x_test[0].shape[1]))
-    # print('input: ', x_test[0])
-    # print('expected: ',y_test[0])
-    # print('predicted: ', pred[0])
 
     print("x_train.shape")
     print(x_train.shape)
@@ -240,15 +205,7 @@ if __name__ == '__main__':
     fit_history = model_encoder_decoder_Bahdanau_Attention.fit(x_train, y_train_final, batch_size=batch_size,
                                                                epochs=epochs, validation_split=validation_split,
                                                                shuffle=True, verbose=2, callbacks=[callback])
-    exit(0)
-    print("x_train_decoder[0, :, :]")
-    print(x_train_decoder[0, :, :])
-    print("y_train_final[0, :, :]")
-    print(y_train_final[0, :, :])
 
-    callback = EarlyStopping(monitor='val_loss', patience=10)
-    fit_history = training_model.fit([x_train, x_train_decoder], y_train_final, batch_size=batch_size, epochs=epochs,
-                                     validation_split=validation_split, shuffle=True, verbose=2, callbacks=[callback])
 
     fig = plt.figure()
 
@@ -272,6 +229,8 @@ if __name__ == '__main__':
 
     # plt.savefig(ROOT_DIR + "/neural_networks/recurrent/seq2seq/training_curves.png", bbox_inches='tight')
 
+    # model_encoder_decoder_Bahdanau_Attention.save("model_Bahdanau_Attention")
+
     x_test = np.reshape(test_data[:, :-1], (int(n_test / 2), time_steps, 13))
     y_test = test_data[:, -1]
     x_test = x_test[:, :, 1:]
@@ -287,10 +246,19 @@ if __name__ == '__main__':
 
     print(x_test.shape)
 
+    pred = model_encoder_decoder_Bahdanau_Attention.predict(x_test[0].reshape(1, x_test[0].shape[0], x_test[0].shape[1]))
+
+    print('input: ', x_test[0])
+    print('expected: ', y_test_final[0])
+    print('predicted: ', pred[0])
+
+    exit(0)
+
     predicted = list()
     n_test = 0
 
     for n in progressbar(range(int(x_test.shape[0]/10)), redirect_stdout=True):
+
         new_predicted = decode_sequence(x_test[n][np.newaxis, :, :], start_number, neurons, labels, e_inputs,
                                      e_states, d_inputs, d_lstm, d_dense)
 
