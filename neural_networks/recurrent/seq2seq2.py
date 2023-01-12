@@ -139,21 +139,29 @@ if __name__ == '__main__':
     x_train = x_train[:, :, 1:]
 
     results = []
+    encodeds = []
     y_train_final = []
     x_train_decoder = []
+
     for line in range(0, y_train.shape[0]):
 
         result = y_train[line, :]
+
         for i in range(0, x_train.shape[1]):
+            if i == 0:
+                encoded = np.array([start_number, start_number, start_number, start_number], dtype=float)
+            else:
+                encoded = result
             results.append(result)
+            encodeds.append(encoded)
 
         y_train_final.append(results)
-        x_train_decoder.append(results)
+        x_train_decoder.append(encodeds)
         results = []
+        encodeds = []
 
     y_train_final = np.array(y_train_final, dtype=float)
     x_train_decoder = np.array(x_train_decoder, dtype=float)
-    x_train_decoder[:, 0, :] = start_number
 
     training_model, e_inputs, e_states, d_inputs, d_lstm, d_dense = training_encoder_decoder(neurons, params, labels)
     training_model.summary()
@@ -162,6 +170,12 @@ if __name__ == '__main__':
     print(x_train.shape)
     print(x_train_decoder.shape)
     print(y_train_final.shape)
+
+    print("x_train_decoder[0, :, :]")
+    print(x_train_decoder[0, :, :])
+    print("y_train_final[0, :, :]")
+    print(y_train_final[0, :, :])
+
     callback = EarlyStopping(monitor='val_loss', patience=10)
     fit_history = training_model.fit([x_train, x_train_decoder], y_train_final, batch_size=batch_size, epochs=epochs,
                                      validation_split=validation_split, shuffle=True, verbose=2, callbacks=[callback])
@@ -184,9 +198,9 @@ if __name__ == '__main__':
     plt.xlabel('epoch')
     plt.legend(['train', 'val'], loc='upper left')
     #
-    # plt.show()
+    plt.show()
 
-    plt.savefig(ROOT_DIR + "/neural_networks/recurrent/seq2seq/training_curves.png", bbox_inches='tight')
+    # plt.savefig(ROOT_DIR + "/neural_networks/recurrent/seq2seq/training_curves.png", bbox_inches='tight')
 
     x_test = np.reshape(test_data[:, :-1], (n_test, time_steps, 13))
     y_test = test_data[:, -1]
@@ -203,7 +217,7 @@ if __name__ == '__main__':
     predicted = list()
     n_test = 0
 
-    for n in progressbar(range(x_test.shape[0]), redirect_stdout=True):
+    for n in progressbar(range(int(x_test.shape[0]/10)), redirect_stdout=True):
         predicted += decode_sequence(x_test[n][np.newaxis, :, :], start_number, neurons, labels, e_inputs,
                                      e_states, d_inputs, d_lstm, d_dense)
         n_test += time_steps
@@ -218,14 +232,14 @@ if __name__ == '__main__':
     disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=labels)
     disp.plot(cmap=blues)
 
-    # plt.show()
-    plt.savefig(ROOT_DIR + "/neural_networks/recurrent/seq2seq/confusion_matrix.png", bbox_inches='tight')
+    plt.show()
+    # plt.savefig(ROOT_DIR + "/neural_networks/recurrent/seq2seq/confusion_matrix.png", bbox_inches='tight')
     cm_true = cm / cm.astype(float).sum(axis=1)
     cm_true_percentage = cm_true * 100
     plot_confusion_matrix_percentage(confusion_matrix=cm_true_percentage, display_labels=labels, cmap=blues,
                                      title="Confusion Matrix (%) - Seq-To-Seq")
-    # plt.show()
-    plt.savefig(ROOT_DIR + "/neural_networks/recurrent/seq2seq/confusion_matrix_true.png", bbox_inches='tight')
+    plt.show()
+    # plt.savefig(ROOT_DIR + "/neural_networks/recurrent/seq2seq/confusion_matrix_true.png", bbox_inches='tight')
 
 
     # metric_accuracy = (tp + tn) / (fp + fn + tp + tn)

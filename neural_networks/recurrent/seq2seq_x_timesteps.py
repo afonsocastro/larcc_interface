@@ -2,9 +2,10 @@
 
 import matplotlib.pyplot as plt
 from keras import Input, Model
+import tensorflow as tf
 from keras.callbacks import EarlyStopping
 from keras.utils import to_categorical  # one-hot encode target column
-from keras.layers import Dense, LSTM
+from keras.layers import Dense, LSTM, Layer
 from keras.utils.vis_utils import plot_model
 from sklearn.metrics import ConfusionMatrixDisplay
 from sklearn.metrics import confusion_matrix
@@ -13,92 +14,129 @@ from config.definitions import ROOT_DIR
 from larcc_classes.data_storage.SortedDataForLearning import SortedDataForLearning
 import numpy as np
 from neural_networks.utils import plot_confusion_matrix_percentage
+from keras.layers import Lambda
+from keras import backend as K
 
 
-def training_encoder_decoder(out_dim, input_params, out_labels):
-    # Define an input sequence and process it.
-    encoder_inputs = Input(shape=(None, input_params), name="encoder_inputs")
-    encoder = LSTM(out_dim, return_state=True, name="encoder_lstm")
-    encoder_outputs, state_h, state_c = encoder(encoder_inputs)
-    # We discard `encoder_outputs` and only keep the states.
-    encoder_states = [state_h, state_c]
+class BahdanauAttention(Layer):
+    def __init__(self, units, verbose=0):
+        super(BahdanauAttention, self).__init__()
+        self.W1 = Dense(units)
+        self.W2 = Dense(units)
+        self.V = Dense(1)
+        self.verbose = verbose
 
-    # Set up the decoder, using `encoder_states` as initial state.
-    decoder_inputs = Input(shape=(None, out_labels), name="decoder_inputs")
-    decoder_lstm = LSTM(out_dim, return_sequences=True, return_state=True, name="decoder_lstm")
-    decoder_outputs, _, _ = decoder_lstm(decoder_inputs, initial_state=encoder_states)
-    decoder_dense = Dense(out_labels, activation='softmax', name="decoder_dense")
-    decoder_outputs = decoder_dense(decoder_outputs)
+    def call(self, query, values):
+        if self.verbose:
+            print('\n******* Bahdanau Attention STARTS******')
+            print('query (decoder hidden state): (batch_size, hidden size) ', query.shape)
+            print('values (encoder all hidden state): (batch_size, max_len, hidden size) ', values.shape)
 
-    # Define the model that will turn
-    # `encoder_input_data` & `decoder_input_data` into `decoder_target_data`
-    model = Model([encoder_inputs, decoder_inputs], decoder_outputs)
+        # query hidden state shape == (batch_size, hidden size)
+        # query_with_time_axis shape == (batch_size, 1, hidden size)
+        # values shape == (batch_size, max_len, hidden size)
+        # we are doing this to broadcast addition along the time axis to calculate the score
+        query_with_time_axis = tf.expand_dims(query, 1)
 
-    model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
+        if self.verbose:
+            print('query_with_time_axis:(batch_size, 1, hidden size) ', query_with_time_axis.shape)
 
-    return model, encoder_inputs, encoder_states, decoder_inputs, decoder_lstm, decoder_dense
+        # score shape == (batch_size, max_length, 1)
+        # we get 1 at the last axis because we are applying score to self.V
+        # the shape of the tensor before applying self.V is (batch_size, max_length, units)
+        score = self.V(tf.nn.tanh(
+            self.W1(query_with_time_axis) + self.W2(values)))
+        if self.verbose:
+            print('score: (batch_size, max_length, 1) ', score.shape)
+        # attention_weights shape == (batch_size, max_length, 1)
+        attention_weights = tf.nn.softmax(score, axis=1)
+        if self.verbose:
+            print('attention_weights: (batch_size, max_length, 1) ', attention_weights.shape)
+        # context_vector shape after sum == (batch_size, hidden_size)
+        context_vector = attention_weights * values
+        if self.verbose:
+            print('context_vector before reduce_sum: (batch_size, max_length, hidden_size) ', context_vector.shape)
+        context_vector = tf.reduce_sum(context_vector, axis=1)
+        if self.verbose:
+            print('context_vector after reduce_sum: (batch_size, hidden_size) ', context_vector.shape)
+            print('\n******* Bahdanau Attention ENDS******')
+        return context_vector, attention_weights
 
 
-def decode_sequence(input_seq, sn, output_dim, o_labels, ei, es, di, dlstm, dd):
+def training_encoder_decoder(out_dim, input_params, out_labels, start_n, batch_s, time_ss):
+    # The first part is encoder
+    encoder_inputs = Input(shape=(None, input_params), name='encoder_inputs')
+    encoder_lstm = LSTM(out_dim, return_sequences=True, return_state=True, name='encoder_lstm')
+    encoder_outputs, encoder_state_h, encoder_state_c = encoder_lstm(encoder_inputs)
 
-    encoder_model = Model(ei, es)
+    # initial context vector is the states of the encoder
+    encoder_states = [encoder_state_h, encoder_state_c]
 
-    plot_model(encoder_model, to_file="seq2seq/testing_model_1.png", show_shapes=True)
+    # Set up the attention layer
+    attention = BahdanauAttention(out_dim)
 
-    decoder_state_input_h = Input(shape=(output_dim,))
-    decoder_state_input_c = Input(shape=(output_dim,))
-    decoder_states_inputs = [decoder_state_input_h, decoder_state_input_c]
+    # Set up the decoder layers
+    decoder_inputs = Input(shape=(1, (out_labels + out_dim)), name='decoder_inputs')
+    decoder_lstm = LSTM(out_dim, return_state=True, name='decoder_lstm')
+    decoder_dense = Dense(out_labels, activation='softmax', name='decoder_dense')
 
-    decoder_outputs, state_h, state_c = dlstm(di, initial_state=decoder_states_inputs)
-    decoder_states = [state_h, state_c]
-    decoder_outputs = dd(decoder_outputs)
-    decoder_model = Model([di] + decoder_states_inputs, [decoder_outputs] + decoder_states)
-    plot_model(decoder_model, to_file="seq2seq/testing_model_2.png", show_shapes=True)
+    all_outputs = []
 
-    # Encode the input as state vectors.
-    states_value = encoder_model.predict(input_seq)
+    # 1 initial decoder's input data
+    # Prepare initial decoder input data that just contains the start character
+    # Note that we made it a constant one-hot-encoded in the model
+    # that is, [1 0 0 0 0 0 0 0 0 0] is the first input for each loop
+    # one-hot encoded zero(0) is the start symbol
 
-    # Generate empty target sequence of length 1.
-    target_seq = np.zeros((1, 1, o_labels))
-    # Populate the first character of target sequence with the start character.
-    target_seq[:, 0, :] = sn
+    # inputs = np.zeros((batch_s, 1, out_labels))
+    inputs = np.zeros((1, 1, out_labels), dtype="float32")
+    inputs[:, :, :] = start_n
 
-    # Sampling loop for a batch of sequences
-    # (to simplify, here we assume a batch of size 1).
-    stop_condition = False
-    decoded_seq = list()
-    while not stop_condition:
+    # 2 initial decoder's state
+    # encoder's last hidden state + last cell state
+    decoder_outputs = encoder_state_h
+    states = encoder_states
 
-        # in a loop
-        # decode the input to a token/output prediction + required states for context vector
-        output_tokens, h, c = decoder_model.predict(
-            [target_seq] + states_value)
+    # decoder will only process one time step at a time.
+    for _ in range(time_ss):
+        # 3 pay attention
+        # create the context vector by applying attention to
+        # decoder_outputs (last hidden state) + encoder_outputs (all hidden states)
+        context_vector, attention_weights = attention(decoder_outputs, encoder_outputs)
 
-        # convert the token/output prediction to a token/output
-        sampled_token_index = np.argmax(output_tokens[0, -1, :])
-        sampled_digit = sampled_token_index
+        context_vector = tf.expand_dims(context_vector, 1)
 
-        # add the predicted token/output to output sequence
-        decoded_seq.append(sampled_digit)
+        # 4. concatenate the input + context vectore to find the next decoder's input
+        inputs = tf.concat([context_vector, inputs], axis=-1)
 
-        # Exit condition: either hit max length
-        # or find stop character.
-        if len(decoded_seq) == time_steps:
-            stop_condition = True
+        # 5. passing the concatenated vector to the LSTM
+        # Run the decoder on one timestep with attended input and previous states
+        decoder_outputs, state_h, state_c = decoder_lstm(inputs,
+                                                         initial_state=states)
+        # decoder_outputs = tf.reshape(decoder_outputs, (-1, decoder_outputs.shape[2]))
 
-        # Update the input target sequence (of length 1)
-        # with the predicted token/output
-        target_seq = np.zeros((1, 1, o_labels))
-        target_seq[0, 0, sampled_token_index] = sn
+        outputs = decoder_dense(decoder_outputs)
+        # 6. Use the last hidden state for prediction the output
+        # save the current prediction
+        # we will concatenate all predictions later
+        outputs = tf.expand_dims(outputs, 1)
+        all_outputs.append(outputs)
+        # 7. Reinject the output (prediction) as inputs for the next loop iteration
+        # as well as update the states
+        inputs = outputs
+        states = [state_h, state_c]
 
-        # Update input states (context vector)
-        # with the ouputed states
-        states_value = [h, c]
+    # 8. After running Decoder for max time steps
+    # we had created a predition list for the output sequence
+    # convert the list to output array by Concatenating all predictions
+    # such as [batch_size, timesteps, features]
+    decoder_outputs = Lambda(lambda x: K.concatenate(x, axis=1))(all_outputs)
 
-        # loop back.....
+    # 9. Define and compile model
+    model = Model(encoder_inputs, decoder_outputs, name='model_encoder_decoder')
+    model.compile(optimizer='rmsprop', loss='categorical_crossentropy', metrics=['accuracy'])
 
-    # when loop exists return the output sequence
-    return decoded_seq
+    return model
 
 
 if __name__ == '__main__':
@@ -111,6 +149,7 @@ if __name__ == '__main__':
     labels = 4
     start_number = 17
     epochs = 100
+    # epochs = 50
 
     sorted_data_for_learning = SortedDataForLearning(
         path=ROOT_DIR + "/data_storage/data/raw_learning_data/user_splitted_data/")
@@ -128,33 +167,79 @@ if __name__ == '__main__':
     x_train = x_train[:, :, 1:]
 
     results = []
+    # encodeds = []
     y_train_final = []
-    x_train_decoder = []
+    # x_train_decoder = []
     for line in range(0, y_train.shape[0], 2):
 
         result1 = y_train[line, :]
         result2 = y_train[line+1, :]
 
         for i in range(0, int(x_train.shape[1] / 2)):
+            # if i == 0:
+            #     encoded1 = np.array([start_number, start_number, start_number, start_number], dtype=float)
+            # else:
+            #     encoded1 = result1
+
             results.append(result1)
+            # encodeds.append(encoded1)
+
         for i in range(int(x_train.shape[1] / 2), x_train.shape[1]):
+            # if i == int(x_train.shape[1] / 2):
+            #     encoded2 = encoded1
+            # else:
+            #     encoded2 = result2
             results.append(result2)
+            # encodeds.append(encoded2)
 
         y_train_final.append(results)
-        x_train_decoder.append(results)
+        # x_train_decoder.append(encodeds)
         results = []
+        # encodeds = []
 
     y_train_final = np.array(y_train_final, dtype=float)
-    x_train_decoder = np.array(x_train_decoder, dtype=float)
-    x_train_decoder[:, 0, :] = start_number
+    # x_train_decoder = np.array(x_train_decoder, dtype=float)
+    # x_train_decoder[:, 0, :] = start_number
 
-    training_model, e_inputs, e_states, d_inputs, d_lstm, d_dense = training_encoder_decoder(neurons, params, labels)
-    training_model.summary()
-    plot_model(training_model, to_file="seq2seq/model.png", show_shapes=True)
+    # training_model, e_inputs, e_states, d_inputs, d_lstm, d_dense = training_encoder_decoder(neurons, params, labels)
+    model_encoder_decoder_Bahdanau_Attention = training_encoder_decoder(neurons, params, labels, start_number, batch_size, time_steps)
+    model_encoder_decoder_Bahdanau_Attention.summary()
 
+    plot_model(model_encoder_decoder_Bahdanau_Attention, to_file="seq2seq/model.png", show_shapes=True)
+
+    x_test = np.reshape(test_data[:, :-1], (int(n_test / 2), time_steps, 13))
+    y_test = test_data[:, -1]
+    x_test = x_test[:, :, 1:]
+
+    # print("x_test.shape")
+    # print(x_test.shape)
+    # print("x_test[0].shape")
+    # print(x_test[0].shape)
+    # print("x_test[0]")
+    # print(x_test[0])
+    #
+    # pred = model_encoder_decoder_Bahdanau_Attention.predict(x_test[0].reshape(1, x_test[0].shape[0], x_test[0].shape[1]))
+    # print('input: ', x_test[0])
+    # print('expected: ',y_test[0])
+    # print('predicted: ', pred[0])
+
+    callback = EarlyStopping(monitor='val_loss', patience=10)
+    fit_history = model_encoder_decoder_Bahdanau_Attention.fit(x_train[0:128], y_train_final[0:128], batch_size=batch_size,
+                                                               epochs=epochs, validation_split=validation_split,
+                                                               shuffle=True, verbose=2, callbacks=[callback])
+    exit(0)
+    print("x_train.shape")
     print(x_train.shape)
+    print("x_train_decoder.shape")
     print(x_train_decoder.shape)
+    print("y_train_final.shape")
     print(y_train_final.shape)
+
+    print("x_train_decoder[0, :, :]")
+    print(x_train_decoder[0, :, :])
+    print("y_train_final[0, :, :]")
+    print(y_train_final[0, :, :])
+
     callback = EarlyStopping(monitor='val_loss', patience=10)
     fit_history = training_model.fit([x_train, x_train_decoder], y_train_final, batch_size=batch_size, epochs=epochs,
                                      validation_split=validation_split, shuffle=True, verbose=2, callbacks=[callback])
@@ -199,10 +284,22 @@ if __name__ == '__main__':
     predicted = list()
     n_test = 0
 
-    for n in progressbar(range(x_test.shape[0]), redirect_stdout=True):
-        predicted += decode_sequence(x_test[n][np.newaxis, :, :], start_number, neurons, labels, e_inputs,
+    for n in progressbar(range(int(x_test.shape[0]/10)), redirect_stdout=True):
+        new_predicted = decode_sequence(x_test[n][np.newaxis, :, :], start_number, neurons, labels, e_inputs,
                                      e_states, d_inputs, d_lstm, d_dense)
+
+        predicted += new_predicted
+        print("new_predicted")
+        print(new_predicted)
+
+        print("len(new_predicted)")
+        print(len(new_predicted))
+
+
         n_test += time_steps
+
+        print("y_test_final[0:n_test]")
+        print(y_test_final[n_test - time_steps:n_test])
 
     cm = confusion_matrix(y_true=y_test_final[0:n_test], y_pred=predicted)
     print("cm")
