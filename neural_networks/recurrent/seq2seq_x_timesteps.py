@@ -211,7 +211,7 @@ if __name__ == '__main__':
 
     # training_model, e_inputs, e_states, d_inputs, d_lstm, d_dense = training_encoder_decoder(neurons, params, labels)
     model_encoder_decoder_Bahdanau_Attention = training_encoder_decoder(neurons, params, labels, start_number, batch_size, time_steps)
-    model_encoder_decoder_Bahdanau_Attention.summary()
+    # model_encoder_decoder_Bahdanau_Attention.summary()
 
     # plot_model(model_encoder_decoder_Bahdanau_Attention, to_file="seq2seq/model.png", show_shapes=True)
 
