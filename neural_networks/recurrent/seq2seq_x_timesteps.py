@@ -131,15 +131,8 @@ def training_encoder_decoder(out_dim, input_params, out_labels, start_n, batch_s
     # convert the list to output array by Concatenating all predictions
     # such as [batch_size, timesteps, features]
 
-    print("all_outputs")
-    print(all_outputs)
-
     decoder_outputs = Lambda(lambda x: K.concatenate(x, axis=1))(all_outputs)
 
-    print("encoder_inputs.shape")
-    print(encoder_inputs.shape)
-    print("decoder_outputs.shape")
-    print(decoder_outputs.shape)
     # 9. Define and compile model
     model = Model(encoder_inputs, decoder_outputs, name='model_encoder_decoder')
     model.compile(optimizer='rmsprop', loss='categorical_crossentropy', metrics=['accuracy'])
@@ -206,6 +199,8 @@ if __name__ == '__main__':
                                                                epochs=epochs, validation_split=validation_split,
                                                                shuffle=True, verbose=2, callbacks=[callback])
 
+    model_encoder_decoder_Bahdanau_Attention.save("model_Bahdanau_Attention")
+    exit(0)
 
     fig = plt.figure()
 
