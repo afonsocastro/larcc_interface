@@ -206,7 +206,7 @@ if __name__ == '__main__':
     model_encoder_decoder_Bahdanau_Attention = training_encoder_decoder(neurons, params, labels, start_number, batch_size, time_steps)
     model_encoder_decoder_Bahdanau_Attention.summary()
 
-    plot_model(model_encoder_decoder_Bahdanau_Attention, to_file="seq2seq/model.png", show_shapes=True)
+    # plot_model(model_encoder_decoder_Bahdanau_Attention, to_file="seq2seq/model.png", show_shapes=True)
 
     x_test = np.reshape(test_data[:, :-1], (int(n_test / 2), time_steps, 13))
     y_test = test_data[:, -1]
