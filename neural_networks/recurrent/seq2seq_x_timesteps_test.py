@@ -177,11 +177,15 @@ if __name__ == '__main__':
         for y in range(int(time_steps / 2), time_steps):
             y_test_final.append(int(y_test[line+1]))
 
-    # print('input: ', x_test[0])
+    # print('input: ', x_test[0:2])
     # print('expected: ', y_test_final[0])
+    # print(x_test[0:260].shape)
 
     pred = model_Bahdanau_Attention.predict(x_test[0:2].reshape(2, time_steps, params), batch_size=2)
 
-    print('input: ', x_test[0].shape)
-    print('expected: ', y_test_final[0])
-    print('predicted: ', pred[0])
+    print(type(pred))
+    print(pred.shape)
+
+    # print('input: ', x_test[0:2].shape)
+    # print('expected: ', y_test_final[0:2])
+    # print('predicted: ', pred[0:2])
