@@ -170,25 +170,15 @@ if __name__ == '__main__':
     x_test = x_test[:, :, 1:]
 
     y_test_final = []
-
     for line in range(0, y_test.shape[0], 2):
+        r = [int(y_test[line]), int(y_test[line + 1])]
+        y_test_final.append(r)
 
-        for y in range(0, int(time_steps / 2)):
-            y_test_final.append(int(y_test[line]))
-        for y in range(int(time_steps / 2), time_steps):
-            y_test_final.append(int(y_test[line+1]))
-
-    # print('input: ', x_test[0:2])
-    # print('expected: ', y_test_final[0])
-    # print(x_test[0:260].shape)
-
-    pred = model_Bahdanau_Attention.predict(x_test[0:2].reshape(2, time_steps, params), batch_size=2)
-
-    print(type(pred))
-    print(pred.shape)
+    pred = model_Bahdanau_Attention.predict(x_test[0:4].reshape(4, time_steps, params), batch_size=2)
 
     save('pred_model_Bahdanau_Attention.npy', pred)
+    save('true_model_Bahdanau_Attention.npy', y_test_final)
 
     # print('input: ', x_test[0:2].shape)
-    # print('expected: ', y_test_final[0:2])
+    # print('expected: ', y_test_final)
     # print('predicted: ', pred[0:2])

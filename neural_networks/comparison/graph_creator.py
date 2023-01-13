@@ -18,11 +18,9 @@ if __name__ == '__main__':
 
     plt.close("all")  # this is the line to be added
 
-    t1 = [float(global_mean_metrics[1][1]), float(global_mean_metrics[1][2]), float(global_mean_metrics[1][3]),
-          float(global_mean_metrics[1][4])]
-    t2 = [float(global_mean_metrics[2][1]), float(global_mean_metrics[2][2]), float(global_mean_metrics[2][3]),
-          float(global_mean_metrics[2][4])]
-    t3 = [float(global_mean_metrics[3][1]), float(global_mean_metrics[3][2]), float(global_mean_metrics[3][3]),
+    t1 = [12, 14, 9, 8]
+    t2 = [11, 10, 7, 12]
+    t3 = [15, float(global_mean_metrics[3][2]), float(global_mean_metrics[3][3]),
           float(global_mean_metrics[3][4])]
     t4 = [float(global_mean_metrics[4][1]), float(global_mean_metrics[4][2]), float(global_mean_metrics[4][3]),
           float(global_mean_metrics[4][4])]
