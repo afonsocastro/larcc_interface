@@ -17,7 +17,7 @@ import numpy as np
 from neural_networks.utils import plot_confusion_matrix_percentage
 from keras.layers import Lambda
 from keras import backend as K
-from numpy import save
+from numpy import save, delete
 
 
 class BahdanauAttention(Layer):
@@ -152,6 +152,9 @@ if __name__ == '__main__':
     start_number = 17
     epochs = 50
     # epochs = 50
+
+    # delete('pred_model_Bahdanau_Attention.npy')
+    # delete('true_model_Bahdanau_Attention.npy')
 
     sorted_data_for_learning = SortedDataForLearning(
         path=ROOT_DIR + "/data_storage/data/raw_learning_data/user_splitted_data/")

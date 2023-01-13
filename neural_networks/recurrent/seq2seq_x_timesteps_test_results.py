@@ -15,6 +15,23 @@ def value_for_array(data, n, timesteps):
     return pull, push, shake, twist
 
 
+def string_result(true):
+    results = []
+
+    for i in range(0,2):
+        if true[i] == 0:
+            result = "PULL"
+        elif true[i] == 1:
+            result = "PUSH"
+        elif true[i] == 2:
+            result = "SHAKE"
+        elif true[i] == 3:
+            result = "TWIST"
+        results.append(result)
+
+    return results
+
+
 if __name__ == '__main__':
     validation_split = 0.3
     batch_size = 2
@@ -38,7 +55,7 @@ if __name__ == '__main__':
     for n in range(0,len(pred)):
         pull, push, shake, twist = value_for_array(pred, n, 100)
 
-        print(true[n])
+        results_true = string_result(true[n])
 
         fig = plt.figure(figsize=(12, 8))
 
@@ -52,51 +69,10 @@ if __name__ == '__main__':
         plt.plot(df3.timestep, df3.shake, color='green', label='shake', linewidth=3)
         plt.plot(df4.timestep, df4.twist, color='orange', label='twist', linewidth=3)
 
-        plt.title('Primitives confidences at timestep ')
+        plt.title('Primitives confidences at timestep.   True Expected: ' + results_true[0] + ' and ' + results_true[1])
         plt.xlabel('timestep')
         plt.ylabel('Confidence')
         plt.legend()
         plt.tight_layout()
         plt.show()
 
-
-    exit(0)
-
-    pull_0, push_0, shake_0, twist_0 = value_for_array(pred, 0, 100)
-    pull_1, push_1, shake_1, twist_1 = value_for_array(pred, 1, 100)
-
-    # Create figure
-
-    fig = plt.figure(figsize=(12, 8))
-
-    # Define Data
-
-    df1 = pd.DataFrame({'timestep': np.array([i for i in range(100)]), 'pull': pull_0})
-    df2 = pd.DataFrame({'timestep': np.array([i for i in range(100)]), 'push': push_0})
-    df3 = pd.DataFrame({'timestep': np.array([i for i in range(100)]), 'shake': shake_0})
-    df4 = pd.DataFrame({'timestep': np.array([i for i in range(100)]), 'twist': twist_0})
-
-    # Plot time series
-
-    plt.plot(df1.timestep, df1.pull, label='pull', linewidth=3)
-    plt.plot(df2.timestep, df2.push, color='red', label='push', linewidth=3)
-    plt.plot(df3.timestep, df3.shake, color='green', label='shake', linewidth=3)
-    plt.plot(df4.timestep, df4.twist, color='orange', label='twist', linewidth=3)
-
-    # Add title and labels
-
-    plt.title('Primitives confidences at timestep ')
-    plt.xlabel('timestep')
-    plt.ylabel('Confidence')
-
-    # Add legend
-
-    plt.legend()
-
-    # Auto space
-
-    plt.tight_layout()
-
-    # Display plot
-
-    plt.show()
