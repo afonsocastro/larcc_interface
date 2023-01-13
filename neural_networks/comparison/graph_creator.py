@@ -13,17 +13,17 @@ from neural_networks.utils import NumpyArrayEncoder, plot_confusion_matrix_perce
 
 if __name__ == '__main__':
 
-    labels = ['PULL', 'PUSH', 'SHAKE', 'TWIST']
+    labels = ['Accuracy', 'Precision', 'Recall', 'F1-score']
     n_labels = len(labels)
 
     plt.close("all")  # this is the line to be added
 
+    t_ff = [0.9767, 0.955375, 0.953725, 0.953275]
+
     t1 = [12, 14, 9, 8]
     t2 = [11, 10, 7, 12]
-    t3 = [15, float(global_mean_metrics[3][2]), float(global_mean_metrics[3][3]),
-          float(global_mean_metrics[3][4])]
-    t4 = [float(global_mean_metrics[4][1]), float(global_mean_metrics[4][2]), float(global_mean_metrics[4][3]),
-          float(global_mean_metrics[4][4])]
+    t3 = [15, 12, 7, 6]
+    t4 = [4, 20, 11, 10]
 
     x = np.arange(len(labels))  # the label locations
     width = 0.2  # the width of the bars
@@ -35,9 +35,9 @@ if __name__ == '__main__':
     rects_t4 = ax.bar(x + (3 * width / 2), t4, width, label='0.4 s', color="#edac5a", edgecolor="white", linewidth=2)
 
     # Add some text for labels, title and custom x-axis tick labels, etc.
-    ax.set_ylabel(ylabel)
+    ax.set_ylabel("ylabel")
 
-    ax.set_title(title)
+    ax.set_title("title")
     ax.set_xticks(x, labels)
     ax.legend()
 

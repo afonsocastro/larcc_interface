@@ -174,10 +174,10 @@ if __name__ == '__main__':
         r = [int(y_test[line]), int(y_test[line + 1])]
         y_test_final.append(r)
 
-    pred = model_Bahdanau_Attention.predict(x_test[0:4].reshape(4, time_steps, params), batch_size=2)
+    pred = model_Bahdanau_Attention.predict(x_test[0:260].reshape(260, time_steps, params), batch_size=2)
 
     save('pred_model_Bahdanau_Attention.npy', pred)
-    save('true_model_Bahdanau_Attention.npy', y_test_final)
+    save('true_model_Bahdanau_Attention.npy', y_test_final[0:260])
 
     # print('input: ', x_test[0:2].shape)
     # print('expected: ', y_test_final)
