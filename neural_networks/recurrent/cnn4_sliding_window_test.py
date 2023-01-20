@@ -60,38 +60,17 @@ if __name__ == '__main__':
     print(len(x_test))
     print("x_test.shape")
     print(x_test.shape)
-    # exit(0)
-    prediction = cnn4_model.predict(x=x_test_cnn[0:1, 0:20, :, :], verbose=0)
 
-    print(prediction)
-    exit(0)
-    # x_test_i = np.reshape(test_data[0:1, :-1], (1, input_nn, 13, 1))
+    pred_cnn = []
+    for i in range(0, len(x_test)-1):
+        sample_pred = []
+        for sw in range(0, 80):
+            sample_pred.append(cnn4_model.predict(x=x_test_cnn[0:1, sw:sw+20, :, :], verbose=0))
+        pred_cnn.append(sample_pred)
 
-    for i in range(0, len(x_test)):
-        x_test = np.reshape(test_data[i:i + 1, :-1], (1,    input_nn, 13, 1))
-        prediction = cnn4_model.predict(x=x_test, verbose=0)
-
-        # Reverse to_categorical from keras utils
-        decoded_prediction = np.argmax(prediction, axis=1, out=None)
-
-        true = test_data[i, -1]
-
-        print('expected: ', true)
-        print('predicted: ', decoded_prediction)
+    print("type(pred_cnn)")
+    print(type(pred_cnn))
+    print("pred_cnn.shape")
+    print(pred_cnn.shape)
 
 
-
-    #
-    # y_test_final = []
-    # for line in range(0, y_test.shape[0], 2):
-    #     r = [int(y_test[line]), int(y_test[line + 1])]
-    #     y_test_final.append(r)
-    #
-    # pred = model_Bahdanau_Attention.predict(x_test[0:260].reshape(260, time_steps, params), batch_size=2)
-    #
-    # save('pred_model_Bahdanau_Attention.npy', pred)
-    # save('true_model_Bahdanau_Attention.npy', y_test_final[0:260])
-
-    # print('input: ', x_test[0:2].shape)
-    # print('expected: ', y_test_final)
-    # print('predicted: ', pred[0:2])
