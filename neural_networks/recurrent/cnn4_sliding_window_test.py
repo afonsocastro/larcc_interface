@@ -42,7 +42,7 @@ if __name__ == '__main__':
     for i in range(0, len(x_test)-1):
         sample_pred = []
         for sw in range(0, 81):
-            prediction = cnn4_model.predict(x=x_test_cnn[i, sw:sw+20, :, :], verbose=0)
+            prediction = cnn4_model.predict(x=x_test_cnn[i:i+1, sw:sw+20, :, :], verbose=0)
             sample_pred.append(prediction)
 
         pred_cnn.append(sample_pred)
