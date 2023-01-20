@@ -37,10 +37,11 @@ if __name__ == '__main__':
     # delete('pred_model_Bahdanau_Attention.npy')
     # delete('true_model_Bahdanau_Attention.npy')
 
-    config_file = "training_config_time_" + str(time_window)
+    # config_file = "training_config_time_" + str(time_window)
 
     path = ROOT_DIR + "/data_storage/data/raw_learning_data/user_splitted_data/"
-    sorted_data_for_learning = SortedDataForLearning(path=path, config_file=config_file)
+    # sorted_data_for_learning = SortedDataForLearning(path=path, config_file=config_file)
+    sorted_data_for_learning = SortedDataForLearning(path=path)
 
     training_data = sorted_data_for_learning.training_data
     test_data = sorted_data_for_learning.test_data
@@ -53,9 +54,20 @@ if __name__ == '__main__':
 
     x_test = np.reshape(test_data[:, :-1], (int(n_test / 2), time_steps, 13))
     y_test = test_data[:, -1]
-    x_test = x_test[:, :, 1:]
+    x_test_rnn = x_test[:, :, 1:]
+    x_test_cnn = np.reshape(x_test, (x_test.shape[0], x_test.shape[1], x_test.shape[2], 1))
+    print("len(x_test)")
+    print(len(x_test))
+    print("x_test.shape")
+    print(x_test.shape)
+    # exit(0)
+    prediction = cnn4_model.predict(x=x_test_cnn[0:1, 0:20, :, :], verbose=0)
 
-    for i in range(0, len(test_data)):
+    print(prediction)
+    exit(0)
+    # x_test_i = np.reshape(test_data[0:1, :-1], (1, input_nn, 13, 1))
+
+    for i in range(0, len(x_test)):
         x_test = np.reshape(test_data[i:i + 1, :-1], (1,    input_nn, 13, 1))
         prediction = cnn4_model.predict(x=x_test, verbose=0)
 
