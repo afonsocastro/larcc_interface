@@ -61,24 +61,24 @@ if __name__ == '__main__':
     print("x_test.shape")
     print(x_test.shape)
 
-    pred_cnn = np.array()
+    pred_cnn = []
     # for i in range(0, len(x_test)-1):
     for i in range(0, 2):
-        sample_pred = np.array()
+        sample_pred = []
         for sw in range(0, 80):
             prediction = cnn4_model.predict(x=x_test_cnn[0:1, sw:sw+20, :, :], verbose=0)
-            np.append(sample_pred, prediction)
-            # sample_pred.append(prediction)
+            # np.append(sample_pred, prediction)
+            sample_pred.append(prediction)
             # print("prediction")
             # print(prediction)
-        np.append(pred_cnn, sample_pred)
-        # pred_cnn.append(sample_pred)
-        print("pred_cnn")
-        print(pred_cnn)
-        print("type(pred_cnn)")
-        print(type(pred_cnn))
-        print("pred_cnn.shape")
-        print(pred_cnn.shape)
+        # np.append(pred_cnn, sample_pred)
+        pred_cnn.append(sample_pred)
+
+    pred_cnn = np.array(pred_cnn)
+    print("type(pred_cnn)")
+    print(type(pred_cnn))
+    print("pred_cnn.shape")
+    print(pred_cnn.shape)
 
     # print("type(pred_cnn)")
     # print(type(pred_cnn))
