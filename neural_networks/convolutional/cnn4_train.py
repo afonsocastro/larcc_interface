@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 #
-from keras.utils import to_categorical  # one-hot encode target column
+from tensorflow.keras.utils import to_categorical  # one-hot encode target column
 import matplotlib.pyplot as plt
 from keras.models import Sequential
 from keras.layers import Dense, Conv2D, Flatten, MaxPooling2D, Dropout  # create model
