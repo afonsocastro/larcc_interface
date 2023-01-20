@@ -65,7 +65,7 @@ if __name__ == '__main__':
     # for i in range(0, len(x_test)-1):
     for i in range(0, 2):
         sample_pred = []
-        for sw in range(0, 80):
+        for sw in range(0, 81):
             prediction = cnn4_model.predict(x=x_test_cnn[0:1, sw:sw+20, :, :], verbose=0)
             # np.append(sample_pred, prediction)
             sample_pred.append(prediction)
