@@ -75,6 +75,7 @@ if __name__ == '__main__':
         pred_cnn.append(sample_pred)
 
     pred_cnn = np.array(pred_cnn)
+    pred_cnn = np.reshape(pred_cnn, (pred_cnn.shape[0], pred_cnn.shape[1], pred_cnn.shape[3]))
     print("type(pred_cnn)")
     print(type(pred_cnn))
     print("pred_cnn.shape")
