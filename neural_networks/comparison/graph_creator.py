@@ -39,13 +39,21 @@ if __name__ == '__main__':
     t_rr_seq2label = [0.9559, 0.9136, 0.911175, 0.910875]
 
     x = np.arange(len(labels))  # the label locations
-    width = 0.2  # the width of the bars
+    width = 0.07  # the width of the bars
 
     fig, ax = plt.subplots()
-    rects_tff = ax.bar(x - (3 * width / 2), t1, width, label='0.1 s', color="#8f9bff", edgecolor="white", linewidth=2)
-    rects_tcnn0 = ax.bar(x - width / 2, t2, width, label='0.2 s', color="#47cd4d", edgecolor="white", linewidth=2)
-    rects_tcnn1 = ax.bar(x + width / 2, t3, width, label='0.3 s', color="#fe8281", edgecolor="white", linewidth=2)
-    rects_t4 = ax.bar(x + (3 * width / 2), t4, width, label='0.4 s', color="#edac5a", edgecolor="white", linewidth=2)
+    rects_tff = ax.bar(x - (5 * width), t_ff, width, label='FeedForward', color="#7f8c8d", edgecolor="white", linewidth=2)
+    rects_tcnn0 = ax.bar(x - (4 * width), t_cnn0, width, label='cnn 0', color="#47cd4d", edgecolor="white", linewidth=2)
+    rects_tcnn1 = ax.bar(x - (3 * width), t_cnn1, width, label='cnn 1', color="#fe8281", edgecolor="white", linewidth=2)
+    rects_tcnn2 = ax.bar(x - (2 * width), t_cnn2, width, label='cnn 2', color="#8f9bff", edgecolor="white", linewidth=2)
+    rects_tcnn3 = ax.bar(x - width, t_cnn3, width, label='cnn 3', color="#edac5a", edgecolor="white", linewidth=2)
+    rects_tcnn4 = ax.bar(x, t_cnn4, width, label='cnn 4', color="#d2b4de", edgecolor="white", linewidth=2)
+    rects_tcnn_1s = ax.bar(x + width, t_cnn_1s, width, label='0.1 s', color="#1e8449", edgecolor="white", linewidth=2)
+    rects_tcnn_2s = ax.bar(x + (2 * width), t_cnn_2s, width, label='0.2 s', color="#1f618d", edgecolor="white", linewidth=2)
+    rects_tcnn_3s = ax.bar(x + (3 * width), t_cnn_3s, width, label='0.3 s', color="#a93226", edgecolor="white", linewidth=2)
+    rects_tcnn_4s = ax.bar(x + (4 * width), t_cnn_4s, width, label='0.4 s', color="#d4ac0d", edgecolor="white", linewidth=2)
+    rects_trr = ax.bar(x + (5 * width), t_rr_seq2label, width, label='Seq2Label (rnn)', color="#17202a", edgecolor="white", linewidth=2)
+
 
     # Add some text for labels, title and custom x-axis tick labels, etc.
     ax.set_ylabel("ylabel")
@@ -54,11 +62,18 @@ if __name__ == '__main__':
     ax.set_xticks(x, labels)
     ax.legend()
 
-    ax.bar_label(rects_t1, padding=3)
-    ax.bar_label(rects_t2, padding=3)
-    ax.bar_label(rects_t3, padding=3)
-    ax.bar_label(rects_t4, padding=3)
+    ax.bar_label(rects_tff, padding=3)
+    ax.bar_label(rects_tcnn0, padding=3)
+    ax.bar_label(rects_tcnn1, padding=3)
+    ax.bar_label(rects_tcnn2, padding=3)
+    ax.bar_label(rects_tcnn3, padding=3)
+    ax.bar_label(rects_tcnn4, padding=3)
+    ax.bar_label(rects_tcnn_1s, padding=3)
+    ax.bar_label(rects_tcnn_2s, padding=3)
+    ax.bar_label(rects_tcnn_3s, padding=3)
+    ax.bar_label(rects_tcnn_4s, padding=3)
+    ax.bar_label(rects_trr, padding=3)
 
     fig.tight_layout()
-    plt.ylim([min(t1 + t2 + t3 + t4) - 0.01, max(t1 + t2 + t3 + t4) + 0.01])
+    plt.ylim([0.9, 0.99])
     plt.show()
