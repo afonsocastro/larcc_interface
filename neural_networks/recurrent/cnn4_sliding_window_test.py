@@ -23,24 +23,16 @@ from numpy import save, delete
 if __name__ == '__main__':
     validation_split = 0.3
     batch_size = 2
-    # time_steps = 50
     time_steps = 100
     neurons = 16
     params = 12
     labels = 4
     start_number = 17
     epochs = 50
-    # epochs = 50
     time_window = 2
     input_nn = time_window * 10
 
-    # delete('pred_model_Bahdanau_Attention.npy')
-    # delete('true_model_Bahdanau_Attention.npy')
-
-    # config_file = "training_config_time_" + str(time_window)
-
     path = ROOT_DIR + "/data_storage/data/raw_learning_data/user_splitted_data/"
-    # sorted_data_for_learning = SortedDataForLearning(path=path, config_file=config_file)
     sorted_data_for_learning = SortedDataForLearning(path=path)
 
     training_data = sorted_data_for_learning.training_data
@@ -56,10 +48,6 @@ if __name__ == '__main__':
     y_test = test_data[:, -1]
     x_test_rnn = x_test[:, :, 1:]
     x_test_cnn = np.reshape(x_test, (x_test.shape[0], x_test.shape[1], x_test.shape[2], 1))
-    print("len(x_test)")
-    print(len(x_test))
-    print("x_test.shape")
-    print(x_test.shape)
 
     pred_cnn = []
     # for i in range(0, len(x_test)-1):
@@ -67,23 +55,13 @@ if __name__ == '__main__':
         sample_pred = []
         for sw in range(0, 81):
             prediction = cnn4_model.predict(x=x_test_cnn[0:1, sw:sw+20, :, :], verbose=0)
-            # np.append(sample_pred, prediction)
             sample_pred.append(prediction)
-            # print("prediction")
-            # print(prediction)
-        # np.append(pred_cnn, sample_pred)
+
         pred_cnn.append(sample_pred)
 
     pred_cnn = np.array(pred_cnn)
     pred_cnn = np.reshape(pred_cnn, (pred_cnn.shape[0], pred_cnn.shape[1], pred_cnn.shape[3]))
-    print("type(pred_cnn)")
-    print(type(pred_cnn))
-    print("pred_cnn.shape")
-    print(pred_cnn.shape)
 
-    # print("type(pred_cnn)")
-    # print(type(pred_cnn))
-    # print("pred_cnn.shape")
-    # print(pred_cnn.shape)
+    save('cnn4_model_pred.npy', pred_cnn)
 
 
