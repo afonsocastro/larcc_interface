@@ -51,8 +51,12 @@ if __name__ == '__main__':
 
     cnn4_model = keras.models.load_model(ROOT_DIR + "/neural_networks/convolutional/cnn4_model_02_time_window")
 
+    x_test = np.reshape(test_data[:, :-1], (int(n_test / 2), time_steps, 13))
+    y_test = test_data[:, -1]
+    x_test = x_test[:, :, 1:]
+
     for i in range(0, len(test_data)):
-        x_test = np.reshape(test_data[i:i + 1, :-1], (1, input_nn, 13, 1))
+        x_test = np.reshape(test_data[i:i + 1, :-1], (1,    input_nn, 13, 1))
         prediction = cnn4_model.predict(x=x_test, verbose=0)
 
         # Reverse to_categorical from keras utils
@@ -64,9 +68,7 @@ if __name__ == '__main__':
         print('predicted: ', decoded_prediction)
 
 
-    # x_test = np.reshape(test_data[:, :-1], (int(n_test / 2), time_steps, 13))
-    # y_test = test_data[:, -1]
-    # x_test = x_test[:, :, 1:]
+
     #
     # y_test_final = []
     # for line in range(0, y_test.shape[0], 2):
