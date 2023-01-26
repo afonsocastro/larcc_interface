@@ -24,7 +24,7 @@
     <xacro:include filename="$(find larcc_cell_description)/urdf/properties.xacro"/>
 
     <xacro:include filename="$(find ur_description)/urdf/inc/ur10e_macro.xacro"/>
-    <xacro:include filename="$(find realsense2_description)/urdf/test_d435i_camera.urdf.xacro" />
+<!--    <xacro:include filename="$(find realsense2_description)/urdf/test_d435i_camera.urdf.xacro" />-->
     <xacro:include filename="$(find gripper)/urdf/robotiq_arg2f_140_model_macro.xacro" />
     <xacro:include filename="$(find larcc_cell_description)/urdf/table.macro.xacro"/>
     <xacro:include filename="$(find larcc_cell_description)/urdf/gantry.macro.xacro"/>
@@ -49,9 +49,9 @@
 
 <!--    Place d45i camera-->
 
-    <xacro:realsense2_camera parent="base_link" use_nominal_extrinsics="true">
-        <origin xyz="0.797 -0.803 0.432" rpy="3.135 2.462 -1.577"/>
-    </xacro:realsense2_camera>
+<!--    <xacro:realsense2_camera parent="base_link" use_nominal_extrinsics="true">-->
+<!--        <origin xyz="0.797 -0.803 0.432" rpy="3.135 2.462 -1.577"/>-->
+<!--    </xacro:realsense2_camera>-->
 
 <!--    Place gripper-->
     <xacro:robotiq_arg2f_140 prefix=""/>
