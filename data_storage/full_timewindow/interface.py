@@ -5,6 +5,8 @@ from datetime import timedelta
 from collections import namedtuple
 import numpy as np
 import random
+import rospy
+from std_msgs.msg import String
 
 
 if __name__ == '__main__':
@@ -18,23 +20,25 @@ if __name__ == '__main__':
     xtime = 60
 
     while True:
-        times = np.random.choice(range(3, 10), size=random.randint(6, 20), replace=True)
+        # times = np.random.choice(range(3, 10), size=random.randint(6, 20), replace=True)
+        times = np.random.choice(range(5, 15), size=random.randint(4, 12), replace=True)
         if sum(times) == xtime:
             break
 
     experiment = []
-    Test = namedtuple("time", "primitive")
-    for t in times:
-        experiment.append(Test(t, random.choice(primitives)))
+    Stamp = namedtuple("Stamp", "time primitive")
 
+    for t in times:
+        experiment.append(Stamp(t, random.choice(primitives)))
+
+    print("experiment")
     print(experiment)
-    exit(0)
 
     label = tk.Label(root, text="Please, perform a continuous: ", font=("Arial", 25), pady=30)
     label.pack()
 
     str_primitive = tk.StringVar()
-    str_primitive.set(random.choice(primitives))
+
     label = tk.Label(root, textvariable=str_primitive, font=("Arial", 100), fg="darkblue")
     label.pack()
 
@@ -44,7 +48,6 @@ if __name__ == '__main__':
     label = tk.Label(root, text="Next interaction in: ", font=("Arial", 25), pady=30)
     label.pack()
 
-    temp = 10
     str_temp = tk.StringVar()
     primitive_timer = tk.Label(root, textvariable=str_temp, font=("Arial", 80), fg="darkgreen")
     primitive_timer.pack()
@@ -60,28 +63,43 @@ if __name__ == '__main__':
     experiment_timer = tk.Label(root, textvariable=str_time, font=("Arial", 25), fg="black")
     experiment_timer.pack()
 
-    while temp > -1:
-        str_temp.set(str(timedelta(seconds=temp)))
-        str_time.set(str(timedelta(seconds=xtime)))
+    pub = rospy.Publisher('ground_truth', String, queue_size=10)
+    rospy.init_node('full_timewindow_interface', anonymous=True)
+    rate = rospy.Rate(100)  # 100hz
+    pub.publish("START")
 
-        if temp < 6:
-            primitive_timer.config(fg="red")
-        else:
-            primitive_timer.config(fg="darkgreen")
+    for stamp in experiment:
+        str_primitive.set(stamp.primitive)
+        temp = int(stamp.time)
 
-        root.update()
-        time.sleep(1)
+        while True:
+            if temp <= 0:
+                if xtime <= 0:
+                    messagebox.showinfo("Experiment Ended", "We got everything we need :)\nThank you!")
+                    root.destroy()
+                break
 
-        if temp == 0:
-            temp = 10
-            str_primitive.set(random.choice(primitives))
+            rate.sleep()
+            temp -= 0.01
+            xtime -= 0.01
+            message = str(stamp.primitive)
+            pub.publish(message)
 
-        if xtime == 0:
-            messagebox.showinfo("Experiment Ended", "We got everything we need :)\nThank you!")
 
-            root.destroy()
 
-        temp -= 1
-        xtime -= 1
+            str_temp.set(str(timedelta(seconds=int(temp))))
+            str_time.set(str(timedelta(seconds=int(xtime))))
+
+            if int(temp) < 6:
+                primitive_timer.config(fg="red")
+            else:
+                primitive_timer.config(fg="darkgreen")
+
+            root.update()
+
+
+            # time.sleep(1)
+
+
 
     root.mainloop()
