@@ -4,9 +4,39 @@ from datetime import datetime
 import json
 import os
 import time
+from std_msgs.msg import String
+
 from larcc_classes.data_storage.DataForLearning import DataForLearning
 import numpy as np
 import rospy
+
+global classification
+global classification_int
+global first_time_stamp
+global vector_data
+
+
+
+def callback_interface(msg):
+    global classification
+    global classification_int
+    global first_time_stamp
+    global vector_data
+
+    classification = msg.data
+
+    classification_int = None
+    if classification.upper() == 'PULL':
+        classification_int = 0
+    elif classification.upper() == 'PUSH':
+        classification_int = 1
+    elif classification.upper() == 'SHAKE':
+        classification_int = 2
+    elif classification.upper() == 'TWIST':
+        classification_int = 3
+
+    vector_data, first_time_stamp = add_to_vector(data_for_learning,
+                                                  vector_data, first_time_stamp, dic_variable_offset)
 
 
 def add_to_vector(data, vector, first_timestamp, dic_offset):
@@ -125,9 +155,9 @@ if __name__ == '__main__':
     # ---------------------------------------------------------------------------------------------
 
     rospy.init_node("training_data_aquisition", anonymous=True)
+    rospy.Subscriber("ground_truth", String, callback_interface)
 
     data_for_learning = DataForLearning()
-
 
     rate = rospy.Rate(config["rate"])
 
@@ -200,51 +230,52 @@ if __name__ == '__main__':
 
     print("Waiting action!!!!")
 
-    while not rospy.is_shutdown():
-        data_mean = calc_data_mean(data_for_learning)
-        variance = data_mean - rest_state_mean
-        # print(variance)
-        if abs(variance) > config["force_threshold_start"]:
-            break
+    # while not rospy.is_shutdown():
+    #     data_mean = calc_data_mean(data_for_learning)
+    #     variance = data_mean - rest_state_mean
+    #     # print(variance)
+    #     if abs(variance) > config["force_threshold_start"]:
+    #         break
+    #
+    #     time.sleep(0.1)
 
-        time.sleep(0.1)
-
-    time.sleep(config["waiting_offset"]) # time waiting to initiate the experiment
+    # time.sleep(config["waiting_offset"]) # time waiting to initiate the experiment
 
     # ---------------------------------------------------------------------------------------------
     # -------------------------------------GET DATA------------------------------------------------
     # ---------------------------------------------------------------------------------------------
 
-    end_experiment = False
     first_time_stamp = None
     vector_data = np.empty((0, 14))
+
+    end_experiment = False
 
     i = 0
     treshold_counter = 0
 
-    rate.sleep()  # The first time rate sleep was used it was giving problems (would not wait the right amout of time)
-
-    # try:
-    while not rospy.is_shutdown() and i < 600:
-
-        i += 1
-        # print(data_for_learning)
-        vector_data, first_time_stamp = add_to_vector(data_for_learning,
-                                                      vector_data, first_time_stamp, dic_variable_offset)
-
-        data_mean = calc_data_mean(data_for_learning)
-        variance = data_mean - rest_state_mean
-
-        # print(variance)
-        if abs(variance) < config["force_threshold_end"]:
-            treshold_counter += 1
-            if treshold_counter >= config["threshold_counter_limit"]:
-                end_experiment = True
-                break
-        else:
-            treshold_counter = 0
-
-        rate.sleep()
+    # rate.sleep()  # The first time rate sleep was used it was giving problems (would not wait the right amout of time)
+    #
+    # # try:
+    # while not rospy.is_shutdown() and i < 600:
+    #
+    #     i += 1
+    #     # print(data_for_learning)
+    #     vector_data, first_time_stamp = add_to_vector(data_for_learning,
+    #                                                   vector_data, first_time_stamp, dic_variable_offset)
+    #
+    #     data_mean = calc_data_mean(data_for_learning)
+    #     variance = data_mean - rest_state_mean
+    #
+    #     # print(variance)
+    #     if abs(variance) < config["force_threshold_end"]:
+    #         treshold_counter += 1
+    #         if treshold_counter >= config["threshold_counter_limit"]:
+    #             end_experiment = True
+    #             break
+    #     else:
+    #         treshold_counter = 0
+    #
+    #     rate.sleep()
     # except:
     #     print("ctrl+C pressed")
 
@@ -252,6 +283,8 @@ if __name__ == '__main__':
     #     print(f"Data collection interrupted in experiment {j + 1}")
     #     trainning_data_array = trainning_data_array[:-1, :]
     #     break
+
+    rospy.spin()
 
     print(vector_data.shape)
     # vector_norm = normalize_data(vector_data, limit)

@@ -2,6 +2,7 @@
 
 import rospy
 from std_msgs.msg import String
+from larcc_classes.data_storage.DataForLearning import DataForLearning
 
 # received_data = []
 
@@ -46,9 +47,14 @@ def callback(data):
 
 
 if __name__ == '__main__':
+
     rospy.init_node('listener', anonymous=True)
-    rospy.Subscriber("ground_truth", String, callback)
+    data_for_learning = DataForLearning()
 
-
-    rospy.spin()
+    print(data_for_learning)
+    # rospy.init_node('listener', anonymous=True)
+    # rospy.Subscriber("ground_truth", String, callback)
+    #
+    #
+    # rospy.spin()
 
