@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import tkinter as tk
 import time
 from tkinter import messagebox
@@ -83,9 +85,8 @@ if __name__ == '__main__':
             temp -= 0.01
             xtime -= 0.01
             message = str(stamp.primitive)
-            pub.publish(message)
-
-
+            if temp >= 0:
+                pub.publish(message)
 
             str_temp.set(str(timedelta(seconds=int(temp))))
             str_time.set(str(timedelta(seconds=int(xtime))))
@@ -97,9 +98,5 @@ if __name__ == '__main__':
 
             root.update()
 
-
-            # time.sleep(1)
-
-
-
+    pub.publish("END")
     root.mainloop()
