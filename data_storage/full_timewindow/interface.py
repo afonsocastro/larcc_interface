@@ -18,7 +18,8 @@ if __name__ == '__main__':
     root.title("Guide")
     root.geometry("1920x1080")
 
-    primitives = ["PULL", "PUSH", "SHAKE", "TWIST"]
+    # primitives = ["PULL", "PUSH", "SHAKE", "TWIST"]
+    primitives = ["PUXAR", "EMPURRAR", "ABANAR", "TORCER"]
 
     xtime = 60
 
@@ -74,7 +75,7 @@ if __name__ == '__main__':
     rate = rospy.Rate(100)  # 100hz
     pub.publish("START")
 
-    for stamp in experiment:
+    for i, stamp in enumerate(experiment):
         label_str.config(font=("Arial", 100))
         str_primitive.set(stamp.primitive)
         temp = int(stamp.time)
@@ -99,9 +100,8 @@ if __name__ == '__main__':
             if int(temp) < 3:
                 if (temp - int(temp)) < 0.1:
                     sound.play()
-                index = experiment.index(stamp)
-                if index < len(experiment) - 1:
-                    str_primitive.set(stamp.primitive + "     =>     " + experiment[index+1].primitive)
+                if i < len(experiment) - 1:
+                    str_primitive.set(stamp.primitive + "     =>     " + experiment[i+1].primitive)
                     label_str.config(font=("Arial", 80))
 
                 primitive_timer.config(fg="red")

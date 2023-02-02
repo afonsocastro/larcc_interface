@@ -16,7 +16,10 @@ class FulltimeData:
         self.vector_data = None
         self.data_for_learning = DataForLearning()
 
-        time.sleep(0.2  )
+        time.sleep(0.2)
+
+        self.actions = ["PUXAR", "EMPURRAR", "ABANAR", "TORCER"]
+        # self.actions = ["PULL", "PUSH", "SHAKE", "TWIST"]
 
         self.first_time_stamp = None
         self.vector_data = np.empty((0, 14))
@@ -62,17 +65,21 @@ class FulltimeData:
         classification = msg.data
 
         classification_int = None
-        if classification.upper() == 'PULL':
+        if classification.upper() == self.actions[0]:
             classification_int = 0
-        elif classification.upper() == 'PUSH':
+        elif classification.upper() == self.actions[1]:
             classification_int = 1
-        elif classification.upper() == 'SHAKE':
+        elif classification.upper() == self.actions[2]:
             classification_int = 2
-        elif classification.upper() == 'TWIST':
+        elif classification.upper() == self.actions[3]:
             classification_int = 3
         elif classification.upper() == 'END':
-            print("SAVING")
-            self.save_trainnning_data(self.vector_data)
+            save_experiment = input("Save data? (s/n)")
+            if save_experiment.lower() == "s":
+                self.save_trainnning_data(self.vector_data)
+                print("Data saved")
+            else:
+                print("Data NOT saved")
 
         if classification_int is not None:
             self.add_to_vector()
@@ -140,9 +147,6 @@ class FulltimeData:
 
 if __name__ == '__main__':
     rospy.init_node("training_data_aquisition", anonymous=True)
-
-
-
     ftd = FulltimeData()
 
     rospy.spin()

@@ -7,7 +7,7 @@ import time
 from larcc_classes.data_storage.DataForLearning import DataForLearning
 import numpy as np
 import rospy
-from lib.src.ArmGripperComm import ArmGripperComm
+# from larcc_classes.src.ArmGripperComm import ArmGripperComm
 
 
 def add_to_vector(data, vector, first_timestamp, dic_offset):
@@ -54,7 +54,7 @@ def offset_calculation(dic):
 
 def save_trainnning_data(data, categ, action_list):
 
-    path = "./../data/raw_learning_data"
+    path = "./../data/new_acquisition"
 
     files = os.listdir(path)
 
@@ -64,10 +64,10 @@ def save_trainnning_data(data, categ, action_list):
 
     for file in files:
         if file.find("raw_learning_data.") != -1:
-            prev_data_array = np.load(path + "/raw_learning_data.npy")
+            prev_data_array = np.load(path + "/raw_learning_data.npy", allow_pickle=False)
             data = np.append(prev_data_array, data, axis=0)
 
-    np.save(path + "/raw_learning_data.npy", data)
+    np.save(path + "/raw_learning_data.npy", data, allow_pickle=False)
 
     idx_dic = {}
     idx_list = []
@@ -120,7 +120,7 @@ if __name__ == '__main__':
     rospy.init_node("training_data_aquisition", anonymous=True)
 
     data_for_learning = DataForLearning()
-    arm_gripper_comm = ArmGripperComm()
+    # arm_gripper_comm = ArmGripperComm()
 
     rate = rospy.Rate(config["rate"])
 
@@ -130,23 +130,23 @@ if __name__ == '__main__':
     # -------------------------------INITIATE ROBOT------------------------------------------------
     # ---------------------------------------------------------------------------------------------
 
-    try:
-        joints = config["initial_pose"]
-        arm_gripper_comm.move_arm_to_joints_state(joints[0], joints[1], joints[2], joints[3], joints[4], joints[5])
-        if args["activate_gripper"] == 1:
-            input("Press ENTER to activate gripper in 3 secs")
-            for i in range(0, 3):
-                print(i + 1)
-                time.sleep(1)
-
-            arm_gripper_comm.gripper_init()
-            time.sleep(1.5)
-
-            arm_gripper_comm.gripper_close_fast()
-            time.sleep(0.5)
-            arm_gripper_comm.gripper_disconnect()
-    except:
-        print("ctrl+C pressed")
+    # try:
+    #     joints = config["initial_pose"]
+    #     arm_gripper_comm.move_arm_to_joints_state(joints[0], joints[1], joints[2], joints[3], joints[4], joints[5])
+    #     if args["activate_gripper"] == 1:
+    #         input("Press ENTER to activate gripper in 3 secs")
+    #         for i in range(0, 3):
+    #             print(i + 1)
+    #             time.sleep(1)
+    #
+    #         arm_gripper_comm.gripper_init()
+    #         time.sleep(1.5)
+    #
+    #         arm_gripper_comm.gripper_close_fast()
+    #         time.sleep(0.5)
+    #         arm_gripper_comm.gripper_disconnect()
+    # except:
+    #     print("ctrl+C pressed")
 
     list_gripper_calibration = []
     dic_offset_calibration = {"fx": [],
@@ -262,7 +262,8 @@ if __name__ == '__main__':
           f'{data_for_learning.wrench_pose.orientation.x}, {data_for_learning.wrench_pose.orientation.y}, ' \
           f'{data_for_learning.wrench_pose.orientation.z}, {data_for_learning.wrench_pose.orientation.w})'
 
-    del data_for_learning, arm_gripper_comm
+    del data_for_learning
+    # del data_for_learning, arm_gripper_comm
 
     # ---------------------------------------------------------------------------------------------
     # -------------------------------SAVE TRAINNING DATA-------------------------------------------
