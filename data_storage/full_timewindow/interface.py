@@ -9,6 +9,7 @@ import numpy as np
 import random
 import rospy
 from std_msgs.msg import String
+from pygame import mixer
 
 
 if __name__ == '__main__':
@@ -21,9 +22,13 @@ if __name__ == '__main__':
 
     xtime = 60
 
+    mixer.init()
+    sound = mixer.Sound("beep-07a.wav")
+    # sound = mixer.Sound("beep-06.wav")
+
     while True:
-        # times = np.random.choice(range(3, 10), size=random.randint(6, 20), replace=True)
-        times = np.random.choice(range(5, 15), size=random.randint(4, 12), replace=True)
+        times = np.random.choice(range(5, 12), size=random.randint(5, 12), replace=True)
+        # times = np.random.choice(range(5, 15), size=random.randint(4, 12), replace=True)
         if sum(times) == xtime:
             break
 
@@ -41,8 +46,8 @@ if __name__ == '__main__':
 
     str_primitive = tk.StringVar()
 
-    label = tk.Label(root, textvariable=str_primitive, font=("Arial", 100), fg="darkblue")
-    label.pack()
+    label_str = tk.Label(root, textvariable=str_primitive, font=("Arial", 100), fg="darkblue")
+    label_str.pack()
 
     label = tk.Label(root, text=" ", font=("Arial", 25), pady=60)
     label.pack()
@@ -61,7 +66,6 @@ if __name__ == '__main__':
     label.pack()
 
     str_time = tk.StringVar()
-
     experiment_timer = tk.Label(root, textvariable=str_time, font=("Arial", 25), fg="black")
     experiment_timer.pack()
 
@@ -71,6 +75,7 @@ if __name__ == '__main__':
     pub.publish("START")
 
     for stamp in experiment:
+        label_str.config(font=("Arial", 100))
         str_primitive.set(stamp.primitive)
         temp = int(stamp.time)
 
@@ -91,7 +96,14 @@ if __name__ == '__main__':
             str_temp.set(str(timedelta(seconds=int(temp))))
             str_time.set(str(timedelta(seconds=int(xtime))))
 
-            if int(temp) < 6:
+            if int(temp) < 3:
+                if (temp - int(temp)) < 0.1:
+                    sound.play()
+                index = experiment.index(stamp)
+                if index < len(experiment) - 1:
+                    str_primitive.set(stamp.primitive + "     =>     " + experiment[index+1].primitive)
+                    label_str.config(font=("Arial", 80))
+
                 primitive_timer.config(fg="red")
             else:
                 primitive_timer.config(fg="darkgreen")

@@ -310,8 +310,12 @@ if __name__ == '__main__':
     # -------------------------------SAVE TRAINNING DATA-------------------------------------------
     # ---------------------------------------------------------------------------------------------
 
+    # answer = input("Do you want to save this experiment? [Y/n]")
+    # if answer == "yes":
     print(f"Trainning saved!\nIt was saved {vector_data.shape[0]} experiments")
     save_trainnning_data(vector_data)
+    # elif answer == "n":
+    #     print("Fine, have a nice day!")
 
     # if out == "s":
     #     with open('../data/raw_learning_data/position_historic.txt', 'a') as f:
