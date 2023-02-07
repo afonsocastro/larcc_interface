@@ -1,0 +1,6 @@
+{
+  "actions": ["pull", "push", "shake", "twist"],
+  "users": ["Luc","Rod","Ine","Ali","Mig","Ana","Gui","Joe","Dia"],
+  "user_order": [6, 7, 8, 9, 10, 11, 12, 13, 14],
+  "user_idxs": [129, 153, 121, 121, 124, 139, 122, 122, 139]
+}
