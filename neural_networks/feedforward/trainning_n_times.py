@@ -53,8 +53,8 @@ def create_model_from_json(input_shape, model_config, output_shape):
 
 if __name__ == '__main__':
 
-    n_times = 2
-    # n_times = 100
+    # n_times = 2
+    n_times = 100
 
     output_neurons = 4
     validation_split = 0.3
