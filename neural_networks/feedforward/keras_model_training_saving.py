@@ -57,9 +57,11 @@ if __name__ == '__main__':
 
     model = create_model_from_json(input_shape=650, model_config=model_config, output_shape=output_neurons)
 
-    sorted_data_for_learning = SortedDataForLearning(path=ROOT_DIR + "/data_storage/data/raw_learning_data/user_splitted_data/")
+    # sorted_data_for_learning = SortedDataForLearning(path=ROOT_DIR + "/data_storage/data/raw_learning_data/user_splitted_data/")
 
-    training_data = sorted_data_for_learning.trainning_data
+    sorted_data_for_learning = SortedDataForLearning(path=ROOT_DIR + "/data_storage/data/processed_learning_data/")
+
+    training_data = sorted_data_for_learning.training_data
 
     validation_n = len(training_data) * validation_split
 

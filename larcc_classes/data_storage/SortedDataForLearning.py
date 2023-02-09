@@ -46,6 +46,11 @@ class SortedDataForLearning:
         # print(data_file)
         # print("config_file")
         # print(config_file)
+        # print("os.path.isfile(path + data_file)")
+        # print(os.path.isfile(path + data_file))
+        # print("os.path.isdir(path)")
+        # print(os.path.isdir(path))
+
         if os.path.isfile(path + data_file):
             self.experiment_data = np.load(path + data_file)
 
@@ -92,12 +97,18 @@ class SortedDataForLearning:
             files = os.listdir(path)
             for file in files:
                 new_array = np.load(path + file)
-                for user in str(self.training_config["training_users"]):
-                    if user in file:
+                for user in self.training_config["training_users"]:
+                    number = int(''.join([str(x) for x in [int(s) for s in str(file) if s.isdigit()]]))
+                    if user == number:
+                        print("training data: " + str(user) )
+                        print("file: " + file)
                         self.raw_training_data = np.append(self.raw_training_data, new_array, axis=0)
 
-                for user in str(self.training_config["test_users"]):
-                    if user in file:
+                for user in self.training_config["test_users"]:
+                    number = int(''.join([str(x) for x in [int(s) for s in str(file) if s.isdigit()]]))
+                    if user == number:
+                        print("test data: " + str(user))
+                        print("file: " + file)
                         self.raw_test_data = np.append(self.raw_test_data, new_array, axis=0)
 
             # print(self.raw_training_data.shape)
@@ -117,7 +128,7 @@ class SortedDataForLearning:
 
         np.save("/tmp/training_data.npy", self.training_data)
         np.save("/tmp/test_data.npy", self.test_data)
-        # np.save(ROOT_DIR + "/data_storage/data/processed_learning_data/Maf_learning_data_5.npy", self.test_data)
+        # np.save(ROOT_DIR + "/data_storage/data/processed_learning_data/Rod_learning_data_7.npy", self.test_data)
 
         print("<======================================================>")
         print("Learning data shape: " + str(self.training_data.shape))
@@ -265,7 +276,9 @@ class SortedDataForLearning:
 if __name__ == '__main__':
 
     parser = argparse.ArgumentParser(description="Arguments for sorter script")
-    parser.add_argument("-p", "--path", type=str, default=ROOT_DIR + "/data_storage/data/raw_learning_data/",
+    # parser.add_argument("-p", "--path", type=str, default=ROOT_DIR + "/data_storage/data/raw_learning_data/",
+    parser.add_argument("-p", "--path", type=str,
+                        default=ROOT_DIR + "/data_storage/data/processed_learning_data/",
                         help="The relative path to the .npy file")
     parser.add_argument("-f", "--file", type=str, default="raw_learning_data.npy",
                         help="The name of the .npy file")
@@ -277,6 +290,6 @@ if __name__ == '__main__':
 
     args = vars(parser.parse_args())
 
-    sort_data_for_learing = SortedDataForLearning(path=ROOT_DIR + args["path"], data_file=args["file"],
+    sort_data_for_learing = SortedDataForLearning(path=args["path"], data_file=args["file"],
                                                   config_file=args["config_file"], div=args["div"])
 

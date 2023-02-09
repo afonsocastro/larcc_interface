@@ -53,8 +53,8 @@ def create_model_from_json(input_shape, model_config, output_shape):
 
 if __name__ == '__main__':
 
-    # n_times = 50
-    n_times = 100
+    n_times = 2
+    # n_times = 100
 
     output_neurons = 4
     validation_split = 0.3
@@ -72,8 +72,10 @@ if __name__ == '__main__':
 
         model = create_model_from_json(input_shape=650, model_config=model_config, output_shape=output_neurons)
 
-        sorted_data_for_learning = SortedDataForLearning(
-            path=ROOT_DIR + "/data_storage/data/raw_learning_data/user_splitted_data/")
+        # sorted_data_for_learning = SortedDataForLearning(
+        #     path=ROOT_DIR + "/data_storage/data/raw_learning_data/user_splitted_data/")
+
+        sorted_data_for_learning = SortedDataForLearning(path=ROOT_DIR + "/data_storage/data/processed_learning_data/")
 
         training_data = sorted_data_for_learning.training_data
 
@@ -124,13 +126,12 @@ if __name__ == '__main__':
             decoded_prediction = np.argmax(prediction)
             true = test_data[i, -1]
 
-
-            print("prediction")
-            print(prediction)
-            print("prediction.shape")
-            print(prediction.shape)
-            print("type(prediction)")
-            print(type(prediction))
+            # print("prediction")
+            # print(prediction)
+            # print("prediction.shape")
+            # print(prediction.shape)
+            # print("type(prediction)")
+            # print(type(prediction))
 
             prediction_classification(cla=0, true_out=true, dec_pred=decoded_prediction, dictionary=pull,
                                       pred=prediction)
@@ -152,5 +153,5 @@ if __name__ == '__main__':
         training_test_list.append(training_test_dict)
         # printProgressBar(n, n_times, prefix='Progress:', suffix='Complete', length=80)
 
-    with open("training_testing_n_times/training_testing_n_times.json", "w") as write_file:
+    with open("training_testing_n_times_2nd_round/training_testing_n_times.json", "w") as write_file:
         json.dump(training_test_list, write_file, cls=NumpyArrayEncoder)

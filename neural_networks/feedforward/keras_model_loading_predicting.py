@@ -83,10 +83,10 @@ if __name__ == '__main__':
 
     test_data = np.load('/tmp/test_data.npy', mmap_mode=None, allow_pickle=False, fix_imports=True, encoding='ASCII')
 
-    # test_data = np.load(ROOT_DIR + '/data_storage/data/processed_learning_data/Ru_learning_data_4.npy',
+    # test_data = np.load(ROOT_DIR + '/data_storage/data/processed_learning_data/Rod_learning_data_7.npy',
     #                     mmap_mode=None, allow_pickle=False, fix_imports=True, encoding='ASCII')
 
-    # test_data = np.load(ROOT_DIR + '/data_storage/data/processed_learning_data/Maf_learning_data_5.npy',
+    # test_data = np.load(ROOT_DIR + '/data_storage/data/processed_learning_data/Joe_learning_data_13.npy',
     #                     mmap_mode=None, allow_pickle=False, fix_imports=True, encoding='ASCII')
 
     model = keras.models.load_model("myModel")
@@ -122,6 +122,9 @@ if __name__ == '__main__':
 
         decoded_prediction = np.argmax(prediction)
         true = test_data[i, -1]
+
+        if decoded_prediction == 2 and true == 3:
+            print("index: " + str(i))
 
         prediction_classification(cla=0, true_out=true, dec_pred=decoded_prediction, dictionary=pull, pred=prediction)
         prediction_classification(cla=1, true_out=true, dec_pred=decoded_prediction, dictionary=push, pred=prediction)

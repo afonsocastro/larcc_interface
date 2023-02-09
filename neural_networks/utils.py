@@ -169,6 +169,23 @@ def metrics_calc(origin, metrics_dest, number):
     metrics_dest["f1"].append(metric_f1)
 
 
+def simple_metrics_calc(origin, metrics_dest):
+    tp = origin["true_positive"]
+    fp = origin["false_positive"]
+    fn = origin["false_negative"]
+    tn = origin["true_negative"]
+
+    metric_accuracy = (tp + tn) / (fp + fn + tp + tn)
+    metric_recall = tp / (fn + tp)
+    metric_precision = tp / (fp + tp)
+    metric_f1 = 2 * (metric_precision * metric_recall) / (metric_precision + metric_recall)
+
+    metrics_dest["accuracy"] = metric_accuracy
+    metrics_dest["recall"] = metric_recall
+    metrics_dest["precision"] = metric_precision
+    metrics_dest["f1"] = metric_f1
+
+
 def filling_table(dict, header):
     data = [
         [header, "Mean", "Std Dev", "Max", "Min", ],
