@@ -29,7 +29,7 @@ def add_to_vector(data, vector, first_timestamp, dic_offset):
                          data.wrench_force_torque.force.z - dic_offset["fz"],
                          data.wrench_force_torque.torque.x - dic_offset["mx"],
                          data.wrench_force_torque.torque.y - dic_offset["my"],
-                         data.wrench_force_torque.torque.z - - dic_offset["mz"]])
+                         data.wrench_force_torque.torque.z - dic_offset["mz"]])
 
     return np.append(vector, new_data), first_timestamp
 

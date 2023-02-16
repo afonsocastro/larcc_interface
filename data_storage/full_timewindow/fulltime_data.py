@@ -82,9 +82,9 @@ class FulltimeData:
                 print("Data NOT saved")
 
         if classification_int is not None:
-            self.add_to_vector()
+            self.add_to_vector(classification_int)
 
-    def add_to_vector(self):
+    def add_to_vector(self, class_int):
 
         data = self.data_for_learning
 
@@ -105,8 +105,8 @@ class FulltimeData:
                              data.wrench_force_torque.force.z - self.dic_offset["fz"],
                              data.wrench_force_torque.torque.x - self.dic_offset["mx"],
                              data.wrench_force_torque.torque.y - self.dic_offset["my"],
-                             data.wrench_force_torque.torque.z - - self.dic_offset["mz"],
-                             0])
+                             data.wrench_force_torque.torque.z - self.dic_offset["mz"],
+                             class_int])
 
         self.vector_data = np.append(self.vector_data, [new_data], axis=0)
 
