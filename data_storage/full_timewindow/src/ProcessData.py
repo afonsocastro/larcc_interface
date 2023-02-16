@@ -51,9 +51,9 @@ class ProcessData:
             self.experiment_data = np.load(path + data_file)
 
             print("self.experiment_data.shape")
-            for i in range(0,18):
+            for i in range(0,1):
                 for j in range(0,6000):
-                    print(self.experiment_data[i][j][0])
+                    print(self.experiment_data[i][j][13])
 
             # self.process_data()
             # self.filter_classes(experiment_data, storage_config, training_config)

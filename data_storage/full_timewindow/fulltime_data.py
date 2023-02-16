@@ -75,7 +75,7 @@ class FulltimeData:
             classification_int = 3
         elif classification.upper() == 'END':
             save_experiment = input("Save data? (s/n)")
-            if save_experiment.lower() == "s":
+            if "s" in save_experiment.lower():
                 self.save_trainnning_data(self.vector_data)
                 print("Data saved")
             else:

@@ -10,6 +10,7 @@ import random
 import rospy
 from std_msgs.msg import String
 from pygame import mixer
+from config.definitions import ROOT_DIR
 
 
 if __name__ == '__main__':
@@ -24,7 +25,7 @@ if __name__ == '__main__':
     xtime = 60
 
     mixer.init()
-    sound = mixer.Sound("beep-07a.wav")
+    sound = mixer.Sound(ROOT_DIR + "/data_storage/full_timewindow/beep-07a.wav")
     # sound = mixer.Sound("beep-06.wav")
 
     while True:
