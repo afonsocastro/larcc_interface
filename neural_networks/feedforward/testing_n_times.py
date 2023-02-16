@@ -7,8 +7,8 @@ import numpy as np
 from larcc_classes.documentation.PDF import PDF
 import statistics
 from neural_networks.utils import NumpyArrayEncoder, plot_confusion_matrix_percentage, values_contabilization, \
-    group_classification, mean_calc, filling_metrics_table_n, filling_metrics_table, metrics_calc, filling_table
-
+    group_classification, mean_calc, filling_metrics_table_n, filling_metrics_table, metrics_calc, filling_table, \
+    filling_table_n
 
 if __name__ == '__main__':
 
@@ -24,7 +24,7 @@ if __name__ == '__main__':
     # # training_test_dict = {"training": fit_history.history, "test": test_dict}
     # # training_test_list.append(training_test_dict)
 
-    with open("training_testing_n_times/training_testing_n_times.json", "r") as read_file:
+    with open("training_testing_n_times_2nd_round/training_testing_n_times.json", "r") as read_file:
         training_test_list = json.load(read_file)
 
     n_times = len(training_test_list)
@@ -50,6 +50,7 @@ if __name__ == '__main__':
     twist = {"true_positive": [], "false_positive": [], "false_negative": [], "true_negative": []}
 
     for n_test in range(0, len(training_test_list)):
+    # for n_test in range(0, 1):
 
         # -------------------------------------------------------------------------------------------------------------
         # TRAINING CURVES-----------------------------------------------------------------------------------------
@@ -107,7 +108,7 @@ if __name__ == '__main__':
     pdf.create_table(table_data=data_metrics, title='Mean Metrics', cell_width='uneven', x_start=25)
     pdf.ln()
 
-    pdf.output('metrics_table.pdf')
+    pdf.output('training_testing_n_times_2nd_round/metrics_table.pdf')
 
     # -------------------------------------------------------------------------------------------------------------
     # OUTPUT CONFIDENCES-----------------------------------------------------------------------------------------
@@ -139,7 +140,7 @@ if __name__ == '__main__':
     pdf.create_table(table_data=data_twist, title='TWIST', cell_width='uneven', x_start=25)
     pdf.ln()
 
-    pdf.output('table_class.pdf')
+    pdf.output('training_testing_n_times_2nd_round/table_class.pdf')
 
     # -------------------------------------------------------------------------------------------------------------
     # TRAINING CURVES-----------------------------------------------------------------------------------------
@@ -182,7 +183,7 @@ if __name__ == '__main__':
     training_curves_mean_dict = {"loss": mean_loss, "accuracy": mean_accuracy, "val_loss": mean_val_loss,
                                  "val_accuracy": mean_val_accuracy}
 
-    with open("training_testing_n_times/training_curves_mean.json", "w") as write_file:
+    with open("training_testing_n_times_2nd_round/training_curves_mean.json", "w") as write_file:
         json.dump(training_curves_mean_dict, write_file, cls=NumpyArrayEncoder)
 
     # plt.savefig(ROOT_DIR + "/neural_networks/feedforward/training_testing_n_times/training_curves_mean.png",
@@ -202,11 +203,11 @@ if __name__ == '__main__':
     plot_confusion_matrix_percentage(confusion_matrix=cm_mean, display_labels=labels, cmap=blues,
                                      title="Mean Percentage CM (%d times)" % n_times, decimals=.2)
     # plt.show()
-    plt.savefig(ROOT_DIR + "/neural_networks/feedforward/training_testing_n_times/confusion_matrix_mean_percentage.png",
+    plt.savefig(ROOT_DIR + "/neural_networks/feedforward/training_testing_n_times_2nd_round/confusion_matrix_mean_percentage.png",
                 bbox_inches='tight')
 
     plot_confusion_matrix_percentage(confusion_matrix=cm_cumulative, display_labels=labels, cmap=blues,
                                      title="Cumulative CM (%d times)" % n_times, decimals=.0)
-    plt.savefig(ROOT_DIR + "/neural_networks/feedforward/training_testing_n_times/confusion_matrix_cumulative.png",
+    plt.savefig(ROOT_DIR + "/neural_networks/feedforward/training_testing_n_times_2nd_round/confusion_matrix_cumulative.png",
                 bbox_inches='tight')
     # -------------------------------------------------------------------------------------------------------------

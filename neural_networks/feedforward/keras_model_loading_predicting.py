@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 from tensorflow import keras
-from itertools import product
+from larcc_classes.documentation.PDF import PDF
 from sklearn.metrics import ConfusionMatrixDisplay
 from sklearn.metrics import confusion_matrix
 import numpy as np
@@ -10,6 +10,25 @@ from config.definitions import ROOT_DIR
 from tabulate import tabulate
 from colorama import Fore
 from neural_networks.utils import plot_confusion_matrix_percentage
+
+
+def metrics_calc_local(origin, metrics_dest):
+    tp = origin["true_positive"].shape[0]
+    fp = origin["false_positive"].shape[0]
+    fn = origin["false_negative"].shape[0]
+    tn = origin["true_negative"].shape[0]
+
+    metric_accuracy = (tp + tn) / (fp + fn + tp + tn)
+    metric_recall = tp / (fn + tp)
+    metric_precision = tp / (fp + tp)
+    metric_f1 = 2 * (metric_precision * metric_recall) / (metric_precision + metric_recall)
+
+    metrics_dest["accuracy"] = metric_accuracy
+    metrics_dest["recall"] = metric_recall
+    metrics_dest["precision"] = metric_precision
+    metrics_dest["f1"] = metric_f1
+
+
 
 
 def save_txt_file(matrix, action, output):
@@ -188,8 +207,8 @@ if __name__ == '__main__':
     #                 title="True Negatives (" + str(len(pull["true_negative"])) + ")", dr=decimal_round, nl=n_labels)
 
     fig_pull.suptitle('PULL Output Confidence')
-    plt.show()
-    # plt.savefig(ROOT_DIR + "/neural_networks/feedforward/predicted_data/pull_output_confidences.png", bbox_inches='tight')
+    # plt.show()
+    plt.savefig(ROOT_DIR + "/neural_networks/feedforward/predicted_data_2nd_round/pull_output_confidences.png", bbox_inches='tight')
 
     # PUSH ---------------------------------------------------------------------- PUSH ------------------------------
     fig_push, axs_push = plt.subplots(1, 3, figsize=(12, 6), sharey=True)
@@ -207,8 +226,8 @@ if __name__ == '__main__':
     #                 title="True Negatives (" + str(len(push["true_negative"])) + ")", dr=decimal_round, nl=n_labels)
 
     fig_push.suptitle('PUSH Output Confidence')
-    plt.show()
-    # plt.savefig(ROOT_DIR + "/neural_networks/feedforward/predicted_data/push_output_confidences.png", bbox_inches='tight')
+    # plt.show()
+    plt.savefig(ROOT_DIR + "/neural_networks/feedforward/predicted_data_2nd_round/push_output_confidences.png", bbox_inches='tight')
 
     # SHAKE ---------------------------------------------------------------------- SHAKE ------------------------------
     fig_shake, axs_shake = plt.subplots(1, 3, figsize=(12, 6), sharey=True)
@@ -226,8 +245,8 @@ if __name__ == '__main__':
     #                 title="True Negatives (" + str(len(shake["true_negative"])) + ")", dr=decimal_round, nl=n_labels)
 
     fig_shake.suptitle('SHAKE Output Confidence')
-    plt.show()
-    # plt.savefig(ROOT_DIR + "/neural_networks/feedforward/predicted_data/shake_output_confidences.png", bbox_inches='tight')
+    # plt.show()
+    plt.savefig(ROOT_DIR + "/neural_networks/feedforward/predicted_data_2nd_round/shake_output_confidences.png", bbox_inches='tight')
 
     # TWIST ---------------------------------------------------------------------- TWIST ------------------------------
     fig_twist, axs_twist = plt.subplots(1, 3, figsize=(12, 6), sharey=True)
@@ -245,8 +264,8 @@ if __name__ == '__main__':
     #                 title="True Negatives (" + str(len(twist["true_negative"])) + ")", dr=decimal_round, nl=n_labels)
 
     fig_twist.suptitle('TWIST Output Confidence')
-    plt.show()
-    # plt.savefig(ROOT_DIR + "/neural_networks/feedforward/predicted_data/twist_output_confidences.png", bbox_inches='tight')
+    # plt.show()
+    plt.savefig(ROOT_DIR + "/neural_networks/feedforward/predicted_data_2nd_round/twist_output_confidences.png", bbox_inches='tight')
 
     # --------------------------------------------------------------------------------------------------------------
 
@@ -271,13 +290,13 @@ if __name__ == '__main__':
     disp.plot(cmap=blues)
 
     # plt.show()
-    plt.savefig(ROOT_DIR + "/neural_networks/feedforward/predicted_data/confusion_matrix.png", bbox_inches='tight')
+    plt.savefig(ROOT_DIR + "/neural_networks/feedforward/predicted_data_2nd_round/confusion_matrix.png", bbox_inches='tight')
 
     plot_confusion_matrix_percentage(confusion_matrix=cm_true_percentage, display_labels=labels, cmap=blues,
                                      title="Confusion Matrix (%) - FEEDFORWARD")
 
     # plt.show()
-    plt.savefig(ROOT_DIR + "/neural_networks/feedforward/predicted_data/confusion_matrix_true.png", bbox_inches='tight')
+    plt.savefig(ROOT_DIR + "/neural_networks/feedforward/predicted_data_2nd_round/confusion_matrix_true.png", bbox_inches='tight')
 
     # plot_confusion_matrix_percentage(confusion_matrix=cm_predicted_percentage, display_labels=labels, cmap=blues,
     #                                  title="Predicted Percentage CM (%)")
@@ -326,3 +345,49 @@ if __name__ == '__main__':
     print(
         Fore.LIGHTBLUE_EX + "Total Accuracy: " + Fore.LIGHTYELLOW_EX + str(round(total_right / total, 5)) + Fore.RESET)
     print("\n")
+
+
+
+
+
+    # -------------------------------------------------------------------------------------------------------------
+    # METRICS-----------------------------------------------------------------------------------------
+    # -------------------------------------------------------------------------------------------------------------
+    metrics_pull = {"accuracy": 0, "recall": 0, "precision": 0, "f1": 0}
+    metrics_push = {"accuracy": 0, "recall": 0, "precision": 0, "f1": 0}
+    metrics_shake = {"accuracy": 0, "recall": 0, "precision": 0, "f1": 0}
+    metrics_twist = {"accuracy": 0, "recall": 0, "precision": 0, "f1": 0}
+
+    metrics_calc_local(pull, metrics_pull)
+    metrics_calc_local(push, metrics_push)
+    metrics_calc_local(shake, metrics_shake)
+    metrics_calc_local(twist, metrics_twist)
+
+    data = [
+        ["", "Mean Accuracy", "Mean Precision", "Mean Recall", "Mean F1", ],
+        ["PULL", str(round(metrics_pull["accuracy"], 4)),
+         str(round(metrics_pull["precision"], 4)),
+         str(round(metrics_pull["recall"], 4)),
+         str(round(metrics_pull["f1"], 4)), ],
+        ["PUSH", str(round(metrics_push["accuracy"], 4)),
+         str(round(metrics_push["precision"], 4)),
+         str(round(metrics_push["recall"], 4)),
+         str(round(metrics_push["f1"], 4)), ],
+        ["SHAKE", str(round(metrics_shake["accuracy"], 4)),
+         str(round(metrics_shake["precision"], 4)),
+         str(round(metrics_shake["recall"], 4)),
+         str(round(metrics_shake["f1"], 4)), ],
+        ["TWIST", str(round(metrics_twist["accuracy"], 4)),
+         str(round(metrics_twist["precision"], 4)),
+         str(round(metrics_twist["recall"], 4)),
+         str(round(metrics_twist["f1"], 4)), ],
+    ]
+
+    pdf = PDF()
+    pdf.add_page()
+    pdf.set_font("Times", size=10)
+
+    pdf.create_table(table_data=data, title='Metrics for THIS single test', cell_width='uneven', x_start=25)
+    pdf.ln()
+
+    pdf.output(ROOT_DIR + '/neural_networks/feedforward/predicted_data_2nd_round/metrics_table.pdf')
