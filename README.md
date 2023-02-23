@@ -76,15 +76,23 @@ sudo apt-get install ros-noetic-pass-through-controllers
 sudo apt-get install ros-noetic-ur-client-library
 sudo apt-get install ros-noetic-velocity-controllers
 sudo apt-get install ros-noetic-force-torque-sensor-controller
+sudo apt-get install socat
 ```
 (**Note:** At this moment, if you do not have a catkin workspace, you should now create one, by following the steps described [here](http://wiki.ros.org/catkin/Tutorials/create_a_workspace))
 
-After all these installations, on your catkin workspace you need to clone this repository and the ```ur_msgs``` (http://wiki.ros.org/ur_msgs) package:
+After all these installations, on your catkin workspace you need to clone this repository, the ```ur_msgs``` (http://wiki.ros.org/ur_msgs) package and the ```robotiq``` (http://wiki.ros.org/robotiq) package:
 
 ```
 cd catkin_ws/src
 git clone https://github.com/afonsocastro/larcc_interface.git
 git clone https://github.com/ros-industrial/ur_msgs.git
+git clone https://github.com/ros-industrial/robotiq.git
+```
+
+There are several packages inside robotiq that do not work are are not needed so they can be removed.
+
+```
+rm -r robotiq/robotiq_2f_gripper_action_server robotiq/robotiq_2f_gripper_control robotiq/robotiq_3f_gripper_articulated_gazebo_plugins robotiq/robotiq_3f_gripper_control robotiq/robotiq_3f_gripper_joint_state_publisher robotiq/robotiq_3f_rviz robotiq/robotiq_ethercat
 ```
 
 [//]: # (TODO Afonso incluir instrução de adicionar export PYTHONPATH=/home/"user"/catkin_ws/src/larcc_interface:$PYTHONPATH to .bashrc)
