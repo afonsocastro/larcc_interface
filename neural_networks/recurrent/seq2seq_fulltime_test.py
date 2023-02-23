@@ -157,7 +157,7 @@ if __name__ == '__main__':
 
     model_Bahdanau_Attention2 = keras.models.load_model("model_Bahdanau_Attention2")
 
-    x_test = test_data[:, : , 1:-1]
+    x_test = test_data[:, :, 1:-1]
     y_test = test_data[:, :,  -1]
 
     print("x_test.shape")
@@ -173,11 +173,11 @@ if __name__ == '__main__':
     #         r = [int(y_test[line]), int(y_test[line + 1])]
     #     y_test_final.append(r)
 
-    nv = x_test[0:18].reshape(18, time_steps, params)
-    print(nv.shape)
-    exit(0)
+    # nv = x_test[0:18].reshape(18, time_steps, params)
+    # print(nv.shape)
+    # exit(0)
 
-    pred = model_Bahdanau_Attention2.predict(x_test[0:18].reshape(18, time_steps, params), batch_size=2)
+    pred = model_Bahdanau_Attention2.predict(x_test, batch_size=2)
 
     print("type(pred)")
     print(type(pred))
