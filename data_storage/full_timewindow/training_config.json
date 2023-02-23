@@ -6,7 +6,7 @@
   "time": 60,
   "rate": 100.0,
   "waiting_offset": 0.2,
-  "data" : ["joint_ef0", "jointe_ef1", "joint_ef2", "jointe_ef3",
+  "data" : ["timestamp", "joint_ef0", "jointe_ef1", "joint_ef2", "jointe_ef3",
     "joint_ef4", "jointe_ef5", "gripper_fx", "gripper_fy", "gripper_fz", "gripper_mx",
     "gripper_my", "gripper_mz"],
   "normalization_clusters": [1, 6, 3, 3],

@@ -150,7 +150,6 @@ if __name__ == '__main__':
     labels = 4
     start_number = 17
     epochs = 50
-    # epochs = 50
 
     sorted_data_for_learning = SortedDataForLearning(
         path=ROOT_DIR + "/data_storage/data/raw_learning_data/user_splitted_data/")
@@ -158,9 +157,9 @@ if __name__ == '__main__':
     training_data = sorted_data_for_learning.training_data
     test_data = sorted_data_for_learning.test_data
 
-    n_train = len(training_data) * validation_split
-    n_val = len(training_data) * (1 - validation_split)
-    n_test = test_data.shape[0]
+    n_train = len(training_data) * (1 - validation_split)
+    n_val = len(training_data) * validation_split
+    # n_test = test_data.shape[0]
 
     x_train = np.reshape(training_data[:, :-1], (int(training_data.shape[0] / 2), time_steps, 13))
 
@@ -184,6 +183,7 @@ if __name__ == '__main__':
         results = []
     y_train_final = np.array(y_train_final, dtype=float)
 
+
     model_encoder_decoder_Bahdanau_Attention = training_encoder_decoder(neurons, params, labels, start_number, batch_size, time_steps)
     # model_encoder_decoder_Bahdanau_Attention.summary()
 
@@ -199,7 +199,7 @@ if __name__ == '__main__':
                                                                epochs=epochs, validation_split=validation_split,
                                                                shuffle=True, verbose=2, callbacks=[callback])
 
-    model_encoder_decoder_Bahdanau_Attention.save("model_Bahdanau_Attention")
+    model_encoder_decoder_Bahdanau_Attention.save("model_Bahdanau_Attention2")
     exit(0)
 
     fig = plt.figure()
