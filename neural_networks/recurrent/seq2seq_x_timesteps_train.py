@@ -264,7 +264,6 @@ if __name__ == '__main__':
         print("len(new_predicted)")
         print(len(new_predicted))
 
-
         n_test += time_steps
 
         print("y_test_final[0:n_test]")
