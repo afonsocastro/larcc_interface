@@ -35,6 +35,7 @@ class ArmGripperComm:
             self.state_dic["gripper_closed"] = True
 
         self.state_dic["gripper_active"] = gripper_status_dict["is_activated"]
+        self.state_dic["activation_completed"] = gripper_status_dict["activation_completed"]
         self.state_dic["object_detected"] = gripper_status_dict["object_detected"]
         self.state_dic["gripper_pos"] = gripper_status_dict["actual_position"]
 
@@ -101,7 +102,7 @@ class ArmGripperComm:
         rospy.loginfo(encoded_data_string_)
         self.pub_gripper.publish(encoded_data_string_)
 
-        while not self.state_dic["gripper_active"]:
+        while not self.state_dic["activation_completed"]:
             time.sleep(0.1)
 
     # Sends a message to the gripper controller to close the gripper

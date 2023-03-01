@@ -40,17 +40,19 @@ arm_gripper_comm = ArmGripperComm()
 
 time.sleep(0.2)
 
-# arm_gripper_comm.gripper_connect()
+arm_gripper_comm.gripper_connect()
 
-# if not arm_gripper_comm.state_dic["gripper_active"]:
-#     arm_gripper_comm.gripper_init()
+#arm_gripper_comm.gripper_status()
+
+if not arm_gripper_comm.state_dic["activation_completed"]: 
+    arm_gripper_comm.gripper_init()
 
 for pos in config["positions"]:
     arm_gripper_comm.move_arm_to_joints_state(pos[0], pos[1], pos[2], pos[3], pos[4], pos[5])
 
-    # if pos[6] == 1:
-    #     arm_gripper_comm.gripper_open_fast()
-    # if pos[6] == -1:
-    #     arm_gripper_comm.gripper_close_fast()
+    if pos[6] == 1:
+        arm_gripper_comm.gripper_open_fast()
+    if pos[6] == -1:
+        arm_gripper_comm.gripper_close_fast()
 
-# arm_gripper_comm.gripper_disconnect()
+arm_gripper_comm.gripper_disconnect()
