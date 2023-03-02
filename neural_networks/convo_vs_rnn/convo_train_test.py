@@ -37,8 +37,8 @@ def create_convolutional_nn(layers):
 
 
 if __name__ == '__main__':
-    # n_times = 100
-    n_times = 1
+    n_times = 100
+    # n_times = 5
     validation_split = 0.3
     labels = ['PULL', 'PUSH', 'SHAKE', 'TWIST']
     n_labels = len(labels)

@@ -185,7 +185,7 @@ if __name__ == '__main__':
             pdf.create_table(table_data=data_metrics, title='Mean Metrics', cell_width='uneven', x_start=25)
             pdf.ln()
 
-            pdf.output('n_times_results/convo_metrics_table.pdf')
+            pdf.output('n_times_results/convo_metrics_table_100_times.pdf')
 
             # -------------------------------------------------------------------------------------------------------------
             # OUTPUT CONFIDENCES---------------------------------------------------------------------------------------
@@ -304,19 +304,19 @@ if __name__ == '__main__':
     for mm in metrics:
 
         global_mean_metrics_accuracy.append(
-            ["CNN " + str(mm["model"]), mm["metrics"][1][1], mm["metrics"][2][1], mm["metrics"][3][1],
+            ["CNN", mm["metrics"][1][1], mm["metrics"][2][1], mm["metrics"][3][1],
              mm["metrics"][4][1], ])
 
         global_mean_metrics_precision.append(
-            ["CNN " + str(mm["model"]), mm["metrics"][1][2], mm["metrics"][2][2], mm["metrics"][3][2],
+            ["CNN", mm["metrics"][1][2], mm["metrics"][2][2], mm["metrics"][3][2],
              mm["metrics"][4][2], ])
 
         global_mean_metrics_recall.append(
-            ["CNN " + str(mm["model"]), mm["metrics"][1][3], mm["metrics"][2][3], mm["metrics"][3][3],
+            ["CNN", mm["metrics"][1][3], mm["metrics"][2][3], mm["metrics"][3][3],
              mm["metrics"][4][3], ])
 
         global_mean_metrics_f1.append(
-            ["CNN " + str(mm["model"]), mm["metrics"][1][4], mm["metrics"][2][4], mm["metrics"][3][4],
+            ["CNN", mm["metrics"][1][4], mm["metrics"][2][4], mm["metrics"][3][4],
              mm["metrics"][4][4], ])
 
     pdf = PDF()
@@ -338,12 +338,12 @@ if __name__ == '__main__':
 
     pdf.output('n_times_results/evaluation.pdf')
 
-    create_grouped_bar_chart(labels, global_mean_metrics_accuracy, title="Mean Accuracy (1 times)", ylabel="accuracy")
-    create_grouped_bar_chart(labels, global_mean_metrics_precision, title="Mean Precision (1 times)", ylabel="precision")
-    create_grouped_bar_chart(labels, global_mean_metrics_recall, title="Mean Recall (1 times)", ylabel="recall")
-    create_grouped_bar_chart(labels, global_mean_metrics_f1, title="Mean F1 score (1 times)", ylabel="f1-score")
+    create_grouped_bar_chart(labels, global_mean_metrics_accuracy, title="Mean Accuracy (100 times)", ylabel="accuracy")
+    create_grouped_bar_chart(labels, global_mean_metrics_precision, title="Mean Precision (100 times)", ylabel="precision")
+    create_grouped_bar_chart(labels, global_mean_metrics_recall, title="Mean Recall (100 times)", ylabel="recall")
+    create_grouped_bar_chart(labels, global_mean_metrics_f1, title="Mean F1 score (100 times)", ylabel="f1-score")
 
     create_global_grouped_bar_chart(global_mean_metrics_accuracy, global_mean_metrics_precision,
                                     global_mean_metrics_recall, global_mean_metrics_f1,
-                                    title="Mean Score per metric - CNN\n(4 primitives - 1 times)")
+                                    title="Mean Score per metric - CNN\n(4 primitives - 100 times)")
 
