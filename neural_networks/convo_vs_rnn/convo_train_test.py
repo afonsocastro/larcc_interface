@@ -124,7 +124,6 @@ if __name__ == '__main__':
         for i in range(0, len(test_data)):
             x_test = np.reshape(test_data[i:i + 1, :-1], (1, 50, 13, 1))
             prediction = model.predict(x=x_test, verbose=0)
-
             # Reverse to_categorical from keras utils
             decoded_prediction = np.argmax(prediction, axis=1, out=None)
 
