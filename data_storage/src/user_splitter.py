@@ -26,7 +26,8 @@ def print_stats(u, array, actions):
 
 if __name__ == '__main__':
 
-    raw_data = np.load(ROOT_DIR + "/data_storage/data/raw_learning_data/raw_learning_data.npy")
+    # raw_data = np.load(ROOT_DIR + "/data_storage/data/raw_learning_data/raw_learning_data.npy")
+    raw_data = np.load(ROOT_DIR + "/data_storage/data/universal_norm/normalized_data.npy")
 
     f = open(ROOT_DIR + '/data_storage/config/user_split.json')
 
@@ -49,8 +50,8 @@ if __name__ == '__main__':
 
     users = split_config["users"]
     for idx in dic_of_matrixs:
-        np.save(ROOT_DIR + f"/data_storage/data/raw_learning_data/user_splitted_data/"
-                           f"{users[int(idx)]}_learning_data_{int(idx)}.npy", dic_of_matrixs[idx])
+        np.save(ROOT_DIR + f"/data_storage/data/universal_norm/user_splitted_data/"
+                           f"{users[int(idx)]}_data_{int(idx)}.npy", dic_of_matrixs[idx])
 
         print_stats(users[int(idx)], dic_of_matrixs[idx], split_config["actions"])
 

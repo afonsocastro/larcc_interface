@@ -16,13 +16,12 @@ if __name__ == '__main__':
     experiment_data = np.load(ROOT_DIR + "/data_storage/data/raw_learning_data/raw_learning_data.npy")
 
     learning_array = experiment_data[:, :-1]
-    array_norm = np.empty((0, learning_array.shape[1]))
 
     clusters_max = {"timestamp": {"max": 0, "min": 0}, "joints": {"max": 0, "min": 0},
                     "gripper_F": {"max": 0, "min": 0}, "gripper_M": {"max": 0, "min": 0}}
+
     for vector in learning_array:
         data_array = np.reshape(vector, (measurements, int(len(vector) / measurements)))
-        data_array_norm = np.empty((data_array.shape[0], 0))
 
         idx = 0
         cont = 0
@@ -60,5 +59,5 @@ if __name__ == '__main__':
             cont += 1
 
     print(clusters_max)
-    with open("clusters_max_min", "w") as fp:
+    with open("clusters_max_min.json", "w") as fp:
         json.dump(clusters_max, fp)
