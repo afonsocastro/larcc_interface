@@ -5,16 +5,17 @@ import json
 from config.definitions import ROOT_DIR
 import numpy as np
 import glob, os
-import re, statistics
+import statistics
 from larcc_classes.documentation.PDF import PDF
-from neural_networks.utils import NumpyArrayEncoder, plot_confusion_matrix_percentage, values_contabilization, \
-    group_classification, mean_calc, filling_metrics_table_n, filling_metrics_table, metrics_calc, filling_table
+from neural_networks.utils import plot_confusion_matrix_percentage, values_contabilization, group_classification, \
+    mean_calc, filling_metrics_table_n, filling_metrics_table, metrics_calc, filling_table
 
 
 def create_grouped_bar_chart(labels, global_mean_metrics, title, ylabel):
     plt.close("all")  # this is the line to be added
 
-    cnn0 = [float(global_mean_metrics[1][1]), float(global_mean_metrics[1][2]), float(global_mean_metrics[1][3]), float(global_mean_metrics[1][4])]
+    cnn0 = [float(global_mean_metrics[1][1]), float(global_mean_metrics[1][2]), float(global_mean_metrics[1][3]),
+            float(global_mean_metrics[1][4])]
 
     x = np.arange(len(labels))  # the label locations
     width = 0.17  # the width of the bars
@@ -86,6 +87,7 @@ def filling_table_local(dict, header):
     ]
 
     return data
+
 
 if __name__ == '__main__':
 
