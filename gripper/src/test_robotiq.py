@@ -48,51 +48,65 @@ def test_robotiq():
         hand.move(0, 255, 0)
         (status, position, force) = hand.wait_move_complete()
 
-        while cont:
-            print ('close slow')
-            hand.move(255, 0, 1)
+        while True:
+            time.sleep(0.1)
+            print('close fast')
+            hand.move(255, 255, 1)
             (status, position, force) = hand.wait_move_complete()
-            position_mm = hand.get_position_mm(position)
-            force_mA = hand.get_force_mA(force)
 
-            if status == 0:
-                print( 'no object detected: position = {:.1f}mm, force = {:.1f}mA '.format(position_mm, force_mA))
-            elif status == 1:
-                print('object detected closing: position = {:.1f}mm, force = {:.1f}mA '.format(position_mm, force_mA))
-                print('keeping')
-                time.sleep(5)
-            elif status == 2:
-                print('object detected opening: position = {:.1f}mm, force = {:.1f}mA '.format(position_mm, force_mA))
-            else:
-                print('failed')
-
+            time.sleep(0.1)
             print('open fast')
             hand.move(0, 255, 0)
             (status, position, force) = hand.wait_move_complete()
 
-            print('test close')
-            hand.close()
-            (status, position, force) = hand.wait_move_complete()
 
-            print('re-open fast')
-            hand.move(0, 255, 0)
 
-            print('close fast')
-            hand.move(255, 255, 0)
-            (status, position, force) = hand.wait_move_complete()
-
-            # if keyboard.is_pressed('q'):  # if key 'q' is pressed
-            #     print('You Pressed A Key!')
-
-            (status, position, force) = hand.wait_move_complete()
-            position_mm = hand.get_position_mm(position)
-            force_mA = hand.get_force_mA(force)
-            print('position = {:.1f}mm, force = {:.1f}mA '.format(position_mm, force_mA))
+    #     while cont:
+    #         print ('close slow')
+    #         hand.move(255, 0, 1)
+    #         (status, position, force) = hand.wait_move_complete()
+    #         position_mm = hand.get_position_mm(position)
+    #         force_mA = hand.get_force_mA(force)
+    #
+    #         if status == 0:
+    #             print( 'no object detected: position = {:.1f}mm, force = {:.1f}mA '.format(position_mm, force_mA))
+    #         elif status == 1:
+    #             print('object detected closing: position = {:.1f}mm, force = {:.1f}mA '.format(position_mm, force_mA))
+    #             print('keeping')
+    #             time.sleep(5)
+    #         elif status == 2:
+    #             print('object detected opening: position = {:.1f}mm, force = {:.1f}mA '.format(position_mm, force_mA))
+    #         else:
+    #             print('failed')
+    #
+    #         print('open fast')
+    #         hand.move(0, 255, 0)
+    #         (status, position, force) = hand.wait_move_complete()
+    #
+    #         print('test close')
+    #         hand.close()
+    #         (status, position, force) = hand.wait_move_complete()
+    #
+    #         print('re-open fast')
+    #         hand.move(0, 255, 0)
+    #
+    #         print('close fast')
+    #         hand.move(255, 255, 0)
+    #         (status, position, force) = hand.wait_move_complete()
+    #
+    #         # if keyboard.is_pressed('q'):  # if key 'q' is pressed
+    #         #     print('You Pressed A Key!')
+    #
+    #         (status, position, force) = hand.wait_move_complete()
+    #         position_mm = hand.get_position_mm(position)
+    #         force_mA = hand.get_force_mA(force)
+    #         print('position = {:.1f}mm, force = {:.1f}mA '.format(position_mm, force_mA))
     except:
         print('Ctrl-c pressed')
         #TODO create handler to close the door
 
     hand.disconnect()
+
 
 
 if __name__ == '__main__':

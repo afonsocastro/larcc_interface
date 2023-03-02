@@ -37,7 +37,7 @@
                 " />
   -->
 
-  <arg name="load_robot_description" default="true" />
+  <arg name="load_robot_description" default="false" />
   <!-- load URDF, SRDF and joint_limits configuration -->
   <include file="$(find ur10e_moveit_config)/launch/larcc_planning_context.launch">
     <arg name="load_robot_description" value="$(arg load_robot_description)" />
@@ -69,7 +69,7 @@
     <param name="max_safe_path_cost" value="$(arg max_safe_path_cost)"/>
     <param name="jiggle_fraction" value="$(arg jiggle_fraction)" />
     <param name="capabilities" value="$(arg capabilities)"/>
-    <param name="disable_capabilities" value="$(arg disable_capabilities)"/>
+    <param name="disable_capabilit  ies" value="$(arg disable_capabilities)"/>
 
 
     <!-- Publish the planning scene of the physical robot so that rviz plugin can know actual robot -->

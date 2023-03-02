@@ -17,22 +17,49 @@
 
     Refer to 'inc/ur_macro.xacro' for more information.
   -->
+    <link name="world"/>
+    <joint name="world_to_base_link" type="fixed">
+        <parent link="world"/>
+        <child link="base_link"/>
+        <origin xyz="0 0 -0.015" rpy="0 0 0"/>
+    </joint>
 
-<!--  <link name="base_link"/>-->
-  <xacro:include filename="$(find ur_description)/urdf/inc/ur10e_macro.xacro"/>
-  <xacro:ur10e_robot prefix="" />
+    <joint name="world_to_robotiq_arg2f_base_link" type="fixed">
+        <parent link="world"/>
+        <child link="robotiq_arg2f_base_link"/>
+        <origin xyz="10 0 -0.5" rpy="0 0 0"/>
+    </joint>
+
+    <xacro:include filename="$(find ur_description)/urdf/inc/ur10e_macro.xacro"/>
+    <xacro:ur10e_robot prefix="" />
+
+
+    <xacro:include filename="$(find gripper)/urdf/robotiq_arg2f_140_model_macro.xacro" />
+
+
+<!--    Place gripper-->
+    <xacro:robotiq_arg2f_140 prefix=""/>
+
+<!--    <joint name="new_gripper_joint" type="fixed">-->
+<!--        <parent link="tool0"/>-->
+<!--        <child link="robotiq_arg2f_base_link"/>-->
+<!--        <origin xyz="0 0 0" rpy="0 0 1.5708"/>-->
+<!--&lt;!&ndash;    </joint>&ndash;&gt;-->
+
+<!--    </xacro:robotiq_arg2f_140>-->
+
 
 <!--  Sensor-->
-  <xacro:include filename="$(find realsense2_description)/urdf/test_d435i_camera.urdf.xacro" />
+<!--  <xacro:include filename="$(find realsense2_description)/urdf/test_d435i_camera.urdf.xacro" />-->
 
-  <xacro:realsense2_camera parent="base_link" use_nominal_extrinsics="true">
-<!--    For this manual calibration, drag the gripper (tool0_controller) to the camera mass
-        center and record here the tf values (/base_link to /tool0_controller).-->
-<!--    The second rotation value (P) you should add pi constant: 2.627 = −0,515 + pi -->
-<!--      <origin xyz="0.785 -0.839 0.426" rpy="-3.104 2.471 -1.613"/>-->
-      <origin xyz="0.797 -0.803 0.432" rpy="3.135 2.462 -1.577"/>
+<!--  <xacro:realsense2_camera parent="base_link" use_nominal_extrinsics="true">-->
+<!--&lt;!&ndash;    For this manual calibration, drag the gripper (tool0_controller) to the camera mass-->
+<!--        center and record here the tf values (/base_link to /tool0_controller).&ndash;&gt;-->
+<!--&lt;!&ndash;    The second rotation value (P) you should add pi constant: 2.627 = −0,515 + pi &ndash;&gt;-->
+<!--&lt;!&ndash;      <origin xyz="0.785 -0.839 0.426" rpy="-3.104 2.471 -1.613"/>&ndash;&gt;-->
+<!--      <origin xyz="0.797 -0.803 0.432" rpy="3.135 2.462 -1.577"/>-->
 
-  </xacro:realsense2_camera>
+<!--  </xacro:realsense2_camera>-->
 
 <!--  <xacro:realsense2_camera use_nominal_extrinsics="true">-->
 <!--  </xacro:realsense2_camera>-->

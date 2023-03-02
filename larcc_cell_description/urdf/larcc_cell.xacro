@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<robot xmlns:xacro="http://wiki.ros.org/xacro" name="larcc_model">
+<robot xmlns:xacro="http://wiki.ros.org/xacro" name="larcc">
 
     <xacro:property name="M_PI" value="3.1415926535897931"/>
 

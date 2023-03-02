@@ -5,10 +5,8 @@ Panels:
     Property Tree Widget:
       Expanded:
         - /Global Options1
-        - /Status1
-        - /MotionPlanning1
       Splitter Ratio: 0.5
-    Tree Height: 325
+    Tree Height: 321
   - Class: rviz/Selection
     Name: Selection
   - Class: rviz/Tool Properties
@@ -24,7 +22,6 @@ Panels:
     Name: Views
     Splitter Ratio: 0.5
   - Class: rviz/Time
-    Experimental: false
     Name: Time
     SyncMode: 0
     SyncSource: ""
@@ -76,59 +73,12 @@ Visualization Manager:
           Show Axes: false
           Show Trail: false
           Value: true
-        camera_accel_frame:
+        bigbeam1_gantry:
           Alpha: 1
           Show Axes: false
           Show Trail: false
-        camera_accel_optical_frame:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-        camera_bottom_screw_frame:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-        camera_color_frame:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-        camera_color_optical_frame:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-        camera_depth_frame:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-        camera_depth_optical_frame:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-        camera_gyro_frame:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-        camera_gyro_optical_frame:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-        camera_infra1_frame:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-        camera_infra1_optical_frame:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-        camera_infra2_frame:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-        camera_infra2_optical_frame:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-        camera_link:
+          Value: true
+        bigbeam2_gantry:
           Alpha: 1
           Show Axes: false
           Show Trail: false
@@ -142,6 +92,14 @@ Visualization Manager:
           Show Axes: false
           Show Trail: false
           Value: true
+        gantry:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        gantry_gantry:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
         left_inner_finger:
           Alpha: 1
           Show Axes: false
@@ -167,12 +125,22 @@ Visualization Manager:
           Show Axes: false
           Show Trail: false
           Value: true
+        leg1_gantry:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
         leg1_table_base:
           Alpha: 1
           Show Axes: false
           Show Trail: false
           Value: true
         leg1_table_front:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        leg2_gantry:
           Alpha: 1
           Show Axes: false
           Show Trail: false
@@ -187,6 +155,11 @@ Visualization Manager:
           Show Axes: false
           Show Trail: false
           Value: true
+        leg3_gantry:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
         leg3_table_base:
           Alpha: 1
           Show Axes: false
@@ -197,12 +170,32 @@ Visualization Manager:
           Show Axes: false
           Show Trail: false
           Value: true
+        leg4_gantry:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
         leg4_table_base:
           Alpha: 1
           Show Axes: false
           Show Trail: false
           Value: true
         leg4_table_front:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        rectangularbeam1_gantry:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        rectangularbeam2_gantry:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        rectangularbeam3_gantry:
           Alpha: 1
           Show Axes: false
           Show Trail: false
@@ -238,6 +231,16 @@ Visualization Manager:
           Show Trail: false
           Value: true
         shoulder_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        smallbeam1_bigbeam1_gantry:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        smallbeam2_bigbeam1_gantry:
           Alpha: 1
           Show Axes: false
           Show Trail: false
@@ -338,59 +341,12 @@ Visualization Manager:
             Show Axes: false
             Show Trail: false
             Value: true
-          camera_accel_frame:
+          bigbeam1_gantry:
             Alpha: 1
             Show Axes: false
             Show Trail: false
-          camera_accel_optical_frame:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-          camera_bottom_screw_frame:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-          camera_color_frame:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-          camera_color_optical_frame:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-          camera_depth_frame:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-          camera_depth_optical_frame:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-          camera_gyro_frame:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-          camera_gyro_optical_frame:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-          camera_infra1_frame:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-          camera_infra1_optical_frame:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-          camera_infra2_frame:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-          camera_infra2_optical_frame:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-          camera_link:
+            Value: true
+          bigbeam2_gantry:
             Alpha: 1
             Show Axes: false
             Show Trail: false
@@ -404,6 +360,14 @@ Visualization Manager:
             Show Axes: false
             Show Trail: false
             Value: true
+          gantry:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+          gantry_gantry:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
           left_inner_finger:
             Alpha: 1
             Show Axes: false
@@ -429,12 +393,22 @@ Visualization Manager:
             Show Axes: false
             Show Trail: false
             Value: true
+          leg1_gantry:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
           leg1_table_base:
             Alpha: 1
             Show Axes: false
             Show Trail: false
             Value: true
           leg1_table_front:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          leg2_gantry:
             Alpha: 1
             Show Axes: false
             Show Trail: false
@@ -449,6 +423,11 @@ Visualization Manager:
             Show Axes: false
             Show Trail: false
             Value: true
+          leg3_gantry:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
           leg3_table_base:
             Alpha: 1
             Show Axes: false
@@ -459,12 +438,32 @@ Visualization Manager:
             Show Axes: false
             Show Trail: false
             Value: true
+          leg4_gantry:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
           leg4_table_base:
             Alpha: 1
             Show Axes: false
             Show Trail: false
             Value: true
           leg4_table_front:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          rectangularbeam1_gantry:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          rectangularbeam2_gantry:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          rectangularbeam3_gantry:
             Alpha: 1
             Show Axes: false
             Show Trail: false
@@ -500,6 +499,16 @@ Visualization Manager:
             Show Trail: false
             Value: true
           shoulder_link:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          smallbeam1_bigbeam1_gantry:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          smallbeam2_bigbeam1_gantry:
             Alpha: 1
             Show Axes: false
             Show Trail: false
@@ -609,59 +618,12 @@ Visualization Manager:
             Show Axes: false
             Show Trail: false
             Value: true
-          camera_accel_frame:
+          bigbeam1_gantry:
             Alpha: 1
             Show Axes: false
             Show Trail: false
-          camera_accel_optical_frame:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-          camera_bottom_screw_frame:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-          camera_color_frame:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-          camera_color_optical_frame:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-          camera_depth_frame:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-          camera_depth_optical_frame:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-          camera_gyro_frame:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-          camera_gyro_optical_frame:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-          camera_infra1_frame:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-          camera_infra1_optical_frame:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-          camera_infra2_frame:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-          camera_infra2_optical_frame:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-          camera_link:
+            Value: true
+          bigbeam2_gantry:
             Alpha: 1
             Show Axes: false
             Show Trail: false
@@ -675,6 +637,14 @@ Visualization Manager:
             Show Axes: false
             Show Trail: false
             Value: true
+          gantry:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+          gantry_gantry:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
           left_inner_finger:
             Alpha: 1
             Show Axes: false
@@ -700,12 +670,22 @@ Visualization Manager:
             Show Axes: false
             Show Trail: false
             Value: true
+          leg1_gantry:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
           leg1_table_base:
             Alpha: 1
             Show Axes: false
             Show Trail: false
             Value: true
           leg1_table_front:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          leg2_gantry:
             Alpha: 1
             Show Axes: false
             Show Trail: false
@@ -720,6 +700,11 @@ Visualization Manager:
             Show Axes: false
             Show Trail: false
             Value: true
+          leg3_gantry:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
           leg3_table_base:
             Alpha: 1
             Show Axes: false
@@ -730,12 +715,32 @@ Visualization Manager:
             Show Axes: false
             Show Trail: false
             Value: true
+          leg4_gantry:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
           leg4_table_base:
             Alpha: 1
             Show Axes: false
             Show Trail: false
             Value: true
           leg4_table_front:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          rectangularbeam1_gantry:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          rectangularbeam2_gantry:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          rectangularbeam3_gantry:
             Alpha: 1
             Show Axes: false
             Show Trail: false
@@ -771,6 +776,16 @@ Visualization Manager:
             Show Trail: false
             Value: true
           shoulder_link:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          smallbeam1_bigbeam1_gantry:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          smallbeam2_bigbeam1_gantry:
             Alpha: 1
             Show Axes: false
             Show Trail: false
@@ -826,11 +841,20 @@ Visualization Manager:
         Show Robot Visual: true
       Value: true
       Velocity_Scaling_Factor: 0.1
+    - Alpha: 1
+      Class: rviz/Axes
+      Enabled: false
+      Length: 1
+      Name: Axes
+      Radius: 0.10000000149011612
+      Reference Frame: world
+      Show Trail: false
+      Value: false
   Enabled: true
   Global Options:
-    Background Color: 48; 48; 48
+    Background Color: 186; 189; 182
     Default Light: true
-    Fixed Frame: base_link
+    Fixed Frame: world
     Frame Rate: 30
   Name: root
   Tools:
@@ -854,7 +878,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 4.1867146492004395
+      Distance: 5.391773223876953
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
@@ -862,17 +886,17 @@ Visualization Manager:
         Value: false
       Field of View: 0.7853981852531433
       Focal Point:
-        X: 0.09922794252634048
-        Y: -0.5563085675239563
-        Z: 0.4499697685241699
+        X: 0.09891451895236969
+        Y: 0.4403689503669739
+        Z: 0.8869551420211792
       Focal Shape Fixed Size: true
       Focal Shape Size: 0.05000000074505806
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 0.11539854854345322
+      Pitch: 0.1953985095024109
       Target Frame: <Fixed Frame>
-      Yaw: 0.43041470646858215
+      Yaw: 5.810470104217529
     Saved: ~
 Window Geometry:
   Displays:
@@ -884,7 +908,7 @@ Window Geometry:
     collapsed: false
   MotionPlanning - Trajectory Slider:
     collapsed: false
-  QMainWindow State: 000000ff00000000fd0000000400000000000001f30000035efc020000000bfb0000001200530065006c0065006300740069006f006e00000001e10000009b0000005c00fffffffb0000001e0054006f006f006c002000500072006f007000650072007400690065007302000001ed000001df00000185000000a3fb000000120056006900650077007300200054006f006f02000001df000002110000018500000122fb000000200054006f006f006c002000500072006f0070006500720074006900650073003203000002880000011d000002210000017afb000000100044006900730070006c006100790073010000003b000001ce000000c700fffffffb0000002000730065006c0065006300740069006f006e00200062007500660066006500720200000138000000aa0000023a00000294fb00000014005700690064006500530074006500720065006f02000000e6000000d2000003ee0000030bfb0000000c004b0069006e0065006300740200000186000001060000030c00000261fb000000280020002d0020005400720061006a006500630074006f0072007900200053006c00690064006500720000000000ffffffff0000000000000000fb0000001c004d006f00740069006f006e0050006c0061006e006e0069006e0067010000020f0000018a0000016900fffffffb00000044004d006f00740069006f006e0050006c0061006e006e0069006e00670020002d0020005400720061006a006500630074006f0072007900200053006c00690064006500720000000000ffffffff0000001600000016000000010000010f0000035afc0200000003fb0000001e0054006f006f006c002000500072006f00700065007200740069006500730100000041000000780000000000000000fb0000000a00560069006500770073000000003d0000035a000000a000fffffffb0000001200530065006c0065006300740069006f006e010000025a000000b200000000000000000000000200000490000000a9fc0100000001fb0000000a00560069006500770073030000004e00000080000002e10000019700000003000007380000003efc0100000002fb0000000800540069006d00650100000000000007380000024400fffffffb0000000800540069006d006501000000000000045000000000000000000000053f0000035e00000004000000040000000800000008fc0000000100000002000000010000000a0054006f006f006c00730100000000ffffffff0000000000000000
+  QMainWindow State: 000000ff00000000fd0000000400000000000001f30000035afc020000000bfb0000001200530065006c0065006300740069006f006e00000001e10000009b0000005c00fffffffb0000001e0054006f006f006c002000500072006f007000650072007400690065007302000001ed000001df00000185000000a3fb000000120056006900650077007300200054006f006f02000001df000002110000018500000122fb000000200054006f006f006c002000500072006f0070006500720074006900650073003203000002880000011d000002210000017afb000000100044006900730070006c006100790073010000003d000001cc000000c900fffffffb0000002000730065006c0065006300740069006f006e00200062007500660066006500720200000138000000aa0000023a00000294fb00000014005700690064006500530074006500720065006f02000000e6000000d2000003ee0000030bfb0000000c004b0069006e0065006300740200000186000001060000030c00000261fb000000280020002d0020005400720061006a006500630074006f0072007900200053006c00690064006500720000000000ffffffff0000000000000000fb0000001c004d006f00740069006f006e0050006c0061006e006e0069006e0067010000020f000001880000017d00fffffffb00000044004d006f00740069006f006e0050006c0061006e006e0069006e00670020002d0020005400720061006a006500630074006f0072007900200053006c00690064006500720000000000ffffffff0000001600000016000000010000010f0000035afc0200000003fb0000001e0054006f006f006c002000500072006f00700065007200740069006500730100000041000000780000000000000000fb0000000a00560069006500770073000000003d0000035a000000a400fffffffb0000001200530065006c0065006300740069006f006e010000025a000000b200000000000000000000000200000490000000a9fc0100000001fb0000000a00560069006500770073030000004e00000080000002e10000019700000003000007420000003efc0100000002fb0000000800540069006d0065010000000000000742000003bc00fffffffb0000000800540069006d00650100000000000004500000000000000000000005490000035a00000004000000040000000800000008fc0000000100000002000000010000000a0054006f006f006c00730100000000ffffffff0000000000000000
   Selection:
     collapsed: false
   Time:
@@ -893,6 +917,6 @@ Window Geometry:
     collapsed: false
   Views:
     collapsed: false
-  Width: 1848
-  X: 0
+  Width: 1858
+  X: 62
   Y: 27

@@ -146,7 +146,8 @@ At this point, you should get the green message "_You can start planning now!_" 
 Now you can control the real robot, by simply moving the manipulator marker on RViz and then asking the robot to move to that goal (using the Motion Planning Panel).
 MoveIt will plan the trajetory.
 
-![tp9](docs/UR10e_moving_moveit.gif)
+[//]: # (![tp9]&#40;docs/UR10e_moving_moveit.gif&#41;)
+![tp9](docs/ur10e_external_control.gif)
 
 
 ## Real-time UR10e following a tracked object
