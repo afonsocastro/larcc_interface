@@ -1,9 +1,12 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+
+
 import time
 import signal
 from larcc_classes.gripper.RobotiqHand import RobotiqHand
+from larcc_classes.gripper.GripperStatusDTO import GripperStatusDTO
 
 #------------------------------------------------------------------------------
 # test_robotiq.py
@@ -48,16 +51,19 @@ def test_robotiq():
         hand.move(0, 255, 0)
         (status, position, force) = hand.wait_move_complete()
 
-        while True:
-            time.sleep(0.1)
-            print('close fast')
-            hand.move(255, 255, 1)
-            (status, position, force) = hand.wait_move_complete()
+        gripper_status = GripperStatusDTO(name=True, location=42)
+        print(gripper_status)
 
-            time.sleep(0.1)
-            print('open fast')
-            hand.move(0, 255, 0)
-            (status, position, force) = hand.wait_move_complete()
+        # while True:
+        #     time.sleep(0.1)
+        #     print('close fast')
+        #     hand.move(255, 255, 1)
+        #     (status, position, force) = hand.wait_move_complete()
+        #
+        #     time.sleep(0.1)
+        #     print('open fast')
+        #     hand.move(0, 255, 0)
+        #     (status, position, force) = hand.wait_move_complete()
 
 
 

@@ -13,6 +13,7 @@ class ArmGripperComm:
         self.state_dic = {"arm_initial_pose": 0,
                           "arm_pose_goal": 0,
                           "arm_joints_goal": 0,
+                          "activation_completed": False,
                           "gripper_closed": False,
                           "gripper_active": False,
                           "object_detected": False,
