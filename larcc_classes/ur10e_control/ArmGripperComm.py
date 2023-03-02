@@ -19,8 +19,10 @@ class ArmGripperComm:
                           "object_detected": False,
                           "gripper_pos": 0}
 
-        rospy.Subscriber("gripper_response", String, self.gripper_response_callback)
-        self.pub_gripper = rospy.Publisher('gripper_request', String, queue_size=10)
+        rospy.Subscriber("gripper_response", String,
+                         self.gripper_response_callback)
+        self.pub_gripper = rospy.Publisher(
+            'gripper_request', String, queue_size=10)
 
         rospy.Subscriber("arm_response", String, self.arm_response_callback)
         self.pub_arm = rospy.Publisher('arm_request', String, queue_size=10)
@@ -68,17 +70,6 @@ class ArmGripperComm:
         elif str(data).find("Arm is now at requested joints state goal.") >= 0:
             self.state_dic["arm_joints_goal"] = 1
 
-        # Sends a message to the gripper controller to open the gripper
-    def gripper_open_fast(self):
-        # values = [position, speed, force]
-        my_dict = {'action': 'move', 'values': [0, 255, 0]}
-        encoded_data_string = json.dumps(my_dict)
-        rospy.loginfo(encoded_data_string)
-        self.pub_gripper.publish(encoded_data_string)
-
-        while self.state_dic["gripper_closed"]:
-            time.sleep(0.1)
-
     def gripper_connect(self):
         # values = [position, speed, force]
         my_dict = {'action': 'connect'}
@@ -96,8 +87,10 @@ class ArmGripperComm:
         rospy.loginfo(encoded_data_string)
         self.pub_gripper.publish(encoded_data_string)
 
-    # Sends a message to the gripper controller to initiate the gripper
     def gripper_init(self):
+        """
+        Sends a message to the gripper controller to initiate the gripper
+        """
         my_dict_ = {'action': 'init'}
         encoded_data_string_ = json.dumps(my_dict_)
         rospy.loginfo(encoded_data_string_)
@@ -106,16 +99,33 @@ class ArmGripperComm:
         while not self.state_dic["activation_completed"]:
             time.sleep(0.1)
 
-    # Sends a message to the gripper controller to close the gripper
-    def gripper_close_fast(self):
+    def gripper_open_fast(self, wait=True):
+        """
+        Sends a message to the gripper controller to open the gripper
+        """
+        # values = [position, speed, force]
+        my_dict = {'action': 'move', 'values': [0, 255, 0]}
+        encoded_data_string = json.dumps(my_dict)
+        rospy.loginfo(encoded_data_string)
+        self.pub_gripper.publish(encoded_data_string)
+
+        if wait:
+            while self.state_dic["gripper_closed"]:
+                time.sleep(0.1)
+
+    def gripper_close_fast(self, wait=True):
+        """
+        Sends a message to the gripper controller to close the gripper
+        """
         # values = [position, speed, force]
         my_dict = {'action': 'move', 'values': [255, 255, 0]}
         encoded_data_string = json.dumps(my_dict)
         rospy.loginfo(encoded_data_string)
         self.pub_gripper.publish(encoded_data_string)
 
-        while not self.state_dic["gripper_closed"]:
-            time.sleep(0.1)
+        if wait:
+            while not self.state_dic["gripper_closed"]:
+                time.sleep(0.1)
 
     def gripper_status(self):
         # values = [position, speed, force]
@@ -124,9 +134,10 @@ class ArmGripperComm:
         rospy.loginfo(encoded_data_string)
         self.pub_gripper.publish(encoded_data_string)
 
-    # Sends a message to the arm controller to move the arm to a preconfigured intial postion
-    def move_arm_to_initial_pose(self):
-
+    def move_arm_to_initial_pose(self, wait=True):
+        """
+        Sends a message to the arm controller to move the arm to a preconfigured intial postion
+        """
         # -----------------ARM INITIAL POSE------------------------------
         arm_initial_pose_dict = {'action': 'move_to_initial_pose'}
         encoded_data_string_initial_pose = json.dumps(arm_initial_pose_dict)
@@ -135,12 +146,15 @@ class ArmGripperComm:
 
         self.state_dic["arm_initial_pose"] = 0
 
-        while self.state_dic["arm_initial_pose"] != 1:
-            time.sleep(0.1)
+        if wait:
+            while self.state_dic["arm_initial_pose"] != 1:
+                time.sleep(0.1)
         # -------------------------------------------------------------------
 
-    # Sends a message to the arm controller to move the arm to a postion based on the global frame
-    def move_arm_to_pose_goal(self, x, y, z, q1, q2, q3, q4):
+    def move_arm_to_pose_goal(self, x, y, z, q1, q2, q3, q4, wait=True):
+        """
+        Sends a message to the arm controller to move the arm to a postion based on the global frame
+        """
         _arm_dict = {'action': 'move_to_pose_goal', 'trans': [x, y, z],
                      'quat': [q1, q2, q3, q4]}
         _encoded_data_string = json.dumps(_arm_dict)
@@ -149,11 +163,14 @@ class ArmGripperComm:
 
         self.state_dic["arm_pose_goal"] = 0
 
-        while self.state_dic["arm_pose_goal"] != 1:
-            time.sleep(0.1)
+        if wait:
+            while self.state_dic["arm_pose_goal"] != 1:
+                time.sleep(0.1)
 
-    # Sends a message to the arm controller to move the arm to a postion based on the arm's joints
-    def move_arm_to_joints_state(self, j1, j2, j3, j4, j5, j6):
+    def move_arm_to_joints_state(self, j1, j2, j3, j4, j5, j6, wait=True):
+        """
+        Sends a message to the arm controller to move the arm to a postion based on the arm's joints
+        """
         _arm_dict_ = {'action': 'move_to_joints_state',
                       'joints': [j1, j2, j3, j4, j5, j6]}
         _encoded_data_string_ = json.dumps(_arm_dict_)
@@ -162,8 +179,9 @@ class ArmGripperComm:
 
         self.state_dic["arm_joints_goal"] = 0
 
-        while self.state_dic["arm_joints_goal"] != 1:
-            time.sleep(0.1)
+        if wait:
+            while self.state_dic["arm_joints_goal"] != 1:
+                time.sleep(0.1)
 
 
 # # Sends a message to the gripper controller to open the gripper
