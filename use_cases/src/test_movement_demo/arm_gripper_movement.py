@@ -9,13 +9,26 @@ from larcc_classes.ur10e_control.ArmGripperComm import ArmGripperComm
 import rospy
 import time
 
+
 parser = argparse.ArgumentParser(description="Arguments for trainning script")
 parser.add_argument("-m", "--movement", type=str, default="",
                     help="It is the name of the movement configuration JSON in the config directory of this package")
+parser.add_argument("-pl", "--position_list", type=str, default="positions",
+                    help="It is the name of the configuration JSON containing the list of positions in the config directory of this package")
 
 args = vars(parser.parse_args())
 
 path = ROOT_DIR + "/use_cases/config/"
+
+try:
+    f = open(path + args['position_list'] + ".json")
+    positions = json.load(f)
+    positions = positions["positions"]
+    f.close()
+
+except:
+    rospy.logerr("Invalid positions file! Closing...")
+    sys.exit(0)
 
 rospy.init_node("arm_gripper_movement", anonymous=True)
 
@@ -30,13 +43,9 @@ arm_gripper_comm.gripper_connect()
 if not arm_gripper_comm.state_dic["activation_completed"]: 
     arm_gripper_comm.gripper_init()
 
-f = open(path + "positions.json")
-positions = json.load(f)
-positions = positions["positions"]
-f.close()
-
 if args['movement'] == "":
     res = os.listdir(path)
+    res.remove(args['position_list'] + ".json")
 
     while True:
         i = 0
@@ -53,6 +62,7 @@ if args['movement'] == "":
             f.close()
         
         except:
+            rospy.logerr("Invalid file! Closing...")
             arm_gripper_comm.gripper_disconnect()
             sys.exit(0)
 
@@ -66,9 +76,15 @@ if args['movement'] == "":
                 arm_gripper_comm.gripper_close_fast()
 
 else:
-    f = open(path + args["movement"] + '.json')
-    config = json.load(f)
-    f.close()
+    try:
+        f = open(path + args["movement"] + '.json')
+        config = json.load(f)
+        f.close()
+    
+    except:
+        rospy.logerr("Invalid file! Closing...")
+        arm_gripper_comm.gripper_disconnect()
+        sys.exit(0)
 
     for pos, gripper in config["positions"]:
         pos = positions[pos]
