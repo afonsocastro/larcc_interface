@@ -20,7 +20,7 @@ from keras import backend as K
 
 
 class BahdanauAttention(Layer):
-    def __init__(self, units, verbose=0):
+    def __init__(self, units, verbose=1):
         super(BahdanauAttention, self).__init__()
         self.W1 = Dense(units)
         self.W2 = Dense(units)
@@ -106,7 +106,7 @@ def training_encoder_decoder(out_dim, input_params, out_labels, start_n, batch_s
 
         context_vector = tf.expand_dims(context_vector, 1)
 
-        # 4. concatenate the input + context vectore to find the next decoder's input
+        # 4. concatenate the input + context vector to find the next decoder's input
         inputs = tf.concat([context_vector, inputs], axis=-1)
 
         # 5. passing the concatenated vector to the LSTM
@@ -199,7 +199,7 @@ if __name__ == '__main__':
                                                                epochs=epochs, validation_split=validation_split,
                                                                shuffle=True, verbose=2, callbacks=[callback])
 
-    model_encoder_decoder_Bahdanau_Attention.save("model_Bahdanau_Attention2")
+    model_encoder_decoder_Bahdanau_Attention.save("just_for_fun")
     exit(0)
 
     fig = plt.figure()
