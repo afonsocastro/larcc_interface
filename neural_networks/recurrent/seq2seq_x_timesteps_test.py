@@ -144,8 +144,8 @@ def training_encoder_decoder(out_dim, input_params, out_labels, start_n, batch_s
 if __name__ == '__main__':
     validation_split = 0.3
     batch_size = 2
-    # time_steps = 50
-    time_steps = 100
+    time_steps = 50
+    # time_steps = 100
     neurons = 16
     params = 12
     labels = 4
