@@ -10,6 +10,7 @@ import moveit_commander
 import moveit_msgs.msg
 import geometry_msgs.msg
 from moveit_commander.conversions import pose_to_list
+import time
 
 try:
     from math import pi, tau, dist, fabs, cos
@@ -220,6 +221,8 @@ class UR10eArm(object):
         # It is always good to clear your targets after planning with poses.
         # Note: there is no equivalent function for clear_joint_value_targets()
         move_group.clear_pose_targets()
+
+        time.sleep(0.3)
 
         return True
 
