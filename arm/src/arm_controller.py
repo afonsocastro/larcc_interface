@@ -59,6 +59,14 @@ def move_arm_to_joints_state(joints_state):
     return state
 
 
+def request_arm_stop_callback(data):
+    state = arm.stop()
+    if state == True:
+        result = 'Arm is now stopped.'
+        print(result)
+        pub.publish(result)
+
+
 if __name__ == '__main__':
     move_group = arm.move_group
 
@@ -70,8 +78,8 @@ if __name__ == '__main__':
     rospy.init_node('arm_controller', anonymous=True)
 
     pub = rospy.Publisher('arm_response', String, queue_size=10)
+    rospy.Subscriber("arm_request_stop", String, request_arm_stop_callback)
     rospy.Subscriber("arm_request", String, request_arm_callback)
 
     # spin() simply keeps python from exiting until this node is stopped
     rospy.spin()
-

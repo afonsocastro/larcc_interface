@@ -10,9 +10,10 @@ from std_msgs.msg import String
 class ArmGripperComm:
 
     def __init__(self):
-        self.state_dic = {"arm_initial_pose": 0,
-                          "arm_pose_goal": 0,
-                          "arm_joints_goal": 0,
+        self.state_dic = {"arm_initial_pose": 1,
+                          "arm_pose_goal": 1,
+                          "arm_joints_goal": 1,
+                          "arm_stopped": 1,
                           "activation_completed": False,
                           "gripper_closed": False,
                           "gripper_active": False,
@@ -26,6 +27,8 @@ class ArmGripperComm:
 
         rospy.Subscriber("arm_response", String, self.arm_response_callback)
         self.pub_arm = rospy.Publisher('arm_request', String, queue_size=10)
+        self.pub_arm_stop = rospy.Publisher('arm_request_stop', String, queue_size=10)
+
 
     def gripper_response_callback(self, data):
 
@@ -53,6 +56,7 @@ class ArmGripperComm:
         # elif str(data).find("status:") >= 0:
         #     self.state_dic["last_status"] = data
 
+
     def arm_response_callback(self, data):
         if str(data).find("Arm is now at initial pose.") >= 0:
             self.state_dic["arm_initial_pose"] = 1
@@ -69,6 +73,12 @@ class ArmGripperComm:
             self.state_dic["arm_pose_goal"] = 1
         elif str(data).find("Arm is now at requested joints state goal.") >= 0:
             self.state_dic["arm_joints_goal"] = 1
+        elif str(data).find("Arm is now stopped.") >= 0:
+            self.state_dic["arm_stopped"] = 1
+            self.state_dic["arm_joints_goal"] = 1
+            self.state_dic["arm_pose_goal"] = 1
+            self.state_dic["arm_initial_pose"] = 1
+
 
     def gripper_connect(self):
         # values = [position, speed, force]
@@ -80,12 +90,14 @@ class ArmGripperComm:
         while not self.state_dic["gripper_active"]:
             time.sleep(0.1)
 
+
     def gripper_disconnect(self):
         # values = [position, speed, force]
         my_dict = {'action': 'disconnect'}
         encoded_data_string = json.dumps(my_dict)
         rospy.loginfo(encoded_data_string)
         self.pub_gripper.publish(encoded_data_string)
+
 
     def gripper_init(self):
         """
@@ -98,6 +110,7 @@ class ArmGripperComm:
 
         while not self.state_dic["activation_completed"]:
             time.sleep(0.1)
+
 
     def gripper_open_fast(self, wait=True):
         """
@@ -113,6 +126,7 @@ class ArmGripperComm:
             while self.state_dic["gripper_closed"]:
                 time.sleep(0.1)
 
+
     def gripper_close_fast(self, wait=True):
         """
         Sends a message to the gripper controller to close the gripper
@@ -127,12 +141,14 @@ class ArmGripperComm:
             while not self.state_dic["gripper_closed"]:
                 time.sleep(0.1)
 
+
     def gripper_status(self):
         # values = [position, speed, force]
         my_dict = {'action': 'status'}
         encoded_data_string = json.dumps(my_dict)
         rospy.loginfo(encoded_data_string)
         self.pub_gripper.publish(encoded_data_string)
+
 
     def move_arm_to_initial_pose(self, wait=True):
         """
@@ -151,6 +167,7 @@ class ArmGripperComm:
                 time.sleep(0.1)
         # -------------------------------------------------------------------
 
+
     def move_arm_to_pose_goal(self, x, y, z, q1, q2, q3, q4, wait=True):
         """
         Sends a message to the arm controller to move the arm to a postion based on the global frame
@@ -167,6 +184,7 @@ class ArmGripperComm:
             while self.state_dic["arm_pose_goal"] != 1:
                 time.sleep(0.1)
 
+
     def move_arm_to_joints_state(self, j1, j2, j3, j4, j5, j6, wait=True):
         """
         Sends a message to the arm controller to move the arm to a postion based on the arm's joints
@@ -181,6 +199,23 @@ class ArmGripperComm:
 
         if wait:
             while self.state_dic["arm_joints_goal"] != 1:
+                time.sleep(0.1)
+    
+
+    def stop_arm(self, wait=True):
+        """
+        Sends a message to the arm controller to stop the arm movement
+        """
+        _arm_dict_ = {'action': 'stop_arm',
+                    'joints': []}
+        _encoded_data_string_ = json.dumps(_arm_dict_)
+        rospy.loginfo(_arm_dict_)
+        self.pub_arm_stop.publish(_encoded_data_string_)
+
+        self.state_dic["arm_stopped"] = 0
+
+        if wait:
+            while self.state_dic["arm_stopped"] != 1:
                 time.sleep(0.1)
 
 

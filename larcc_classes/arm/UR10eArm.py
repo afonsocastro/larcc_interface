@@ -122,6 +122,7 @@ class UR10eArm(object):
         self.eef_link = eef_link
         self.group_names = group_names
 
+
     def go_to_joint_state(self, joint1, joint2, joint3, joint4, joint5, joint6):
         # Copy class variables to local variables to make the web tutorials more clear.
         # In practice, you should use the class variables directly unless you have a good
@@ -157,6 +158,7 @@ class UR10eArm(object):
         # # For testing:
         current_joints = move_group.get_current_joint_values()
         return all_close(joint_goal, current_joints, 0.01)
+
 
     def go_to_pose_goal(self, trans_x, trans_y, trans_z, q1, q2, q3, q4):
         # Copy class variables to local variables to make the web tutorials more clear.
@@ -205,6 +207,22 @@ class UR10eArm(object):
         # we use the class variable rather than the copied state variable
         current_pose = self.move_group.get_current_pose().pose
         return all_close(pose_goal, current_pose, 0.01)
+    
+
+    def stop(self):
+        # Copy class variables to local variables to make the web tutorials more clear.
+        # In practice, you should use the class variables directly unless you have a good
+        # reason not to.
+        move_group = self.move_group
+
+        # Calling `stop()` ensures that there is no residual movement
+        move_group.stop()
+        # It is always good to clear your targets after planning with poses.
+        # Note: there is no equivalent function for clear_joint_value_targets()
+        move_group.clear_pose_targets()
+
+        return True
+
 
     def display_trajectory(self, plan):
         # Copy class variables to local variables to make the web tutorials more clear.
