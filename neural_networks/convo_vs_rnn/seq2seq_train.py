@@ -16,7 +16,7 @@ from neural_networks.utils import training_encoder_decoder
 
 if __name__ == '__main__':
     validation_split = 0.3
-    batch_size = 2
+    batch_size = 25
     time_steps = 50
     neurons = 16
     params = 12
@@ -68,8 +68,8 @@ if __name__ == '__main__':
     # print("y_train_final.shape")
     # print(y_train_final.shape)
     #
-    x_train = x_train[0:2000]
-    y_train_final = y_train_final[0:2000]
+    x_train = x_train[0:2500]
+    y_train_final = y_train_final[0:2500]
 
     print("x_train.shape")
     print(x_train.shape)
