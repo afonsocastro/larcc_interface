@@ -97,10 +97,10 @@ if __name__ == '__main__':
     plt.ylabel('loss')
     plt.xlabel('epoch')
     plt.legend(['train', 'val'], loc='upper left')
+    #
+    # plt.show()
 
-    plt.show()
+    model.save("RNN_LSTM_attention_50ts_adjustable_norm")
 
-    # model_encoder_decoder_Bahdanau_Attention.save("RNN_LSTM_attention_50ts_universal_norm")
-
-    # plt.savefig(ROOT_DIR + "/neural_networks/recurrent/seq2seq/training_curves.png", bbox_inches='tight')
+    plt.savefig(ROOT_DIR + "/neural_networks/convo_vs_rnn/training_curves.png", bbox_inches='tight')
 
