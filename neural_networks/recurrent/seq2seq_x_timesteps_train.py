@@ -88,7 +88,7 @@ if __name__ == '__main__':
     model_encoder_decoder_Bahdanau_Attention.save("just_for_fun")
     exit(0)
 
-    # plt.savefig(ROOT_DIR + "/neural_networks/recurrent/seq2seq/training_curves.png", bbox_inches='tight')
+    # plt.savefig(ROOT_DIR + "/neural_networks/recurrent/seq2seq/training_curves_RNN_adjusted_norm.png", bbox_inches='tight')
 
     # model_encoder_decoder_Bahdanau_Attention.save("model_Bahdanau_Attention")
 

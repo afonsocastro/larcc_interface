@@ -200,7 +200,7 @@ if __name__ == '__main__':
     #
     plt.show()
 
-    # plt.savefig(ROOT_DIR + "/neural_networks/recurrent/seq2seq/training_curves.png", bbox_inches='tight')
+    # plt.savefig(ROOT_DIR + "/neural_networks/recurrent/seq2seq/training_curves_RNN_adjusted_norm.png", bbox_inches='tight')
 
     x_test = np.reshape(test_data[:, :-1], (n_test, time_steps, 13))
     y_test = test_data[:, -1]

@@ -1,17 +1,10 @@
 #!/usr/bin/env python3
 
 import matplotlib.pyplot as plt
-from keras import Model, Input
 from keras.callbacks import EarlyStopping
-from keras.layers import Lambda, LSTM, Dense
 from tensorflow.keras.utils import to_categorical  # one-hot encode target column
-from keras import backend as K
-
 from config.definitions import ROOT_DIR
-from larcc_classes.data_storage.SortedDataForLearning import SortedDataForLearning
 import numpy as np
-import tensorflow as tf
-
 from neural_networks.utils import training_encoder_decoder
 
 if __name__ == '__main__':
@@ -24,13 +17,15 @@ if __name__ == '__main__':
     start_number = 17
     epochs = 50
 
-    # training_data = np.load(ROOT_DIR + "/data_storage/data/universal_norm/normalized_data.npy")
+    # ADJUSTED NORMALIZATION DATA --------------------------------------------------------------------------------
+    # sorted_data_for_learning = SortedDataForLearning(
+    #     path=ROOT_DIR + "/data_storage/data/raw_learning_data/user_splitted_data/")
+    # training_data = sorted_data_for_learning.training_data
+    # -------------------------------------------------------------------------------------------------------------
 
-    sorted_data_for_learning = SortedDataForLearning(
-        path=ROOT_DIR + "/data_storage/data/raw_learning_data/user_splitted_data/")
-
-    training_data = sorted_data_for_learning.training_data
-    test_data = sorted_data_for_learning.test_data
+    # UNIVERSAL NORMALIZATION DATA ------------------------------------------------------------------------------
+    training_data = np.load(ROOT_DIR + "/data_storage/data/universal_norm/normalized_data.npy")
+    # -------------------------------------------------------------------------------------------------------------
 
     n_train = len(training_data) * (1 - validation_split)
     n_val = len(training_data) * validation_split
@@ -45,29 +40,10 @@ if __name__ == '__main__':
         for t in range(0, time_steps):
             y_train_final[line][t] = result
 
-    # results = []
-    # y_train_final = []
-    # for line in range(0, y_train.shape[0]):
-    #     result1 = y_train[line, :]
-    #     for i in range(0, x_train.shape[1]):
-    #         results.append(result1)
-    #
-    #     y_train_final.append(results)
-    #     results = []
-    # y_train_final = np.array(y_train_final, dtype=float)
-
     model = training_encoder_decoder(out_dim=neurons, input_params=params, out_labels=labels, start_n=start_number,
                                      batch_s=batch_size, time_ss=time_steps)
     # model_encoder_decoder_Bahdanau_Attention.summary()
 
-    # plot_model(model_encoder_decoder_Bahdanau_Attention, to_file="seq2seq/model.png", show_shapes=True)
-
-    # print("x_train.shape")
-    # print(x_train.shape)
-    # print(x_train[:-2].shape)
-    # print("y_train_final.shape")
-    # print(y_train_final.shape)
-    #
     x_train = x_train[0:2500]
     y_train_final = y_train_final[0:2500]
 
@@ -100,7 +76,7 @@ if __name__ == '__main__':
     #
     # plt.show()
 
-    model.save("RNN_LSTM_attention_50ts_adjustable_norm")
+    model.save("RNN_LSTM_attention_50ts_universal_norm")
 
     plt.savefig(ROOT_DIR + "/neural_networks/convo_vs_rnn/training_curves.png", bbox_inches='tight')
 
