@@ -18,39 +18,65 @@ if __name__ == '__main__':
     input_nn = time_window * 10
 
     test_data = np.load(ROOT_DIR + "/data_storage/full_timewindow/data/raw_learning_data.npy")
-
-    f = open(ROOT_DIR + '/data_storage/src/clusters_max_min.json')
-    clusters_max_min = json.load(f)
-    f.close()
-
-    data_max_timestamp = abs(max(clusters_max_min["timestamp"]["max"], clusters_max_min["timestamp"]["min"], key=abs))
-    data_max_joints = abs(max(clusters_max_min["joints"]["max"], clusters_max_min["joints"]["min"], key=abs))
-    data_max_gripper_F = abs(max(clusters_max_min["gripper_F"]["max"], clusters_max_min["gripper_F"]["min"], key=abs))
-    data_max_gripper_M = abs(max(clusters_max_min["gripper_M"]["max"], clusters_max_min["gripper_M"]["min"], key=abs))
-
-    RNN_universal_norm_model = keras.models.load_model("RNN_LSTM_attention_50ts_universal_norm")
-    RNN_adjustable_norm_model = keras.models.load_model("RNN_LSTM_attention_50ts_adjustable_norm")
     total_predictions = np.empty((18, 5950, 50, 4))
 
+    # UNIVERSAL NORMALIZATION -------------------------------------------------------------------------------------
+    # f = open(ROOT_DIR + '/data_storage/src/clusters_max_min.json')
+    # clusters_max_min = json.load(f)
+    # f.close()
+    #
+    # data_max_timestamp = abs(max(clusters_max_min["timestamp"]["max"], clusters_max_min["timestamp"]["min"], key=abs))
+    # data_max_joints = abs(max(clusters_max_min["joints"]["max"], clusters_max_min["joints"]["min"], key=abs))
+    # data_max_gripper_F = abs(max(clusters_max_min["gripper_F"]["max"], clusters_max_min["gripper_F"]["min"], key=abs))
+    # data_max_gripper_M = abs(max(clusters_max_min["gripper_M"]["max"], clusters_max_min["gripper_M"]["min"], key=abs))
+
+    # RNN_universal_norm_model = keras.models.load_model("RNN_LSTM_attention_50ts_universal_norm")
+
+    # for n_sample in range(0, test_data.shape[0]):
+    #     sample = test_data[n_sample]
+    #     ground_truth = sample[:, -1]
+    #     # sample = sample[:, 1:-1]
+    #     data_array_norm = np.empty((sample.shape[0], 0))
+    #     data_array_norm = np.hstack((data_array_norm, sample[:, 0:1] / data_max_timestamp))
+    #     data_array_norm = np.hstack((data_array_norm, sample[:, 1:7] / data_max_joints))
+    #     data_array_norm = np.hstack((data_array_norm, sample[:, 7:10] / data_max_gripper_F))
+    #     data_array_norm = np.hstack((data_array_norm, sample[:, 10:13] / data_max_gripper_M))
+    #     data_universal_norm = data_array_norm[:, 1:]
+    #
+    #     data = np.empty((time_steps - 50, 50, 12))
+    #     for ts in range(0, time_steps-51):
+    #         data[ts] = data_universal_norm[ts:50+ts].reshape(1, 50, 12)
+    #     pred = RNN_universal_norm_model.predict(data, batch_size=25)
+    #     total_predictions[n_sample] = pred
+    #
+    # save(ROOT_DIR + "/neural_networks/convo_vs_rnn/predictions/rnn_universal_norm_pred.npy", total_predictions)
+    # ---------------------------------------------------------------------------------------------------------------
+
+    # ADJUSTABLE NORMALIZATION -------------------------------------------------------------------------------------
+    RNN_adjustable_norm_model = keras.models.load_model("RNN_LSTM_attention_50ts_adjustable_norm")
     for n_sample in range(0, test_data.shape[0]):
         sample = test_data[n_sample]
         ground_truth = sample[:, -1]
-        # sample = sample[:, 1:-1]
-        data_array_norm = np.empty((sample.shape[0], 0))
-        data_array_norm = np.hstack((data_array_norm, sample[:, 0:1] / data_max_timestamp))
-        data_array_norm = np.hstack((data_array_norm, sample[:, 1:7] / data_max_joints))
-        data_array_norm = np.hstack((data_array_norm, sample[:, 7:10] / data_max_gripper_F))
-        data_array_norm = np.hstack((data_array_norm, sample[:, 10:13] / data_max_gripper_M))
-        data_universal_norm = data_array_norm[:, 1:]
-
+        sample = sample[:, 1:-1]
         data = np.empty((time_steps - 50, 50, 12))
-        for ts in range(0, time_steps-51):
-            data[ts] = data_universal_norm[ts:50+ts].reshape(1, 50, 12)
-        pred = RNN_universal_norm_model.predict(data, batch_size=25)
+        for ts in range(0, time_steps - 51):
+            s = sample[ts:50 + ts]
+            data_array_norm = np.empty((50, 0))
+            idx = 0
+            for n in [6, 3, 3]:
+                data_sub_array = s[:, idx:idx + n]
+                idx += n
+                data_max = abs(max(data_sub_array.min(), data_sub_array.max(), key=abs))
+                data_sub_array_norm = data_sub_array / data_max
+                data_array_norm = np.hstack((data_array_norm, data_sub_array_norm))
+            data[ts] = data_array_norm[:, :].reshape(1, 50, 12)
+        pred = RNN_adjustable_norm_model.predict(data, batch_size=25)
         total_predictions[n_sample] = pred
 
-    save(ROOT_DIR + "/neural_networks/convo_vs_rnn/predictions/rnn_universal_norm_pred.npy", total_predictions)
+    save('rnn_adjustable_norm_pred.npy', total_predictions)
+    # ---------------------------------------------------------------------------------------------------------------
     exit(0)
+
 
 
     # n_test = test_data.shape[0]
