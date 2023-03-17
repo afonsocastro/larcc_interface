@@ -30,8 +30,10 @@ if __name__ == '__main__':
 
     RNN_universal_norm_model = keras.models.load_model("RNN_LSTM_attention_50ts_universal_norm")
     RNN_adjustable_norm_model = keras.models.load_model("RNN_LSTM_attention_50ts_adjustable_norm")
+    total_predictions = np.empty((18, 5950, 50, 4))
 
-    for sample in test_data:
+    for n_sample in range(0, test_data.shape[0]):
+        sample = test_data[n_sample]
         ground_truth = sample[:, -1]
         # sample = sample[:, 1:-1]
         data_array_norm = np.empty((sample.shape[0], 0))
@@ -41,25 +43,14 @@ if __name__ == '__main__':
         data_array_norm = np.hstack((data_array_norm, sample[:, 10:13] / data_max_gripper_M))
         data_universal_norm = data_array_norm[:, 1:]
 
-        data = np.empty((time_steps - 49, 50, 12))
+        data = np.empty((time_steps - 50, 50, 12))
         for ts in range(0, time_steps-51):
             data[ts] = data_universal_norm[ts:50+ts].reshape(1, 50, 12)
-
-        print("data.shape")
-        print(data.shape)
         pred = RNN_universal_norm_model.predict(data, batch_size=25)
-        print("pred.shape")
-        print(pred.shape)
+        total_predictions[n_sample] = pred
 
+    save(ROOT_DIR + "/neural_networks/convo_vs_rnn/predictions/rnn_universal_norm_pred.npy", total_predictions)
     exit(0)
-
-
-
-
-
-
-
-
 
 
     # n_test = test_data.shape[0]
