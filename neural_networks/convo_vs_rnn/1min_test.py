@@ -49,7 +49,7 @@ if __name__ == '__main__':
     #     pred = RNN_universal_norm_model.predict(data, batch_size=25)
     #     total_predictions[n_sample] = pred
     #
-    # save(ROOT_DIR + "/neural_networks/convo_vs_rnn/predictions/rnn_universal_norm_pred.npy", total_predictions)
+    save('rnn_universal_norm_pred.npy', total_predictions)
     # ---------------------------------------------------------------------------------------------------------------
 
     # ADJUSTABLE NORMALIZATION -------------------------------------------------------------------------------------
