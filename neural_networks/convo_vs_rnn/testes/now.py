@@ -65,7 +65,7 @@ if __name__ == '__main__':
 
     # for n in range(0, 3):
     n_data = test_data.shape[0]
-    for n in progressbar(range(0, 1), redirect_stdout=True):
+    for n in progressbar(range(0, n_data), redirect_stdout=True):
         one_sample_test = test_data[n]
         y_true = one_sample_test[:, -1]
         one_sample_test = one_sample_test[:, 1:-1]
