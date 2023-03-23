@@ -62,6 +62,7 @@ if __name__ == '__main__':
     test_data = np.load(ROOT_DIR + "/data_storage/full_timewindow/data/universal_normalized_data.npy")
     all_predicts = []
     all_trues = []
+
     # for n in range(0, 3):
     for n in progressbar(range(0, 3), redirect_stdout=True):
         one_sample_test = test_data[n]
