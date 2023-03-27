@@ -35,7 +35,7 @@ def predict_sequence(infenc, infdec, source, n_steps, cardinality, sn):
 if __name__ == '__main__':
     validation_split = 0.3
     batch_size = 25
-    time_steps_in = 50
+    # time_steps_in = 50
     # time_steps_out = 6000
     time_steps_out = 50
     neurons = 16
@@ -64,24 +64,18 @@ if __name__ == '__main__':
     all_trues = []
 
     # for n in range(0, 3):
-    for n in progressbar(range(0, 3), redirect_stdout=True):
+    n_data = test_data.shape[0]
+    for n in progressbar(range(0, 2), redirect_stdout=True):
+    # for n in range(0, 1):
         one_sample_test = test_data[n]
         y_true = one_sample_test[:, -1]
         one_sample_test = one_sample_test[:, 1:-1]
 
-
         # target = predict_sequence(infenc, infdec, one_sample_test, time_steps_out, labels, start_number)
-        # print(target)
         # # predicted = np.empty((target.shape[0]))
         # predicted = []
-        #
         # correct = 0
         # total = one_sample_test.shape[0]
-        #
-        # for i in range(0, target.shape[0]):
-        #     predicted.append(target[i])
-        #     if int(y_true[i]) == int(argmax(predicted[i])):
-        #         correct += 1
 
         # target = predict_sequence(infenc, infdec, one_sample_test, time_steps_out, labels, start_number)
         # print(target)
@@ -97,23 +91,36 @@ if __name__ == '__main__':
 
         for i in range(50, y_true.shape[0]):
         # for i in progressbar(range(50, y_true.shape[0]), redirect_stdout=True):
-            target = predict_sequence(infenc, infdec, one_sample_test[i-49:i], time_steps_out, labels, start_number)
-            predicted.append(target[49])
-            # print("\n")
-            # print("predicted")
-            # print(predicted)
-            if int(y_true[i]) == int(argmax(predicted[i])):
-                correct += 1
+        # for i in progressbar(range(50, y_true.shape[0], 25), redirect_stdout=True):
+            target = predict_sequence(infenc, infdec, one_sample_test[i-49:i+1], time_steps_out, labels, start_number)
+            # for t in range(40, 50):
+            predicted.append(target[-1])
 
-        print('Accuracy: %.2f%%' % (float(correct) / float(total) * 100.0))
+        # for i in range(0, target.shape[0]):
+        #     if int(y_true[i]) == int(argmax(target[i])):
+        #         correct += 1
+        # print('Accuracy: %.2f%%' % (float(correct) / float(total) * 100.0))
+
         all_predicts.append(predicted)
         all_trues.append(y_true)
+
+    # print(predicted.shape)
+    # print(y_true.shape)
+    #
+    # # exit(0)
+    # for _ in range(0, predicted.shape[0]):
+    #     if int(y_true[_]) == int(argmax(predicted[_])):
+    #         correct += 1
+    #
+    # print('Accuracy: %.2f%%' % (float(correct) / float(total) * 100.0))
+    # all_predicts.append(predicted)
+    # all_trues.append(y_true)
 
     # predicted = np.array(predicted, dtype=float)
     all_predicts = np.array(all_predicts, dtype=float)
     all_trues = np.array(all_trues, dtype=float)
-    save("y_true.npy", all_trues)
-    save("predicted.npy", all_predicts)
+    save("1_results/y_true.npy", all_trues)
+    save("1_results/predicted.npy", all_predicts)
 
     # total, correct = 261, 0
     # # for _ in range(total):
