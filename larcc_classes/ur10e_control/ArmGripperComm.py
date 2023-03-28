@@ -230,11 +230,10 @@ class ArmGripperComm:
         """
         Sends a message to the arm controller to stop the arm movement
         """
-        _arm_dict_ = {'action': 'stop_arm',
-                    'joints': []}
-        _encoded_data_string_ = json.dumps(_arm_dict_)
-        rospy.loginfo(_arm_dict_)
-        self.pub_arm_stop.publish(_encoded_data_string_)
+        msg = "stop_arm"
+        
+        rospy.loginfo(msg)
+        self.pub_arm_stop.publish(msg)
 
         self.state_dic["arm_stopped"] = 0
 
