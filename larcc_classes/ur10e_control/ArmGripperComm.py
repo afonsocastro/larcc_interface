@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+from arm.msg import MoveArmAction
 import json
 import time
 import rospy
@@ -26,7 +27,7 @@ class ArmGripperComm:
             'gripper_request', String, queue_size=10)
 
         rospy.Subscriber("arm_response", String, self.arm_response_callback)
-        self.pub_arm = rospy.Publisher('arm_request', String, queue_size=10)
+        self.pub_arm = rospy.Publisher('arm_request', MoveArmAction, queue_size=10)
         self.pub_arm_stop = rospy.Publisher('arm_request_stop', String, queue_size=10)
 
 
@@ -78,6 +79,7 @@ class ArmGripperComm:
             self.state_dic["arm_joints_goal"] = 1
             self.state_dic["arm_pose_goal"] = 1
             self.state_dic["arm_initial_pose"] = 1
+
 
 
     def gripper_connect(self):
@@ -150,15 +152,23 @@ class ArmGripperComm:
         self.pub_gripper.publish(encoded_data_string)
 
 
-    def move_arm_to_initial_pose(self, wait=True):
+    def move_arm_to_initial_pose(self, vel=0.1, a=0.1, wait=True):
         """
         Sends a message to the arm controller to move the arm to a preconfigured intial postion
         """
         # -----------------ARM INITIAL POSE------------------------------
-        arm_initial_pose_dict = {'action': 'move_to_initial_pose'}
-        encoded_data_string_initial_pose = json.dumps(arm_initial_pose_dict)
-        rospy.loginfo(arm_initial_pose_dict)
-        self.pub_arm.publish(encoded_data_string_initial_pose)
+        vel = 1 if vel>1 else 0.1 if vel<0.1 else vel
+        a = 1 if a>1 else 0.1 if a<0.1 else a
+
+        msg = MoveArmAction()
+        msg.header.stamp = rospy.Time.now()
+        msg.action = 'move_to_initial_pose'
+        msg.goal = []
+        msg.velocity = vel
+        msg.acceleration = a
+
+        rospy.loginfo(msg)
+        self.pub_arm.publish(msg)
 
         self.state_dic["arm_initial_pose"] = 0
 
@@ -168,15 +178,22 @@ class ArmGripperComm:
         # -------------------------------------------------------------------
 
 
-    def move_arm_to_pose_goal(self, x, y, z, q1, q2, q3, q4, wait=True):
+    def move_arm_to_pose_goal(self, x, y, z, q1, q2, q3, q4, vel=0.1, a=0.1, wait=True):
         """
         Sends a message to the arm controller to move the arm to a postion based on the global frame
         """
-        _arm_dict = {'action': 'move_to_pose_goal', 'trans': [x, y, z],
-                     'quat': [q1, q2, q3, q4]}
-        _encoded_data_string = json.dumps(_arm_dict)
-        rospy.loginfo(_arm_dict)
-        self.pub_arm.publish(_encoded_data_string)
+        vel = 1 if vel>1 else 0.1 if vel<0.1 else vel
+        a = 1 if a>1 else 0.1 if a<0.1 else a
+
+        msg = MoveArmAction()
+        msg.header.stamp = rospy.Time.now()
+        msg.action = 'move_to_pose_goal'
+        msg.goal = [x, y, z, q1, q2, q3, q4]
+        msg.velocity = vel
+        msg.acceleration = a
+
+        rospy.loginfo(msg)
+        self.pub_arm.publish(msg)
 
         self.state_dic["arm_pose_goal"] = 0
 
@@ -185,15 +202,22 @@ class ArmGripperComm:
                 time.sleep(0.1)
 
 
-    def move_arm_to_joints_state(self, j1, j2, j3, j4, j5, j6, wait=True):
+    def move_arm_to_joints_state(self, j1, j2, j3, j4, j5, j6, vel=0.1, a=0.1, wait=True):
         """
         Sends a message to the arm controller to move the arm to a postion based on the arm's joints
         """
-        _arm_dict_ = {'action': 'move_to_joints_state',
-                      'joints': [j1, j2, j3, j4, j5, j6]}
-        _encoded_data_string_ = json.dumps(_arm_dict_)
-        rospy.loginfo(_arm_dict_)
-        self.pub_arm.publish(_encoded_data_string_)
+        vel = 1 if vel>1 else 0.1 if vel<0.1 else vel
+        a = 1 if a>1 else 0.1 if a<0.1 else a
+        
+        msg = MoveArmAction()
+        msg.header.stamp = rospy.Time.now()
+        msg.action = 'move_to_joints_state'
+        msg.goal = [j1, j2, j3, j4, j5, j6]
+        msg.velocity = vel
+        msg.acceleration = a
+
+        rospy.loginfo(msg)
+        self.pub_arm.publish(msg)
 
         self.state_dic["arm_joints_goal"] = 0
 
