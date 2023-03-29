@@ -3,13 +3,12 @@ from __future__ import print_function
 from six.moves import input
 
 import sys
-import copy
-import std_msgs
 import rospy
 import moveit_commander
 import moveit_msgs.msg
 import geometry_msgs.msg
 from moveit_commander.conversions import pose_to_list
+
 
 try:
     from math import pi, tau, dist, fabs, cos
@@ -122,7 +121,8 @@ class UR10eArm(object):
         self.eef_link = eef_link
         self.group_names = group_names
 
-    def go_to_joint_state(self, joint1, joint2, joint3, joint4, joint5, joint6):
+
+    def go_to_joint_state(self, joint1, joint2, joint3, joint4, joint5, joint6, vel, a):
         # Copy class variables to local variables to make the web tutorials more clear.
         # In practice, you should use the class variables directly unless you have a good
         # reason not to.
@@ -145,6 +145,9 @@ class UR10eArm(object):
         joint_goal[5] = joint6  # 1/6 of a turn
         # joint_goal[6] = 0
 
+        move_group.set_max_velocity_scaling_factor(vel)
+        move_group.set_max_acceleration_scaling_factor(a)
+
         # The go command can be called with joint values, poses, or without any
         # parameters if you have already set the pose or joint target for the group
         move_group.go(joint_goal, wait=True)
@@ -158,7 +161,8 @@ class UR10eArm(object):
         current_joints = move_group.get_current_joint_values()
         return all_close(joint_goal, current_joints, 0.01)
 
-    def go_to_pose_goal(self, trans_x, trans_y, trans_z, q1, q2, q3, q4):
+
+    def go_to_pose_goal(self, trans_x, trans_y, trans_z, q1, q2, q3, q4, vel, a):
         # Copy class variables to local variables to make the web tutorials more clear.
         # In practice, you should use the class variables directly unless you have a good
         # reason not to.
@@ -182,13 +186,8 @@ class UR10eArm(object):
 
         move_group.set_pose_target(pose_goal)
 
-        # if is_far:
-        move_group.set_max_velocity_scaling_factor(0.6)
-        move_group.set_max_acceleration_scaling_factor(0.3)
-        # else:
-        #     move_group.set_max_velocity_scaling_factor(0.4)
-        #     move_group.set_max_acceleration_scaling_factor(0.2)
-
+        move_group.set_max_velocity_scaling_factor(vel)
+        move_group.set_max_acceleration_scaling_factor(a)
 
         ## Now, we call the planner to compute the plan and execute it.
         plan = move_group.go(wait=True)
@@ -205,6 +204,7 @@ class UR10eArm(object):
         # we use the class variable rather than the copied state variable
         current_pose = self.move_group.get_current_pose().pose
         return all_close(pose_goal, current_pose, 0.01)
+
 
     def display_trajectory(self, plan):
         # Copy class variables to local variables to make the web tutorials more clear.
