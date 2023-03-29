@@ -70,6 +70,13 @@ if __name__ == '__main__':
     x = np.random.randn(n_samples, seq_len, 1)
     y = np.random.randn(n_samples, 1)
 
+    print("x")
+    print(x.shape)
+    # print(x)
+    print("y")
+    print(y.shape)
+    # print(y)
+
     # Build and compile the model
     model = build_model(seq_len)
     model.compile(loss='mse', optimizer='adam')
