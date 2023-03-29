@@ -101,6 +101,18 @@ def prediction_classification(cla, true_out, dec_pred, dictionary, pred):
         dictionary["true_negative"] = np.append(dictionary["true_negative"], pred, axis=0)
 
 
+def prediction_classification_absolute(cla, true_out, dec_pred, dictionary):
+    if true_out == cla and dec_pred == cla:
+        dictionary["true_positive"] += 1
+    elif true_out != cla and dec_pred == cla:
+        dictionary["false_positive"] += 1
+    elif true_out == cla and dec_pred != cla:
+        dictionary["false_negative"] += 1
+    elif true_out != cla and dec_pred != cla:
+        dictionary["true_negative"] += 1
+
+
+
 def values_contabilization(origin_dict, dest_dict):
     for indice, val in enumerate(origin_dict):
         dest_dict["accumulated"][indice] += val

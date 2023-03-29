@@ -4,6 +4,8 @@ from tensorflow.keras.utils import to_categorical  # one-hot encode target colum
 import matplotlib.pyplot as plt
 from keras.models import Sequential
 from keras.layers import Dense, Conv2D, Flatten, MaxPooling2D, Dropout  # create model
+from tensorflow.python.keras.callbacks import EarlyStopping
+
 from config.definitions import ROOT_DIR
 from larcc_classes.data_storage.SortedDataForLearning import SortedDataForLearning
 import numpy as np
@@ -31,17 +33,11 @@ if __name__ == '__main__':
 
     path = ROOT_DIR + "/data_storage/data/raw_learning_data/user_splitted_data/"
 
-    # time_windows = 5
     time_window = 2
-    n_times = 100
     labels = ['PULL', 'PUSH', 'SHAKE', 'TWIST']
     n_labels = len(labels)
 
-    # for time_window in progressbar(range(1, time_windows+1), redirect_stdout=True):
-
     config_file = "training_config_time_" + str(time_window)
-    training_test_list = []
-    # for n in progressbar(range(n_times), redirect_stdout=True):
 
     sorted_data_for_learning = SortedDataForLearning(path=path, config_file=config_file)
     training_data = sorted_data_for_learning.training_data
@@ -64,9 +60,13 @@ if __name__ == '__main__':
 
     model = create_convolutional_nn(input_nn)
 
+    model.summary()
+
+    callback = EarlyStopping(monitor='val_loss', patience=20)
+
     # train the model
-    fit_history = model.fit(x=x_train, y=y_train, validation_split=validation_split, epochs=50, verbose=2,
-                            batch_size=64, shuffle=True)
+    fit_history = model.fit(x=x_train, y=y_train, validation_split=validation_split, epochs=150, verbose=2,
+                            batch_size=64, shuffle=True, callbacks=callback)
 
     model.save("cnn4_model_20ms")
 

@@ -4,16 +4,6 @@ from numpy import load
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-import matplotlib.transforms as mtransforms
-
-
-# def value_for_array(data, n, timesteps):
-#     pull = np.array([data[n][j][0] for j in range(timesteps)])
-#     push = np.array([data[n][j][1] for j in range(timesteps)])
-#     shake = np.array([data[n][j][2] for j in range(timesteps)])
-#     twist = np.array([data[n][j][3] for j in range(timesteps)])
-#
-#     return pull, push, shake, twist
 
 
 def value_for_array(data, timesteps):
@@ -23,40 +13,6 @@ def value_for_array(data, timesteps):
     twist = np.array([data[j][3] for j in range(timesteps)])
 
     return pull, push, shake, twist
-
-
-def string_result(true):
-    results = []
-
-    for i in range(0, 2):
-        if true[i] == 0:
-            result = "PULL"
-        elif true[i] == 1:
-            result = "PUSH"
-        elif true[i] == 2:
-            result = "SHAKE"
-        elif true[i] == 3:
-            result = "TWIST"
-        results.append(result)
-
-    return results
-
-
-def color_result(true):
-    results = []
-
-    for i in range(0, 2):
-        if true[i] == 0:
-            result = "PULL"
-        elif true[i] == 1:
-            result = "PUSH"
-        elif true[i] == 2:
-            result = "SHAKE"
-        elif true[i] == 3:
-            result = "TWIST"
-        results.append(result)
-
-    return results
 
 
 def plot_true_shadow(ts, t, p):
@@ -74,6 +30,7 @@ def plot_true_shadow(ts, t, p):
                 color = "orange"
             p.axvspan(start, end, color=color, alpha=0.2, lw=0)
             start = end
+
 
 if __name__ == '__main__':
     validation_split = 0.3
@@ -116,19 +73,6 @@ if __name__ == '__main__':
         plt.plot(df4.timestep, df4.twist_rnn, color='orange', label='twist R', linewidth=3)
 
         plot_true_shadow(times, true, plt)
-    # for i in times:
-    #     if (i != 0 and true[i] != true[i-1]) or i == 5999:
-    #         end = i
-    #         if true[i-1] == 0:
-    #             color = "red"
-    #         elif true[i-1] == 1:
-    #             color = "green"
-    #         elif true[i-1] == 2:
-    #             color = "blue"
-    #         elif true[i-1] == 3:
-    #             color = "orange"
-    #         plt.axvspan(start, end, color=color, alpha=0.2, lw=0)
-    #         start = end
 
         plt.title('Primitives confidences at timestep. 50-timesteps RNN / 25 steps sliding window  ')
         plt.xlabel('timestep')
