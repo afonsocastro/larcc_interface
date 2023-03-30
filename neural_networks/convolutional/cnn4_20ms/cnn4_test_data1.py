@@ -17,23 +17,12 @@ import numpy as np
 
 if __name__ == '__main__':
 
-    path = ROOT_DIR + "/data_storage/data/raw_learning_data/user_splitted_data/"
-
     time_window = 2
     labels = ['PULL', 'PUSH', 'SHAKE', 'TWIST']
     n_labels = len(labels)
-
-    config_file = "training_config_time_" + str(time_window)
-
-    sorted_data_for_learning = SortedDataForLearning(path=path, config_file=config_file)
-    test_data = sorted_data_for_learning.test_data
-
-    print("\n")
-    print("config_file")
-    print(config_file)
-    print("\n")
-
     input_nn = time_window * 10
+
+    test_data = np.load(ROOT_DIR + "/data_storage/data1/global_normalized_test_data_20ms.npy")
 
     n_test = test_data.shape[0]
     x_test = test_data[:, :-1]
