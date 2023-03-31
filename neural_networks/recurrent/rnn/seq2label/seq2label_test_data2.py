@@ -16,17 +16,20 @@ if __name__ == '__main__':
     labels = ['PULL', 'PUSH', 'SHAKE', 'TWIST']
     n_labels = len(labels)
 
-    path = ROOT_DIR + "/data_storage/data/raw_learning_data/user_splitted_data/"
-    sorted_data_for_learning = SortedDataForLearning(path=path)
+    x_test = np.load(ROOT_DIR + "/data_storage/data2/x_test_global_normalized_data.npy")
+    x_test = x_test[:, :, 1:]
 
-    test_data = sorted_data_for_learning.test_data
-    n_test = test_data.shape[0]
+    n_test = x_test.shape[0]
+    y_test = np.load(ROOT_DIR + "/data_storage/data2/y_test_data.npy")
+
+    # TRUE RESULTS
+    y_test_final = []
+    for line in y_test:
+        r = [line[0], line[1]]
+        y_test_final.append(r)
+    save('../true_results_data2.npy', y_test_final)
 
     seq2label_model = keras.models.load_model("seq2label_20ms")
-
-    x_test = np.reshape(test_data[:, :-1], (int(n_test / 2), time_steps, 13))
-    x_test = x_test[:, :, 1:]
-    y_test = test_data[:, -1]
 
     # SEQUENCE 2 LABEL TESTING
     pred_seq2label = []
@@ -47,10 +50,3 @@ if __name__ == '__main__':
     pred_seq2label = np.reshape(pred_seq2label, (pred_seq2label.shape[0], pred_seq2label.shape[1], pred_seq2label.shape[3]))
 
     save('seq2label_20ms_data2_pred.npy', pred_seq2label)
-
-    # TRUE RESULTS
-    y_test_final = []
-    for line in range(0, y_test.shape[0], 2):
-        r = [int(y_test[line]), int(y_test[line + 1])]
-        y_test_final.append(r)
-    save('../true_results_data2.npy', y_test_final[0:len(x_test)])

@@ -20,21 +20,13 @@ if __name__ == '__main__':
     time_steps = 20
     batch_size = 64
     epochs = 150
-    validation_split = 0.7
-    time_window = 2
+
     labels = ['PULL', 'PUSH', 'SHAKE', 'TWIST']
     n_labels = len(labels)
 
-    config_file = "training_config_time_" + str(time_window)
-    path = ROOT_DIR + "/data_storage/data/raw_learning_data/user_splitted_data/"
-    sorted_data_for_learning = SortedDataForLearning(path=path, config_file=config_file)
-    training_data = sorted_data_for_learning.training_data
-    test_data = sorted_data_for_learning.test_data
+    test_data = np.load(ROOT_DIR + "/data_storage/data1/global_normalized_test_data_20ms.npy")
 
-    n_train = len(training_data) * validation_split
-    n_val = len(training_data) * (1 - validation_split)
     n_test = test_data.shape[0]
-
     x_test = np.reshape(test_data[:, :-1], (n_test, time_steps, 13))
     y_test = to_categorical(test_data[:, -1])
 

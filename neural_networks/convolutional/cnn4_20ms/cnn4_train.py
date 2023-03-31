@@ -14,7 +14,7 @@ import numpy as np
 def create_convolutional_nn(input):
     # Create model CNN 4
     modelo = Sequential()
-    modelo.add(Conv2D(64, kernel_size=(5, 1), activation="relu", input_shape=(input, 13, 1)))
+    modelo.add(Conv2D(64, kernel_size=(5, 1), activation="relu", input_shape=(input, 12, 1)))
     modelo.add(MaxPooling2D((2, 1)))
 
     modelo.add(Conv2D(32, kernel_size=(2, 1), activation="relu"))
@@ -44,6 +44,7 @@ if __name__ == '__main__':
     x_train = training_data[:, :-1]
     y_train = training_data[:, -1]
     x_train = np.reshape(x_train, (training_data.shape[0], input_nn, 13, 1))
+    x_train = x_train[:, :, 1:, :]
     y_train = to_categorical(y_train)
 
     model = create_convolutional_nn(input_nn)

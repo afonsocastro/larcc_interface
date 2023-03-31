@@ -23,6 +23,7 @@ if __name__ == '__main__':
     cnn_model = keras.models.load_model("cnn4_model_20ms")
 
     x_test_cnn = np.reshape(x_test, (x_test.shape[0], x_test.shape[1], x_test.shape[2], 1))
+    x_test_cnn = x_test_cnn[:, :, 1:, :]
     y_test = np.load(ROOT_DIR + "/data_storage/data2/y_test_data.npy")
 
     # TRUE RESULTS

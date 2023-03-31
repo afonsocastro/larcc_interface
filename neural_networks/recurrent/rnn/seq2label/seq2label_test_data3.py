@@ -40,12 +40,12 @@ if __name__ == '__main__':
 
     seq2label_model = keras.models.load_model("seq2label_20ms")
 
-    data = np.load(ROOT_DIR + "/data_storage/data3/sequence_normalized_data.npy")
-    n_test = data.shape[0]
+    test_data = np.load(ROOT_DIR + "/data_storage/data3/global_normalized_data.npy")
+    n_test = test_data.shape[0]
 
-    x_test = np.reshape(data[:, :, :-1], (int(n_test), time_steps, 13))
+    x_test = np.reshape(test_data[:, :, :-1], (int(n_test), time_steps, 13))
     x_test = x_test[:, :, 1:]
-    y_test = data[:, :, -1]
+    y_test = test_data[:, :, -1]
 
     # SEQUENCE 2 LABEL TESTING
     pred_seq2label = []

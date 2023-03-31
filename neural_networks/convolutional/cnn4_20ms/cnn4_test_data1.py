@@ -30,6 +30,8 @@ if __name__ == '__main__':
     x_test = np.reshape(x_test, (test_data.shape[0], input_nn, 13, 1))
     y_test = to_categorical(y_test)
 
+    x_test = x_test[:, :, 1:, :]
+
     cnn_model = keras.models.load_model("cnn4_model_20ms")
 
     predictions_list = []
@@ -40,9 +42,7 @@ if __name__ == '__main__':
     twist = {"true_positive": 0, "false_positive": 0, "false_negative": 0, "true_negative": 0}
 
     for i in range(0, len(test_data)):
-        x_test = np.reshape(test_data[i:i + 1, :-1], (1, input_nn, 13, 1))
-        # x_test = x_test[i:i + 1, :, :, :]
-        prediction = cnn_model.predict(x=x_test, verbose=0)
+        prediction = cnn_model.predict(x=x_test[i:i + 1, :, :, :], verbose=0)
 
         # Reverse to_categorical from keras utils
         decoded_prediction = np.argmax(prediction, axis=1, out=None)
