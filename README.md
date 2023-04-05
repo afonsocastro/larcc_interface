@@ -95,7 +95,12 @@ There are several packages inside robotiq that do not work are are not needed so
 rm -r robotiq/robotiq_2f_gripper_action_server robotiq/robotiq_2f_gripper_control robotiq/robotiq_3f_gripper_articulated_gazebo_plugins robotiq/robotiq_3f_gripper_control robotiq/robotiq_3f_gripper_joint_state_publisher robotiq/robotiq_3f_rviz robotiq/robotiq_ethercat
 ```
 
-[//]: # (TODO Afonso incluir instrução de adicionar export PYTHONPATH=/home/"user"/catkin_ws/src/larcc_interface:$PYTHONPATH to .bashrc)
+So that packages are able to import from each other, run the following:
+
+```
+echo "export PYTHONPATH=\$PYTHONPATH:~/catkin_ws/src/larcc_interface" >> ~/.bashrc
+source ~/.bashrc
+```
 
 TENSOR FLOW install
 ```
