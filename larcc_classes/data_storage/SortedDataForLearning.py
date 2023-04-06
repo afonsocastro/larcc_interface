@@ -116,12 +116,14 @@ class SortedDataForLearning:
             print("========================================")
             self.experiment_data = self.raw_training_data
             self.process_data()
-            self.training_data = self.data_norm
+            self.training_data = self.data_filtered
+            # self.training_data = self.data_norm
 
             print("========================================")
             self.experiment_data = self.raw_test_data
             self.process_data()
-            self.test_data = self.data_norm
+            # self.test_data = self.data_norm
+            self.test_data = self.data_filtered
 
         else:
             print("Could not find learning data file")
@@ -159,10 +161,11 @@ class SortedDataForLearning:
             self.filter_data(self.data_shortened, self.storage_config, self.training_config)
             print("Variable filter complete...")
 
-        self.normalize_data(self.data_filtered, self.storage_config, self.training_config)
-        print("Normalization complete...")
+        # self.normalize_data(self.data_filtered, self.storage_config, self.training_config)
+        # print("Normalization complete...")
 
-        np.random.shuffle(self.data_norm)
+        # np.random.shuffle(self.data_norm)
+        np.random.shuffle(self.data_filtered)
         print("Shuffle complete...")
 
     def sample_shortener(self, array, measurements, store_config, train_config):

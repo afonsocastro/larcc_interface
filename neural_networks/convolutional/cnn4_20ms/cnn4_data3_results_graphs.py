@@ -61,7 +61,7 @@ if __name__ == '__main__':
         plt.plot(df33.timestep, df33.shake_cnn, color='green', label='shake', linewidth=3)
         plt.plot(df44.timestep, df44.twist_cnn, color='orange', label='twist', linewidth=3)
 
-        plt.title('Primitives confidences at timestep. 50-timesteps RNN / 25 steps sliding window  ')
+        plt.title('sample ' + str(n) + ' /18')
         plt.xlabel('timestep')
         plt.ylabel('Confidence')
         plt.legend()

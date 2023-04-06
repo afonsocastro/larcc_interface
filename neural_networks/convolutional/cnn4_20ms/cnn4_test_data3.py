@@ -40,11 +40,12 @@ if __name__ == '__main__':
 
     cnn_model = keras.models.load_model("cnn4_model_20ms")
 
-    data = np.load(ROOT_DIR + "/data_storage/data3/sequence_normalized_data.npy")
-    n_test = data.shape[0]
+    test_data = np.load(ROOT_DIR + "/data_storage/data3/global_normalized_data.npy")
+    n_test = test_data.shape[0]
 
-    x_test_cnn = np.reshape(data[:, :, :-1], (int(n_test), time_steps, 13, 1))
-    y_test = data[:, :, -1]
+    x_test_cnn = np.reshape(test_data[:, :, :-1], (int(n_test), time_steps, 13, 1))
+    x_test_cnn = x_test_cnn[:, :, 1:, :]
+    y_test = test_data[:, :, -1]
 
     # CONVOLUTIONAL TESTING
     pred_cnn = []

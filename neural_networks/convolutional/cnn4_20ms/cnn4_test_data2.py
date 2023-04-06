@@ -1,19 +1,9 @@
 #!/usr/bin/env python3
-#
+
 import keras
 from numpy import save
-from tensorflow.keras.utils import to_categorical  # one-hot encode target column
-import matplotlib.pyplot as plt
-from sklearn.metrics import confusion_matrix
-
-from larcc_classes.documentation.PDF import PDF
-from neural_networks.utils import plot_confusion_matrix_percentage, prediction_classification, simple_metrics_calc, \
-    prediction_classification_absolute
-from sklearn.metrics import ConfusionMatrixDisplay
 from progressbar import progressbar
-
 from config.definitions import ROOT_DIR
-from larcc_classes.data_storage.SortedDataForLearning import SortedDataForLearning
 import numpy as np
 
 
@@ -27,16 +17,21 @@ if __name__ == '__main__':
     print("time_steps-sliding_window+1")
     print(time_steps-sliding_window+1)
 
-    path = ROOT_DIR + "/data_storage/data/raw_learning_data/user_splitted_data/"
-    sorted_data_for_learning = SortedDataForLearning(path=path)
-
-    test_data = sorted_data_for_learning.test_data
-    n_test = test_data.shape[0]
+    x_test = np.load(ROOT_DIR + "/data_storage/data2/x_test_global_normalized_data.npy")
+    n_test = x_test.shape[0]
 
     cnn_model = keras.models.load_model("cnn4_model_20ms")
 
-    x_test_cnn = np.reshape(test_data[:, :-1], (int(n_test / 2), time_steps, 13, 1))
-    y_test = test_data[:, -1]
+    x_test_cnn = np.reshape(x_test, (x_test.shape[0], x_test.shape[1], x_test.shape[2], 1))
+    x_test_cnn = x_test_cnn[:, :, 1:, :]
+    y_test = np.load(ROOT_DIR + "/data_storage/data2/y_test_data.npy")
+
+    # TRUE RESULTS
+    y_test_final = []
+    for line in y_test:
+        r = [line[0], line[1]]
+        y_test_final.append(r)
+    save('true_results_data2.npy', y_test_final)
 
     # CONVOLUTIONAL TESTING
     pred_cnn = []
@@ -57,10 +52,3 @@ if __name__ == '__main__':
     pred_cnn = np.reshape(pred_cnn, (pred_cnn.shape[0], pred_cnn.shape[1], pred_cnn.shape[3]))
 
     save('cnn4_20ms_data2_pred.npy', pred_cnn)
-
-    # TRUE RESULTS
-    y_test_final = []
-    for line in range(0, y_test.shape[0], 2):
-        r = [int(y_test[line]), int(y_test[line + 1])]
-        y_test_final.append(r)
-    save('true_results_data2.npy', y_test_final[0:len(x_test_cnn)])
