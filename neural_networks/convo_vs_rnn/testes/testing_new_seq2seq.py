@@ -89,10 +89,10 @@ if __name__ == '__main__':
     print("\n")
     print(x_train.shape, y_train_final.shape, y_train_middle.shape)
     print("\n")
-    print('x_train[0]= %s, y_train_final=%s, y_train_middle=%s' % (x_train[0], y_train_final[0], y_train_middle[0]))
-    print("\n")
+    # print('x_train[0]= %s, y_train_final=%s, y_train_middle=%s' % (x_train[0], y_train_final[0], y_train_middle[0]))
+    # print("\n")
 
-    train, infenc, infdec = define_models(params, labels, 128)
+    train, infenc, infdec = define_models(params, labels, neurons)
     train.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
 
     callback = EarlyStopping(monitor='val_loss', patience=10)
@@ -119,6 +119,6 @@ if __name__ == '__main__':
     #
     plt.show()
 
-    train.save("train_model")
-    infenc.save("infenc_model")
-    infdec.save("infdec_model")
+    # train.save("train_model")
+    # infenc.save("infenc_model")
+    # infdec.save("infdec_model")
