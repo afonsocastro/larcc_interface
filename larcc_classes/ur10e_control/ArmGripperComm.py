@@ -15,6 +15,7 @@ class ArmGripperComm:
                           "arm_pose_goal": 1,
                           "arm_joints_goal": 1,
                           "arm_stopped": 1,
+                          "arm_moving": 0,
                           "activation_completed": False,
                           "gripper_closed": False,
                           "gripper_active": False,
@@ -192,6 +193,11 @@ class ArmGripperComm:
         msg.velocity = vel
         msg.acceleration = a
 
+        while self.state_dic["arm_moving"]!=0:
+            time.sleep(0.1)
+
+        self.state_dic["arm_moving"] == 1
+
         rospy.loginfo(msg)
         self.pub_arm.publish(msg)
 
@@ -200,6 +206,9 @@ class ArmGripperComm:
         if wait:
             while self.state_dic["arm_pose_goal"] != 1:
                 time.sleep(0.1)
+
+        if self.state_dic["arm_moving"] == 1:
+            self.state_dic["arm_moving"] == 0
 
 
     def move_arm_to_joints_state(self, j1, j2, j3, j4, j5, j6, vel=0.1, a=0.1, wait=True):
@@ -216,6 +225,11 @@ class ArmGripperComm:
         msg.velocity = vel
         msg.acceleration = a
 
+        while self.state_dic["arm_moving"]!=0:
+            time.sleep(0.1)
+
+        self.state_dic["arm_moving"] == 1
+
         rospy.loginfo(msg)
         self.pub_arm.publish(msg)
 
@@ -224,22 +238,27 @@ class ArmGripperComm:
         if wait:
             while self.state_dic["arm_joints_goal"] != 1:
                 time.sleep(0.1)
+
+        if self.state_dic["arm_moving"] == 1:
+            self.state_dic["arm_moving"] == 0
     
 
     def stop_arm(self, wait=True):
         """
         Sends a message to the arm controller to stop the arm movement
         """
+        self.state_dic["arm_moving"] == 2
+
         msg = "stop_arm"
         
         rospy.loginfo(msg)
         self.pub_arm_stop.publish(msg)
 
-        self.state_dic["arm_stopped"] = 0
-
         if wait:
             while self.state_dic["arm_stopped"] != 1:
                 time.sleep(0.1)
+
+        self.state_dic["arm_moving"] == 0
 
 
 # # Sends a message to the gripper controller to open the gripper

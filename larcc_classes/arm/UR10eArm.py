@@ -58,6 +58,9 @@ class UR10eArm(object):
     def __init__(self):
         super(UR10eArm, self).__init__()
 
+        # flag indicating the robot started stopping
+        self.stopping = False
+
         ## BEGIN_SUB_TUTORIAL setup
         ##
         ## First initialize `moveit_commander`_ and a `rospy`_ node:
@@ -143,9 +146,9 @@ class UR10eArm(object):
         joint_goal[2] = joint3
         joint_goal[3] = joint4
         joint_goal[4] = joint5
-        joint_goal[5] = joint6  # 1/6 of a turn
-        # joint_goal[6] = 0
+        joint_goal[5] = joint6
 
+        # speed configuration
         move_group.set_max_velocity_scaling_factor(vel)
         move_group.set_max_acceleration_scaling_factor(a)
 
@@ -167,6 +170,8 @@ class UR10eArm(object):
         """
         Go to a certain pose goal described by a quaternion tf from 'world' to the end-effector 'tool0'
         """
+        self.stopping = False
+
         move_group = self.move_group
 
         ## Planning to a Pose Goal
@@ -182,11 +187,16 @@ class UR10eArm(object):
         pose_goal.position.y = trans_y
         pose_goal.position.z = trans_z
 
+        # speed configuration
         move_group.set_max_velocity_scaling_factor(vel)
         move_group.set_max_acceleration_scaling_factor(a)
 
         ## Now, we call the planner to compute the plan and execute it.
-        plan = move_group.go(pose_goal, wait=True)
+        # `go()` returns a boolean indicating whether the planning and execution was successful.
+        sucess = False
+        while not sucess and not self.stopping:
+            sucess = move_group.go(pose_goal, wait=True)
+
         # Calling `stop()` ensures that there is no residual movement
         move_group.stop()
         # It is always good to clear your targets after planning with poses.
@@ -201,6 +211,9 @@ class UR10eArm(object):
     
 
     def stop(self):
+        # robot started stopping
+        self.stopping = True
+
         # Copy class variables to local variables to make the web tutorials more clear.
         # In practice, you should use the class variables directly unless you have a good
         # reason not to.
@@ -208,11 +221,10 @@ class UR10eArm(object):
 
         # Calling `stop()` ensures that there is no residual movement
         move_group.stop()
+
         # It is always good to clear your targets after planning with poses.
         # Note: there is no equivalent function for clear_joint_value_targets()
         move_group.clear_pose_targets()
-
-        time.sleep(0.3)
 
         return True
 
