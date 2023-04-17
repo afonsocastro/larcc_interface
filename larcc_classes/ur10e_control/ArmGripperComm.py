@@ -16,10 +16,7 @@ from std_msgs.msg import String
 class ArmGripperComm:
 
     def __init__(self):
-        self.state_dic = {"arm_pose_goal": 1,
-                          "arm_joints_goal": 1,
-                          "arm_stopped": 1,
-                          "arm_moving": 0,
+        self.state_dic = {"arm_moving": 0,
                           "activation_completed": False,
                           "gripper_closed": False,
                           "gripper_active": False,
@@ -62,28 +59,6 @@ class ArmGripperComm:
         #     self.state_dic["gripper_active"] = 1
         # elif str(data).find("status:") >= 0:
         #     self.state_dic["last_status"] = data
-
-    # def arm_response_callback(self, data):
-    #     if str(data).find("Arm is now at initial pose.") >= 0:
-    #         self.state_dic["arm_initial_pose"] = 1
-    #
-    #         # if self.state_dic["gripper_active"] == 0:
-    #         #     # -----------------GRIPPER ACTIVATION------------------------------
-    #         #     my_dict_ = {'action': 'init'}
-    #         #     encoded_data_string_ = json.dumps(my_dict_)
-    #         #     rospy.loginfo(encoded_data_string_)
-    #         #     self.pub_gripper.publish(encoded_data_string_)
-    #         #     # ----------------------------------------------------------------------
-    #
-    #     elif str(data).find("Arm is now at requested pose goal.") >= 0:
-    #         self.state_dic["arm_pose_goal"] = 1
-    #     elif str(data).find("Arm is now at requested joints state goal.") >= 0:
-    #         self.state_dic["arm_joints_goal"] = 1
-    #     elif str(data).find("Arm is now stopped.") >= 0:
-    #         self.state_dic["arm_stopped"] = 1
-    #         self.state_dic["arm_joints_goal"] = 1
-    #         self.state_dic["arm_pose_goal"] = 1
-    #         self.state_dic["arm_initial_pose"] = 1
 
     def gripper_connect(self):
         # values = [position, speed, force]
@@ -172,13 +147,11 @@ class ArmGripperComm:
         self.state_dic["arm_moving"] == 1
 
         req = MoveArmToPoseGoalRequest(translation=(x, y, z), quaternions=(q1, q2, q3, q4),
-                                                velocity=vel, acceleration=a)
+                                       velocity=vel, acceleration=a)
 
         rospy.loginfo(req)
 
         resp = self.move_arm_to_pose_goal_proxy(req)
-
-        self.state_dic["arm_pose_goal"] = 0
 
         if self.state_dic["arm_moving"] == 1:
             self.state_dic["arm_moving"] == 0
@@ -203,22 +176,24 @@ class ArmGripperComm:
 
         resp = self.move_arm_to_joints_state_proxy(req)
 
-        self.state_dic["arm_joints_goal"] = 0
-
         if self.state_dic["arm_moving"] == 1:
             self.state_dic["arm_moving"] == 0
+
+        return resp
 
     def stop_arm(self):
         """
         Sends a message to the arm controller to stop the arm movement
         """
-        self.state_dic["arm_moving"] == 2
+        self.state_dic["arm_moving"] == -1
 
         rospy.loginfo("stopping arm...")
 
-        self.stop_arm_proxy()
+        resp = self.stop_arm_proxy()
 
         self.state_dic["arm_moving"] == 0
+
+        return resp
 
 # # Sends a message to the gripper controller to open the gripper
 # def gripper_open_fast(pub_gripper):
