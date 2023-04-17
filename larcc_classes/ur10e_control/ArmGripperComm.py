@@ -151,7 +151,11 @@ class ArmGripperComm:
 
         rospy.loginfo(req)
 
-        resp = self.move_arm_to_pose_goal_proxy(req)
+        try:
+            resp = self.move_arm_to_pose_goal_proxy(req)
+        except rospy.ServiceException as exc:
+            print("Service did not process request: " + str(exc))
+            return
 
         if self.state_dic["arm_moving"] == 1:
             self.state_dic["arm_moving"] == 0
@@ -174,7 +178,11 @@ class ArmGripperComm:
 
         rospy.loginfo(req)
 
-        resp = self.move_arm_to_joints_state_proxy(req)
+        try:
+            resp = self.move_arm_to_joints_state_proxy(req)
+        except rospy.ServiceException as exc:
+            print("Service did not process request: " + str(exc))
+            return
 
         if self.state_dic["arm_moving"] == 1:
             self.state_dic["arm_moving"] == 0
@@ -189,7 +197,11 @@ class ArmGripperComm:
 
         rospy.loginfo("stopping arm...")
 
-        resp = self.stop_arm_proxy()
+        try:
+            resp = self.stop_arm_proxy()
+        except rospy.ServiceException as exc:
+            print("Service did not process request: " + str(exc))
+            return
 
         self.state_dic["arm_moving"] == 0
 
