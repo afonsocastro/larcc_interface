@@ -8,6 +8,7 @@ from tensorflow.keras import layers
 from keras.utils.vis_utils import plot_model
 
 from config.definitions import ROOT_DIR
+from MultiHeadAttention import MultiHeadAttention
 from larcc_classes.data_storage.SortedDataForLearning import SortedDataForLearning
 
 
@@ -15,6 +16,7 @@ def transformer_encoder(inputs, head_size, num_heads, ff_dim, dropout=0):
     # Normalization and Attention
     x = layers.LayerNormalization(epsilon=1e-6)(inputs)
     x = layers.MultiHeadAttention(key_dim=head_size, num_heads=num_heads, dropout=dropout)(x, x)
+    # x = MultiHeadAttention(key_dim=head_size, num_heads=num_heads, dropout=dropout)(x, x)
     res = x + inputs
 
     # Feed Forward Part
@@ -39,6 +41,12 @@ def build_model(input_shape, head_size, num_heads, ff_dim, num_transformer_block
 
 
 if __name__ == '__main__':
+    training_data = np.load(ROOT_DIR + "/data_storage/data1/raw_learning_data.npy")
+
+    print(training_data[0])
+
+    exit(0)
+
     params = 12
     time_steps = 20
     batch_size = 64
