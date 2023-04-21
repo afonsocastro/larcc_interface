@@ -43,29 +43,72 @@ _CHR_IDX = string.ascii_lowercase
 
 
 class DotProductAttention(tf.keras.layers.Layer):
-    def __init__(self, W_q, W_k, W_v, _num_heads, **kwargs):
+    def __init__(self, W_q, W_k, W_v, _num_heads, key_dim, **kwargs):
         super(DotProductAttention, self).__init__(**kwargs)
 
         self.W_q = W_q
         self.W_k = W_k
         self.W_v = W_v
         self._num_heads = _num_heads
+        self._key_dim = key_dim
+        self.w_v = tf.keras.layers.Dense(1, use_bias=False)
 
     def __call__(self, query, key, value, d_k):
+        print("queries.shape")
+        print(query.shape)
+        print("keys.shape")
+        print(key.shape)
         # # Rearrange the queries to be able to compute all heads in parallel
-        q_reshaped = self.reshape_tensor(self.W_q(query), self._num_heads, True)
+        # q_reshaped = self.reshape_tensor(self.W_q(query), self._num_heads, True)
         # Resulting tensor shape: (batch_size, heads, input_seq_length, -1)
 
         # Rearrange the keys to be able to compute all heads in parallel
-        k_reshaped = self.reshape_tensor(self.W_k(key), self._num_heads, True)
+        # k_reshaped = self.reshape_tensor(self.W_k(key), self._num_heads, True)
         # Resulting tensor shape: (batch_size, heads, input_seq_length, -1)
 
         # Rearrange the values to be able to compute all heads in parallel
-        v_reshaped = self.reshape_tensor(self.W_v(value), self._num_heads, True)
+        # v_reshaped = self.reshape_tensor(self.W_v(value), self._num_heads, True)
+
+        q_reshaped = self.reshape_tensor(self.W_q(query), self._num_heads, False)
         # Resulting tensor shape: (batch_size, heads, input_seq_length, -1)
 
+        # Rearrange the keys to be able to compute all heads in parallel
+        k_reshaped = self.reshape_tensor(self.W_k(key), self._num_heads, False)
+        # Resulting tensor shape: (batch_size, heads, input_seq_length, -1)
+
+        # Rearrange the values to be able to compute all heads in parallel
+        v_reshaped = self.reshape_tensor(self.W_v(value), self._num_heads, False)
+        # Resulting tensor shape: (batch_size, heads, input_seq_length, -1)
+        print("q_reshaped.shape")
+        print(q_reshaped.shape)
+        print("k_reshaped.shape")
+        print(k_reshaped.shape)
+        print("v_reshaped.shape")
+        print(v_reshaped.shape)
+        # print("d_k.shape")
+        # print(d_k.shape)
         # Scoring the queries against the keys after transposing the latter, and scaling
-        scores = matmul(q_reshaped, k_reshaped, transpose_b=True) / math.sqrt(cast(d_k, float32))
+        # scores = matmul(q_reshaped, k_reshaped, transpose_b=True) / math.sqrt(cast(d_k, float32))
+        # print("scores.shape")
+        # print(scores.shape)
+
+        print("tf.expand_dims(q_reshaped, axis=2).shape")
+        print(tf.expand_dims(q_reshaped, axis=3).shape)
+        print("tf.expand_dims(k_reshaped, axis=1).shape")
+        print(tf.expand_dims(k_reshaped, axis=2).shape)
+
+        features = tf.expand_dims(q_reshaped, axis=3) + tf.expand_dims(k_reshaped, axis=2)
+        print("features.shape")
+        print(features.shape)
+        features = tf.nn.tanh(features)
+        print("features.shape")
+        print(features.shape)
+        # There is only one output of self.w_v, so we remove the last
+        # one-dimensional entry from the shape. Shape of scores: (batch_size,
+        # no. of queries, no. of key-value pairs)
+        scores = tf.squeeze(self.w_v(features), axis=-1)
+        print("scores.shape")
+        print(scores.shape)
         return scores
 
     def reshape_tensor(self, x, heads, flag):
@@ -75,8 +118,11 @@ class DotProductAttention(tf.keras.layers.Layer):
             x = transpose(x, perm=(0, 2, 1, 3))
         else:
             # Reverting the reshaping and transposing operations: (batch_size, seq_length, d_k)
+            x = reshape(x, shape=(shape(x)[0], shape(x)[1], heads, self._key_dim))
             x = transpose(x, perm=(0, 2, 1, 3))
-            x = reshape(x, shape=(shape(x)[0], shape(x)[1], self._key_dim))
+
+            # x = transpose(x, perm=(0, 2, 1, 3))
+            # x = reshape(x, shape=(shape(x)[0], shape(x)[1], self._key_dim))
         return x
 
 
@@ -87,6 +133,7 @@ class AdditiveAttention(tf.keras.layers.Layer):  #@save
         self.W_k = tf.keras.layers.Dense(num_hiddens, use_bias=False)
         self.W_q = tf.keras.layers.Dense(num_hiddens, use_bias=False)
         self.w_v = tf.keras.layers.Dense(1, use_bias=False)
+        self.num_hiddens = num_hiddens
         # self.dropout = tf.keras.layers.Dropout(dropout)
 
     def __call__(self, queries, keys):
@@ -94,19 +141,47 @@ class AdditiveAttention(tf.keras.layers.Layer):  #@save
         # After dimension expansion, shape of queries: (batch_size, no. of
         # queries, 1, num_hiddens) and shape of keys: (batch_size, 1, no. of
         # key-value pairs, num_hiddens). Sum them up with broadcasting
+
+        print("queries.shape")
+        print(queries.shape)
+        print("keys.shape")
+        print(keys.shape)
+
+        print("tf.expand_dims(q_reshaped, axis=2).shape")
+        print(tf.expand_dims(queries, axis=2).shape)
+        print("tf.expand_dims(k_reshaped, axis=1).shape")
+        print(tf.expand_dims(keys, axis=1).shape)
+
+
         features = tf.expand_dims(queries, axis=2) + tf.expand_dims(keys, axis=1)
+        print("features.shape")
+        print(features.shape)
+
+        features = self.reshape_tensor(features, self.num_hiddens, False)
+        print("features.shape")
+        print(features.shape)
+
         features = tf.nn.tanh(features)
+        print("features.shape")
+        print(features.shape)
         # There is only one output of self.w_v, so we remove the last
         # one-dimensional entry from the shape. Shape of scores: (batch_size,
         # no. of queries, no. of key-value pairs)
         scores = tf.squeeze(self.w_v(features), axis=-1)
+        print("scores.shape")
+        print(scores.shape)
         return scores
 
-        # self.attention_weights = masked_softmax(scores, valid_lens)
-        # # Shape of values: (batch_size, no. of key-value pairs, value
-        # # dimension)
-        # return tf.matmul(self.dropout(
-        #     self.attention_weights, **kwargs), values)
+    def reshape_tensor(self, x, heads, flag):
+        if flag:
+            # Tensor shape after reshaping and transposing: (batch_size, heads, seq_length, -1)
+            x = reshape(x, shape=(shape(x)[0], shape(x)[1], heads, -1))
+            x = transpose(x, perm=(0, 2, 1, 3))
+        else:
+            # Reverting the reshaping and transposing operations: (batch_size, seq_length, d_k)
+            x = transpose(x, perm=(0, 2, 1, 3))
+            x = reshape(x, shape=(shape(x)[0], shape(x)[1], self.num_hiddens))
+        return x
 
 
 def _build_attention_equation(rank, attn_axes):
@@ -601,11 +676,11 @@ class MultiHeadAttention(Layer):
         # attention scores.
         # attention_scores = tf.einsum(self._dot_product_equation, key, query)
 
-        # self.attention = DotProductAttention(self.W_q, self.W_k, self.W_v, self._num_heads)
-        # attention_scores = self.attention(query, key, value, self._key_dim)
-
-        self.attention = AdditiveAttention(self._key_dim)
-        attention_scores = self.attention(query, key)
+        self.attention = DotProductAttention(self.W_q, self.W_k, self.W_v, self._num_heads, self._key_dim)
+        attention_scores = self.attention(query, key, value, self._key_dim)
+        #
+        # self.attention = AdditiveAttention(self._key_dim)
+        # attention_scores = self.attention(query, key)
 
         attention_scores = self._masked_softmax(
             attention_scores, attention_mask
