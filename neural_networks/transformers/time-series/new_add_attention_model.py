@@ -1,22 +1,26 @@
 #!/usr/bin/env python3
 
 import numpy as np
-from keras.utils import to_categorical
+from tensorflow.keras.utils import to_categorical
 from matplotlib import pyplot as plt
 from tensorflow import keras
 from tensorflow.keras import layers
 from keras.utils.vis_utils import plot_model
 
 from config.definitions import ROOT_DIR
-from MultiHeadAttention import MultiHeadAttention
 from larcc_classes.data_storage.SortedDataForLearning import SortedDataForLearning
 import tensorflow as tf
 from tensorflow import keras
 from tensorflow.keras import layers
+import matplotlib.pyplot as plt
+from sklearn.metrics import confusion_matrix
+from sklearn.metrics import ConfusionMatrixDisplay
+from config.definitions import ROOT_DIR
+import numpy as np
 
 
 class TransformerEncoder(keras.layers.Layer):
-    def __init__(self, embed_dim, num_heads, ff_dim, dropout=0.1):
+    def __init__(self, embed_dim, num_heads, ff_dim, dropout=0):
         super(TransformerEncoder, self).__init__()
         self.embed_dim = embed_dim
         self.num_heads = num_heads
@@ -135,6 +139,33 @@ if __name__ == '__main__':
     plt.xlabel('epoch')
     plt.legend(['train', 'val'], loc='upper left')
     #
-    plt.show()
-
+   
     # model.evaluate(x_test, y_test, verbose=1)
+
+    test_data = np.load(ROOT_DIR + "/data_storage/data1/global_normalized_test_data_20ms.npy")
+
+    x_test = test_data[:, :-1]
+    y_test = test_data[:, -1]
+    x_test = np.reshape(x_test, (test_data.shape[0], 20, 13, 1))
+    y_test = to_categorical(y_test)
+
+    x_test = x_test[:, :, 1:, :]
+
+    predictions_list = []
+
+    for i in range(0, len(test_data)):
+        prediction = model.predict(x=x_test[i:i + 1, :, :, :], verbose=0)
+        # Reverse to_categorical from keras utils
+        decoded_prediction = np.argmax(prediction, axis=1, out=None)
+        predictions_list.append(decoded_prediction)
+
+    predicted_values = np.asarray(predictions_list)
+
+    # Reverse to_categorical from keras utils
+    # predicted_values = np.argmax(predicted_values, axis=1, out=None)
+
+    true_values = test_data[:, -1]
+
+    cm = confusion_matrix(y_true=true_values, y_pred=predicted_values)
+    print(cm)
+
