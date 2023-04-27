@@ -76,9 +76,6 @@ def get_transformer_encoder_model(sequence_length, num_features, num_classes):
     return model
 
 
-
-
-
 if __name__ == '__main__':
     params = 12
     time_steps = 20
