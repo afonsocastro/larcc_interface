@@ -35,7 +35,7 @@ if __name__ == '__main__':
 
     # TST TESTING
     pred_tst = []
-    for i in progressbar(range(int(len(x_test_cnn)/10)), redirect_stdout=True):
+    for i in progressbar(range(int(len(x_test_cnn)/1)), redirect_stdout=True):
     # for i in range(0, len(x_test_cnn)):
         sample_pred = []
         for sw in range(0, time_steps-sliding_window+1):

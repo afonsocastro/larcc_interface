@@ -87,22 +87,22 @@ if __name__ == '__main__':
                     changed_transformer = True
 
                 if changed_cnn:
-                    if old_cnn_pred == pred_cnn_i:
-                        count_cnn += 1
-                    elif old_cnn_pred != pred_cnn_i:
+                    if pred_cnn_i == true[i]:
                         changed_cnn = False
+                    else:
+                        count_cnn += 1
 
                 if changed_seq2label:
-                    if old_seq2label_pred == pred_seq2label_i:
-                        count_seq2label += 1
-                    elif old_seq2label_pred != pred_seq2label_i:
+                    if pred_seq2label_i == true[i]:
                         changed_seq2label = False
+                    else:
+                        count_seq2label += 1
 
                 if changed_transformer:
-                    if old_transformer_pred == pred_transformer_i:
-                        count_transformer += 1
-                    elif old_transformer_pred != pred_transformer_i:
+                    if pred_transformer_i == true[i]:
                         changed_transformer = False
+                    else:
+                        count_transformer += 1
 
                 old_cnn_pred = pred_cnn_i
                 old_seq2label_pred = pred_seq2label_i
