@@ -2,6 +2,7 @@
 
 import numpy as np
 from keras.layers import Conv2D, MaxPooling2D, Reshape
+from keras.optimizers import Adam
 from keras.utils import to_categorical
 from matplotlib import pyplot as plt
 from tensorflow import keras
@@ -73,7 +74,7 @@ if __name__ == '__main__':
     # model.compile(loss="sparse_categorical_crossentropy", optimizer=keras.optimizers.Adam(learning_rate=1e-4),
     #               metrics=["sparse_categorical_accuracy"])
 
-    model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
+    model.compile(optimizer=Adam, loss='categorical_crossentropy', metrics=['accuracy'])
     model.summary()
     plot_model(model, to_file="tst_model.png", show_shapes=True)
 
