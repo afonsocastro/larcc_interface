@@ -23,7 +23,7 @@ if __name__ == '__main__':
 
     pred_cnn_data = load('../convolutional/cnn4_20ms/cnn4_20ms_data2_pred.npy')
     pred_seq2label_data = load('../recurrent/rnn/seq2label/seq2label_20ms_data2_pred.npy')
-    pred_transformer_data = load('../transformers/full_tst/ts_transformer_data2_pred.npy')
+    pred_transformer_data = load('../transformers/time-series/ts_transformer_data2_pred.npy')
     all_true = load('../convolutional/cnn4_20ms/true_results_data2.npy')
 
     times = np.array([i for i in range(0, time_steps)])
@@ -34,7 +34,8 @@ if __name__ == '__main__':
     total_count_cnn = 0
     total_count_seq2label = 0
     total_count_transformer = 0
-    for n in range(0, len(all_true)):
+    # for n in range(0, len(all_true)):
+    for n in range(0, int(len(all_true) / 2)):
 
         old_true = all_true[n]
         print("old_true.shape")
@@ -112,9 +113,9 @@ if __name__ == '__main__':
         total_count_seq2label += count_seq2label
         total_count_transformer += count_transformer
 
-    cnn_metric = total_count_cnn / len(all_true)
-    seq2label_metric = total_count_seq2label / len(all_true)
-    transformer_metric = total_count_transformer / len(all_true)
+    cnn_metric = 2 * total_count_cnn / len(all_true)
+    seq2label_metric = 2 * total_count_seq2label / len(all_true)
+    transformer_metric = 2 * total_count_transformer / len(all_true)
 
     print("cnn_metric")
     print(cnn_metric)
