@@ -18,9 +18,9 @@ def build_model(input_shape, head_size, num_heads, n_classes):
     positional_encoding = keras_nlp.layers.SinePositionEncoding()(inputs)
     outputs = inputs + positional_encoding
     # outputs = inputs
-    x = outputs
+    # x = outputs
 
-    # x = layers.LayerNormalization(epsilon=1e-6)(outputs)
+    x = layers.LayerNormalization(epsilon=1e-6)(outputs)
     x = layers.MultiHeadAttention(key_dim=head_size, num_heads=num_heads, dropout=0)(x, x)
     res = x + outputs
 
@@ -74,7 +74,7 @@ if __name__ == '__main__':
     # model.compile(loss="sparse_categorical_crossentropy", optimizer=keras.optimizers.Adam(learning_rate=1e-4),
     #               metrics=["sparse_categorical_accuracy"])
 
-    model.compile(optimizer=Adam, loss='categorical_crossentropy', metrics=['accuracy'])
+    model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
     model.summary()
     plot_model(model, to_file="tst_model.png", show_shapes=True)
 
