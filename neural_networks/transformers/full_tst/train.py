@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import numpy as np
+from keras.layers import Conv2D, MaxPooling2D, Reshape
 from keras.utils import to_categorical
 from matplotlib import pyplot as plt
 from tensorflow import keras
@@ -11,21 +12,31 @@ from keras.utils.vis_utils import plot_model
 from config.definitions import ROOT_DIR
 
 
-def build_model(input_shape, head_size, num_heads, ff_dim, num_transformer_blocks, mlp_units, n_classes, dropout=0):
+def build_model(input_shape, head_size, num_heads, n_classes):
     inputs = keras.Input(shape=input_shape)
     positional_encoding = keras_nlp.layers.SinePositionEncoding()(inputs)
     outputs = inputs + positional_encoding
+    # outputs = inputs
+    x = outputs
 
-    x = layers.LayerNormalization(epsilon=1e-6)(outputs)
-    x = layers.MultiHeadAttention(key_dim=head_size, num_heads=num_heads, dropout=dropout)(x, x)
+    # x = layers.LayerNormalization(epsilon=1e-6)(outputs)
+    x = layers.MultiHeadAttention(key_dim=head_size, num_heads=num_heads, dropout=0)(x, x)
     res = x + outputs
 
-    x = layers.LayerNormalization(epsilon=1e-6)(res)
-    x = layers.Dense(12, activation="relu")(x)
-    transformer_output = x + res
+    # x = layers.LayerNormalization(epsilon=1e-6)(res)
+    x = Reshape((20, 12, 1), input_shape=(20, 12))(res)
+    x = Conv2D(64, kernel_size=(5, 1), activation="relu", input_shape=(20, 12, 1))(x)
+    x = MaxPooling2D((2, 1))(x)
+    x = Conv2D(32, kernel_size=(2, 1), activation="relu")(x)
+    x = MaxPooling2D((2, 1))(x)
+
+    # x = layers.Dense(12, activation="relu", kernel_regularizer='l1')(x)
+
+    # transformer_output = x + res
+    transformer_output = x
 
     flatten_output = layers.Flatten()(transformer_output)
-    dense_output = layers.Dense(units=n_classes, activation="softmax")(flatten_output)
+    dense_output = layers.Dense(units=n_classes, activation="softmax", kernel_regularizer='l1')(flatten_output)
     model = keras.models.Model(inputs=inputs, outputs=dense_output)
 
     return model
@@ -53,8 +64,10 @@ if __name__ == '__main__':
 
     input_shape = x_train.shape[1:]
 
-    model = build_model(input_shape, head_size=16, num_heads=4, ff_dim=1, num_transformer_blocks=1, n_classes=n_labels,
-                        mlp_units=[2])
+    print("input_shape")
+    print(input_shape)
+
+    model = build_model(input_shape, head_size=16, num_heads=4, n_classes=n_labels)
     # , )
 
     # model.compile(loss="sparse_categorical_crossentropy", optimizer=keras.optimizers.Adam(learning_rate=1e-4),
