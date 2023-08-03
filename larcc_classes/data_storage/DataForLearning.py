@@ -69,22 +69,23 @@ class DataForLearning:
     def __repr__(self):
         rep = '-------------------------------------\n' + \
               'Data For Learning\n' + \
-              '-------------------------------------\n' + \
-              '\n' + \
-              Fore.LIGHTBLUE_EX + 'timestamp: ' + Fore.YELLOW + str(self.timestamp()) + '\n' + Fore.RESET + \
-              '\n' + \
-              Fore.LIGHTBLUE_EX + 'joints_position: ' + Fore.YELLOW + str(self.joints_position) + '\n' + \
-              '\n' + \
-              Fore.LIGHTBLUE_EX + 'joints_effort: ' + Fore.YELLOW + str(self.joints_effort) + '\n' + \
-              '\n' + \
-              Fore.LIGHTBLUE_EX + 'wrench_pose: \n' + Fore.YELLOW + str(self.wrench_pose) + '\n' + \
-              '\n' + \
-              Fore.LIGHTBLUE_EX + 'wrench_force_torque: \n' + Fore.YELLOW + str(self.wrench_force_torque) + '\n' + \
-              '\n' + \
-              Fore.LIGHTBLUE_EX + 'gripper_current: ' + Fore.YELLOW + str(self.gripper_current) + '\n' + \
-              '\n' + \
-              Fore.LIGHTBLUE_EX + 'object_detection: ' + Fore.YELLOW + str(self.object_detection) + '\n' + \
-              '\n' + Fore.RESET
+              '-------------------------------------\n'
+        # '\n' + \
+        # Fore.LIGHTBLUE_EX + 'timestamp: ' + Fore.YELLOW + str(self.timestamp()) + '\n' + Fore.RESET + \
+        # '\n' + \
+        # Fore.LIGHTBLUE_EX + 'joints_position: ' + Fore.YELLOW + str(self.joints_position) + '\n' + \
+        # '\n' + \
+        # Fore.LIGHTBLUE_EX + 'joints_effort: ' + Fore.YELLOW + str(self.joints_effort) + '\n' + \
+        # '\n' + \
+        # Fore.LIGHTBLUE_EX + 'wrench_pose: \n' + Fore.YELLOW + str(self.wrench_pose) + '\n' + \
+        '\n' + \
+        Fore.LIGHTBLUE_EX + 'wrench_force_torque: \n' + Fore.YELLOW + str(self.wrench_force_torque) + '\n'
+        # '\n' + \
+        # Fore.LIGHTBLUE_EX + 'gripper_current: ' + Fore.YELLOW + str(self.gripper_current) + '\n' + \
+        # '\n' + \
+        # Fore.LIGHTBLUE_EX + 'object_detection: ' + Fore.YELLOW + str(self.object_detection) + '\n' + \
+        # '\n' + Fore.RESET
+
         return rep
 
 

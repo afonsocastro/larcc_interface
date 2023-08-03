@@ -1,48 +1,46 @@
 #!/usr/bin/env python3
 
+import numpy as np
+from keras.layers import Conv2D, MaxPooling2D, Reshape
+from keras.optimizers import Adam
 from keras.utils import to_categorical
 from matplotlib import pyplot as plt
 from tensorflow import keras
+import keras_nlp
 from tensorflow.keras import layers
 from keras.utils.vis_utils import plot_model
-import numpy as np
+
 from config.definitions import ROOT_DIR
-from tensorflow import math, matmul, reshape, shape, transpose, cast, float32
-from tensorflow.keras.layers import Dense, Layer
-from keras.backend import softmax
 
 
-def transformer_encoder(inputs, head_size, num_heads, ff_dim, dropout=0):
-    # Normalization and Attention
-    x = layers.LayerNormalization(epsilon=1e-6)(inputs)
-
-    # x = layers.MultiHeadAttention(key_dim=head_size, num_heads=num_heads, dropout=dropout)(x, x)
-    d_model = head_size * num_heads  # Dimensionality of the model
-    # x = multihead_attention(num_heads=num_heads, d_model=d_model, query=x, memory=x)
-
-    multihead_attention = MultiHeadAttention(h=num_heads, d_k=64, d_v=64, d_model=d_model)
-
-    res = x + inputs
-
-    # Feed Forward Part
-    x = layers.LayerNormalization(epsilon=1e-6)(res)
-    x = layers.Conv1D(filters=ff_dim, kernel_size=1, activation="relu")(x)
-    x = layers.Conv1D(filters=inputs.shape[-1], kernel_size=1)(x)
-    return x + res
-
-
-def build_model(input_shape, head_size, num_heads, ff_dim, num_transformer_blocks, mlp_units, n_classes, dropout=0,
-                mlp_dropout=0):
+def build_model(input_shape, head_size, num_heads, n_classes):
     inputs = keras.Input(shape=input_shape)
-    x = inputs
-    for _ in range(num_transformer_blocks):
-        x = transformer_encoder(x, head_size, num_heads, ff_dim, dropout)
+    positional_encoding = keras_nlp.layers.SinePositionEncoding()(inputs)
+    outputs = inputs + positional_encoding
+    # outputs = inputs
+    # x = outputs
 
-    x = layers.GlobalAveragePooling1D(data_format="channels_first")(x)
-    for dim in mlp_units:
-        x = layers.Dense(dim, activation="relu")(x)
-    outputs = layers.Dense(n_classes, activation="softmax")(x)
-    return keras.Model(inputs, outputs)
+    x = layers.LayerNormalization(epsilon=1e-6)(outputs)
+    x = layers.MultiHeadAttention(key_dim=head_size, num_heads=num_heads, dropout=0)(x, x)
+    res = x + outputs
+
+    # x = layers.LayerNormalization(epsilon=1e-6)(res)
+    x = Reshape((20, 12, 1), input_shape=(20, 12))(res)
+    x = Conv2D(64, kernel_size=(5, 1), activation="relu", input_shape=(20, 12, 1))(x)
+    x = MaxPooling2D((2, 1))(x)
+    x = Conv2D(32, kernel_size=(2, 1), activation="relu")(x)
+    x = MaxPooling2D((2, 1))(x)
+
+    # x = layers.Dense(12, activation="relu", kernel_regularizer='l1')(x)
+
+    # transformer_output = x + res
+    transformer_output = x
+
+    flatten_output = layers.Flatten()(transformer_output)
+    dense_output = layers.Dense(units=n_classes, activation="softmax", kernel_regularizer='l1')(flatten_output)
+    model = keras.models.Model(inputs=inputs, outputs=dense_output)
+
+    return model
 
 
 if __name__ == '__main__':
@@ -50,11 +48,6 @@ if __name__ == '__main__':
     time_steps = 20
     batch_size = 64
     epochs = 150
-
-    num_heads = 4
-    head_size = 16
-
-
     labels = ['PULL', 'PUSH', 'SHAKE', 'TWIST']
     n_labels = len(labels)
     validation_split = 0.3
@@ -72,8 +65,11 @@ if __name__ == '__main__':
 
     input_shape = x_train.shape[1:]
 
-    model = build_model(input_shape, head_size=head_size, num_heads=num_heads, ff_dim=1, num_transformer_blocks=1,
-                        n_classes=n_labels, mlp_units=[2])
+    print("input_shape")
+    print(input_shape)
+
+    model = build_model(input_shape, head_size=16, num_heads=4, n_classes=n_labels)
+    # , )
 
     # model.compile(loss="sparse_categorical_crossentropy", optimizer=keras.optimizers.Adam(learning_rate=1e-4),
     #               metrics=["sparse_categorical_accuracy"])

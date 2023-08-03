@@ -8,6 +8,7 @@ from tensorflow.keras import layers
 from keras.utils.vis_utils import plot_model
 
 from config.definitions import ROOT_DIR
+from MultiHeadAttention import MultiHeadAttention
 from larcc_classes.data_storage.SortedDataForLearning import SortedDataForLearning
 
 
