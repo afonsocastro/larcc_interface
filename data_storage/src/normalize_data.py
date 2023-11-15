@@ -11,7 +11,7 @@ if __name__ == '__main__':
     clusters_max_min = json.load(f)
     f.close()
 
-    data_max_timestamp = abs(max(clusters_max_min["timestamp"]["max"], clusters_max_min["timestamp"]["min"], key=abs))
+    # data_max_timestamp = abs(max(clusters_max_min["timestamp"]["max"], clusters_max_min["timestamp"]["min"], key=abs))
     data_max_joints = abs(max(clusters_max_min["joints"]["max"], clusters_max_min["joints"]["min"], key=abs))
     data_max_gripper_F = abs(max(clusters_max_min["gripper_F"]["max"], clusters_max_min["gripper_F"]["min"], key=abs))
     data_max_gripper_M = abs(max(clusters_max_min["gripper_M"]["max"], clusters_max_min["gripper_M"]["min"], key=abs))
@@ -117,36 +117,72 @@ if __name__ == '__main__':
     y_test = test_data[:, -1]
 
     array_norm = np.empty((0, x_train.shape[1], x_train.shape[2]))
+    array_not_norm = np.empty((0, x_train.shape[1], x_train.shape[2]))
     for sample in x_train:
 
         data_array_norm = np.empty((sample.shape[0], 0))
+        data_array_not_norm = np.empty((sample.shape[0], 0))
 
-        data_array_norm = np.hstack((data_array_norm, sample[:, 0:1] / data_max_timestamp))
+        # data_array_norm = np.hstack((data_array_norm, sample[:, 0:1] / data_max_timestamp))
+        data_array_norm = np.hstack((data_array_norm, sample[:, 0:1]))
         data_array_norm = np.hstack((data_array_norm, sample[:, 1:7] / data_max_joints))
         data_array_norm = np.hstack((data_array_norm, sample[:, 7:10] / data_max_gripper_F))
         data_array_norm = np.hstack((data_array_norm, sample[:, 10:13] / data_max_gripper_M))
-
         data_array_norm = np.reshape(data_array_norm, (1, data_array_norm.shape[0], data_array_norm.shape[1]))
 
+        data_array_not_norm = np.hstack((data_array_not_norm, sample[:, 0:1]))
+        data_array_not_norm = np.hstack((data_array_not_norm, sample[:, 1:7]))
+        data_array_not_norm = np.hstack((data_array_not_norm, sample[:, 7:10]))
+        data_array_not_norm = np.hstack((data_array_not_norm, sample[:, 10:13]))
+        data_array_not_norm = np.reshape(data_array_not_norm,
+                                         (1, data_array_not_norm.shape[0], data_array_not_norm.shape[1]))
+
         array_norm = np.append(array_norm, data_array_norm, axis=0)
+        array_not_norm = np.append(array_not_norm, data_array_not_norm, axis=0)
 
     # array_norm = np.append(array_norm, np.reshape([y_train], (-1, 1)), axis=1)
     np.save(ROOT_DIR + "/data_storage/data2/x_train_global_normalized_data.npy", array_norm)
+    np.save(ROOT_DIR + "/data_storage/data2/x_train_raw_data.npy", array_not_norm)
 
     array_norm = np.empty((0, x_test.shape[1], x_test.shape[2]))
+    array_not_norm = np.empty((0, x_train.shape[1], x_train.shape[2]))
     for sample in x_test:
-        data_array_norm = np.empty((sample.shape[0], 0))
 
-        data_array_norm = np.hstack((data_array_norm, sample[:, 0:1] / data_max_timestamp))
+        # print("\nsample.shape\n")
+        # print(sample.shape)
+        #
+        # print("\nsample\n")
+        # print(sample[48:52, :])
+        #
+        # input()
+        data_array_norm = np.empty((sample.shape[0], 0))
+        data_array_not_norm = np.empty((sample.shape[0], 0))
+
+        # data_array_norm = np.hstack((data_array_norm, sample[:, 0:1] / data_max_timestamp))
+        data_array_norm = np.hstack((data_array_norm, sample[:, 0:1]))
         data_array_norm = np.hstack((data_array_norm, sample[:, 1:7] / data_max_joints))
         data_array_norm = np.hstack((data_array_norm, sample[:, 7:10] / data_max_gripper_F))
         data_array_norm = np.hstack((data_array_norm, sample[:, 10:13] / data_max_gripper_M))
         data_array_norm = np.reshape(data_array_norm, (1, data_array_norm.shape[0], data_array_norm.shape[1]))
 
+        data_array_not_norm = np.hstack((data_array_not_norm, sample[:, 0:1]))
+        data_array_not_norm = np.hstack((data_array_not_norm, sample[:, 1:7]))
+        data_array_not_norm = np.hstack((data_array_not_norm, sample[:, 7:10]))
+        data_array_not_norm = np.hstack((data_array_not_norm, sample[:, 10:13]))
+        data_array_not_norm = np.reshape(data_array_not_norm, (1, data_array_not_norm.shape[0], data_array_not_norm.shape[1]))
+
+        # print("\ndata_array_norm.shape\n")
+        # print(data_array_norm.shape)
+        #
+        # print("\ndata_array_norm\n")
+        # print(data_array_norm[:, 48:52, :])
+
         array_norm = np.append(array_norm, data_array_norm, axis=0)
+        array_not_norm = np.append(array_not_norm, data_array_not_norm, axis=0)
 
     # array_norm = np.append(array_norm, np.reshape([y_train], (-1, 1)), axis=1)
     np.save(ROOT_DIR + "/data_storage/data2/x_test_global_normalized_data.npy", array_norm)
+    np.save(ROOT_DIR + "/data_storage/data2/x_test_raw_data.npy", array_not_norm)
 
     # TRUE RESULTS
     y_test_final = []
