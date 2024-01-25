@@ -24,29 +24,26 @@
         <origin xyz="0 0 -0.015" rpy="0 0 0"/>
     </joint>
 
-    <joint name="world_to_robotiq_arg2f_base_link" type="fixed">
-        <parent link="world"/>
-        <child link="robotiq_arg2f_base_link"/>
-        <origin xyz="10 0 -0.5" rpy="0 0 0"/>
-    </joint>
+<!--    <joint name="world_to_robotiq_arg2f_base_link" type="fixed">-->
+<!--        <parent link="world"/>-->
+<!--        <child link="robotiq_arg2f_base_link"/>-->
+<!--        <origin xyz="10 0 -0.5" rpy="0 0 0"/>-->
+<!--    </joint>-->
 
     <xacro:include filename="$(find ur_description)/urdf/inc/ur10e_macro.xacro"/>
     <xacro:ur10e_robot prefix="" />
 
 
-    <xacro:include filename="$(find gripper)/urdf/robotiq_arg2f_140_model_macro.xacro" />
-
-
+    <joint name="gripper_joint" type="fixed">
+        <parent link="tool0"/>
+        <child link="robotiq_arg2f_base_link"/>
+        <origin xyz="0 0 0" rpy="0 0 1.5708"/>
+    </joint>
 <!--    Place gripper-->
+    <xacro:include filename="$(find gripper)/urdf/robotiq_arg2f_140_model_macro.xacro" />
     <xacro:robotiq_arg2f_140 prefix=""/>
 
-<!--    <joint name="new_gripper_joint" type="fixed">-->
-<!--        <parent link="tool0"/>-->
-<!--        <child link="robotiq_arg2f_base_link"/>-->
-<!--        <origin xyz="0 0 0" rpy="0 0 1.5708"/>-->
-<!--&lt;!&ndash;    </joint>&ndash;&gt;-->
 
-<!--    </xacro:robotiq_arg2f_140>-->
 
 
 <!--  Sensor-->
@@ -64,14 +61,4 @@
 <!--  <xacro:realsense2_camera use_nominal_extrinsics="true">-->
 <!--  </xacro:realsense2_camera>-->
 
-  <!-- Gripper -->
-<!--  <xacro:include filename="$(find robotiq_2f_140_gripper_visualization)/urdf/robotiq_arg2f_140.xacro" />-->
-<!--  <xacro:robotiq_arg2f_140_model parent="base_link">-->
-<!--      <origin xyz="1.7 -0.833 0.424 " rpy="3.073 2.627 -1.650"/>-->
-<!--  </xacro:robotiq_arg2f_140_model>-->
-
-
-<!--&lt;!&ndash;   Gripper &ndash;&gt;-->
-<!--  <xacro:include filename="$(find robotiq_2f_140_gripper_visualization)/urdf/robotiq_arg2f_140.xacro" />-->
-<!--  <xacro:robotiq_arg2f_140_model/>-->
 </robot>

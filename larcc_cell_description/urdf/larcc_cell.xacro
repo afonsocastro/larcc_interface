@@ -53,13 +53,61 @@
 <!--        <origin xyz="0.797 -0.803 0.432" rpy="3.135 2.462 -1.577"/>-->
 <!--    </xacro:realsense2_camera>-->
 
+    <joint name="tool0-FT_sensor_base" type="fixed">
+        <parent link="tool0"/>
+        <child link="FT_sensor_base"/>
+        <origin xyz="0 0 0.003" rpy="0 0 1.5708"/>
+    </joint>
+
+
+    <link name="FT_sensor_base">
+        <visual>
+          <geometry>
+            <cylinder length="0.006" radius="0.05"/>
+          </geometry>
+          <material name="metalic_blue">
+            <color rgba="0.0118 0.5176 0.6706 1.0"/>
+          </material>
+        </visual>
+        <collision>
+          <geometry>
+            <cylinder length="0.006" radius="0.05"/>
+          </geometry>
+        </collision>
+    </link>
+
+
+    <joint name="FT_sensor_base-FT_sensor" type="fixed">
+        <parent link="FT_sensor_base"/>
+        <child link="FT_sensor"/>
+        <origin xyz="0 0 0.014" rpy="0 0 0"/>
+    </joint>
+
+    <link name="FT_sensor">
+        <visual>
+          <geometry>
+            <cylinder length="0.022" radius="0.04"/>
+          </geometry>
+          <material name="metalic_blue">
+            <color rgba="0.0118 0.5176 0.6706 1.0"/>
+          </material>
+        </visual>
+        <collision>
+          <geometry>
+            <cylinder length="0.022" radius="0.04"/>
+          </geometry>
+        </collision>
+    </link>
+
+
+
 <!--    Place gripper-->
     <xacro:robotiq_arg2f_140 prefix=""/>
 
-    <joint name="new_gripper_joint" type="fixed">
-        <parent link="tool0"/>
+    <joint name="gripper_joint" type="fixed">
+        <parent link="FT_sensor"/>
         <child link="robotiq_arg2f_base_link"/>
-        <origin xyz="0 0 0" rpy="0 0 1.5708"/>
+        <origin xyz="0 0 0.011" rpy="0 0 0"/>
     </joint>
 
 <!--    Place base table-->
