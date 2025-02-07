@@ -8,7 +8,7 @@ from config.definitions import ROOT_DIR
 
 # file = ROOT_DIR + "/data_storage/data/predicted_learning_data/multi_class_sample_1.json"
 
-file = ROOT_DIR + "/data_storage/data/raw_learning_data/user_splitted_data/Ru_learning_data_4.npy"
+file = ROOT_DIR + "/data_storage/data/raw_learning_data/user_splitted_data/Ru_learning_data_5.npy"
 #
 # f = open(file)
 #

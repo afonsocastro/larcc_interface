@@ -273,7 +273,7 @@ if __name__ == '__main__':
     out = input(f"You wish to save the {trainning_data_array.shape[0]} {classification} experiment? (s/n)\n")
 
     if out == "s":
-        with open('../data/raw_learning_data/position_historic.txt', 'a') as f:
+        with open('../data/position_historic.txt', 'a') as f:
             f.write(pos + "\n")
 
         print(f"Trainning saved!\nIt was saved {trainning_data_array.shape[0]} experiments")

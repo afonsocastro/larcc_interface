@@ -48,15 +48,15 @@ if __name__ == '__main__':
                           mmap_mode=None,
                           allow_pickle=False, fix_imports=True, encoding='ASCII')
 
-    test_data_13 = np.load(ROOT_DIR + "/data_storage/data/processed_learning_data/Joe_learning_data_13.npy",
+    test_data_13 = np.load(ROOT_DIR + "/data_storage/data/processed_learning_data/Joe_learning_data_11.npy",
                           mmap_mode=None,
                           allow_pickle=False, fix_imports=True, encoding='ASCII')
 
-    test_data_6 = np.load(ROOT_DIR + "/data_storage/data/processed_learning_data/Luc_learning_data_6.npy",
+    test_data_6 = np.load(ROOT_DIR + "/data_storage/data/processed_learning_data/Luc_learning_data_7.npy",
                           mmap_mode=None,
                           allow_pickle=False, fix_imports=True, encoding='ASCII')
 
-    test_data_5 = np.load(ROOT_DIR + "/data_storage/data/processed_learning_data/Maf_learning_data_5.npy",
+    test_data_5 = np.load(ROOT_DIR + "/data_storage/data/processed_learning_data/Maf_learning_data_6.npy",
                           mmap_mode=None,
                           allow_pickle=False, fix_imports=True, encoding='ASCII')
 
@@ -64,7 +64,7 @@ if __name__ == '__main__':
                           mmap_mode=None,
                           allow_pickle=False, fix_imports=True, encoding='ASCII')
 
-    test_data_4 = np.load(ROOT_DIR + "/data_storage/data/processed_learning_data/Ru_learning_data_4.npy",
+    test_data_4 = np.load(ROOT_DIR + "/data_storage/data/processed_learning_data/Ru_learning_data_5.npy",
                           mmap_mode=None,
                           allow_pickle=False, fix_imports=True, encoding='ASCII')
 

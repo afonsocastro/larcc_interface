@@ -6,7 +6,7 @@ import time
 
 import numpy as np
 from sklearn.preprocessing import normalize
-from config.definitions import ROOT_DIR
+from larcc_interface.config.definitions import ROOT_DIR
 
 
 class SortedDataForLearning:
