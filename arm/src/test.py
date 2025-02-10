@@ -1,6 +1,6 @@
 #! /usr/bin/python3
 
-from larcc_classes.arm.UR10eArm import UR10eArm
+from arm.arm_controller import UR10eArm
 import rospy
 
 if __name__ == '__main__':

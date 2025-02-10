@@ -1,33 +1,38 @@
 #!/usr/bin/env python3
 
-from arm.msg import MoveArmAction
 import json
-import time
 import rospy
+import time
+
+from arm.srv import MoveArmToPoseGoal, MoveArmToPoseGoalRequest
+from arm.srv import MoveArmToJointsState, MoveArmToJointsStateRequest
+from arm.srv import StopArm
 from std_msgs.msg import String
+
+
 # from gripper.src.GripperStatusDTO import GripperStatusDTO
 
 
 class ArmGripperComm:
 
     def __init__(self):
-        self.state_dic = {"arm_initial_pose": 0,
-                          "arm_pose_goal": 0,
-                          "arm_joints_goal": 0,
+        self.state_dic = {"arm_moving": 0,
                           "activation_completed": False,
                           "gripper_closed": False,
                           "gripper_active": False,
                           "object_detected": False,
                           "gripper_pos": 0}
 
-        rospy.Subscriber("gripper_response", String,
-                         self.gripper_response_callback)
-        self.pub_gripper = rospy.Publisher(
-            'gripper_request', String, queue_size=10)
+        rospy.Subscriber('gripper_response', String, self.gripper_response_callback)
+        self.pub_gripper = rospy.Publisher('gripper_request', String, queue_size=10)
 
-        rospy.Subscriber("arm_response", String, self.arm_response_callback)
-        self.pub_arm = rospy.Publisher('arm_request', MoveArmAction, queue_size=10)
-
+        # set up arm controller service proxies
+        rospy.wait_for_service('move_arm_to_pose_goal')
+        rospy.wait_for_service('move_arm_to_joints_state')
+        rospy.wait_for_service('stop_arm')
+        self.move_arm_to_pose_goal_proxy = rospy.ServiceProxy('move_arm_to_pose_goal', MoveArmToPoseGoal)
+        self.move_arm_to_joints_state_proxy = rospy.ServiceProxy('move_arm_to_joints_state', MoveArmToJointsState)
+        self.stop_arm_proxy = rospy.ServiceProxy('stop_arm', StopArm)
 
     def gripper_response_callback(self, data):
 
@@ -55,25 +60,6 @@ class ArmGripperComm:
         # elif str(data).find("status:") >= 0:
         #     self.state_dic["last_status"] = data
 
-
-    def arm_response_callback(self, data):
-        if str(data).find("Arm is now at initial pose.") >= 0:
-            self.state_dic["arm_initial_pose"] = 1
-
-            # if self.state_dic["gripper_active"] == 0:
-            #     # -----------------GRIPPER ACTIVATION------------------------------
-            #     my_dict_ = {'action': 'init'}
-            #     encoded_data_string_ = json.dumps(my_dict_)
-            #     rospy.loginfo(encoded_data_string_)
-            #     self.pub_gripper.publish(encoded_data_string_)
-            #     # ----------------------------------------------------------------------
-
-        elif str(data).find("Arm is now at requested pose goal.") >= 0:
-            self.state_dic["arm_pose_goal"] = 1
-        elif str(data).find("Arm is now at requested joints state goal.") >= 0:
-            self.state_dic["arm_joints_goal"] = 1
-
-
     def gripper_connect(self):
         # values = [position, speed, force]
         my_dict = {'action': 'connect'}
@@ -84,14 +70,12 @@ class ArmGripperComm:
         while not self.state_dic["gripper_active"]:
             time.sleep(0.1)
 
-
     def gripper_disconnect(self):
         # values = [position, speed, force]
         my_dict = {'action': 'disconnect'}
         encoded_data_string = json.dumps(my_dict)
         rospy.loginfo(encoded_data_string)
         self.pub_gripper.publish(encoded_data_string)
-
 
     def gripper_init(self):
         """
@@ -104,7 +88,6 @@ class ArmGripperComm:
 
         while not self.state_dic["activation_completed"]:
             time.sleep(0.1)
-
 
     def gripper_open_fast(self, wait=True):
         """
@@ -120,7 +103,6 @@ class ArmGripperComm:
             while self.state_dic["gripper_closed"]:
                 time.sleep(0.1)
 
-
     def gripper_close_fast(self, wait=True):
         """
         Sends a message to the gripper controller to close the gripper
@@ -135,7 +117,6 @@ class ArmGripperComm:
             while not self.state_dic["gripper_closed"]:
                 time.sleep(0.1)
 
-
     def gripper_status(self):
         # values = [position, speed, force]
         my_dict = {'action': 'status'}
@@ -143,80 +124,88 @@ class ArmGripperComm:
         rospy.loginfo(encoded_data_string)
         self.pub_gripper.publish(encoded_data_string)
 
-
-    def move_arm_to_initial_pose(self, vel=0.1, a=0.1, wait=True):
+    def move_arm_to_initial_pose(self, vel=0.1, a=0.1):
         """
-        Sends a message to the arm controller to move the arm to a preconfigured intial postion
+        Sends a message to the arm controller to move the arm to a preconfigured initial position
         """
-        # -----------------ARM INITIAL POSE------------------------------
-        vel = 1 if vel>1 else 0.1 if vel<0.1 else vel
-        a = 1 if a>1 else 0.1 if a<0.1 else a
+        vel = 1 if vel > 1 else 0.1 if vel < 0.1 else vel
+        a = 1 if a > 1 else 0.1 if a < 0.1 else a
 
-        msg = MoveArmAction()
-        msg.header.stamp = rospy.Time.now()
-        msg.action = 'move_to_initial_pose'
-        msg.goal = []
-        msg.velocity = vel
-        msg.acceleration = a
+        return self.move_arm_to_joints_state(0.01725006103515625, -1.9415461025633753, 1.8129728476153772,
+                                             -1.5927173099913539, -1.5878670851336878, 0.03150486946105957, vel, a)
 
-        rospy.loginfo(msg)
-        self.pub_arm.publish(msg)
-
-        self.state_dic["arm_initial_pose"] = 0
-
-        if wait:
-            while self.state_dic["arm_initial_pose"] != 1:
-                time.sleep(0.1)
-        # -------------------------------------------------------------------
-
-
-    def move_arm_to_pose_goal(self, x, y, z, q1, q2, q3, q4, vel=0.1, a=0.1, wait=True):
+    def move_arm_to_pose_goal(self, x, y, z, q1, q2, q3, q4, vel=0.1, a=0.1):
         """
-        Sends a message to the arm controller to move the arm to a postion based on the global frame
+        Sends a message to the arm controller to move the arm to a position based on the global frame
         """
-        vel = 1 if vel>1 else 0.1 if vel<0.1 else vel
-        a = 1 if a>1 else 0.1 if a<0.1 else a
+        vel = 1 if vel > 1 else 0.1 if vel < 0.1 else vel
+        a = 1 if a > 1 else 0.1 if a < 0.1 else a
 
-        msg = MoveArmAction()
-        msg.header.stamp = rospy.Time.now()
-        msg.action = 'move_to_pose_goal'
-        msg.goal = [x, y, z, q1, q2, q3, q4]
-        msg.velocity = vel
-        msg.acceleration = a
+        while self.state_dic["arm_moving"] != 0:
+            time.sleep(0.1)
 
-        rospy.loginfo(msg)
-        self.pub_arm.publish(msg)
+        self.state_dic["arm_moving"] == 1
 
-        self.state_dic["arm_pose_goal"] = 0
+        req = MoveArmToPoseGoalRequest(translation=(x, y, z), quaternions=(q1, q2, q3, q4),
+                                       velocity=vel, acceleration=a)
 
-        if wait:
-            while self.state_dic["arm_pose_goal"] != 1:
-                time.sleep(0.1)
+        rospy.loginfo(req)
 
+        try:
+            resp = self.move_arm_to_pose_goal_proxy(req)
+        except rospy.ServiceException as exc:
+            print("Service did not process request: " + str(exc))
+            return
 
-    def move_arm_to_joints_state(self, j1, j2, j3, j4, j5, j6, vel=0.1, a=0.1, wait=True):
+        if self.state_dic["arm_moving"] == 1:
+            self.state_dic["arm_moving"] == 0
+
+        return resp
+
+    def move_arm_to_joints_state(self, j1, j2, j3, j4, j5, j6, vel=0.1, a=0.1):
         """
         Sends a message to the arm controller to move the arm to a postion based on the arm's joints
         """
-        vel = 1 if vel>1 else 0.1 if vel<0.1 else vel
-        a = 1 if a>1 else 0.1 if a<0.1 else a
-        
-        msg = MoveArmAction()
-        msg.header.stamp = rospy.Time.now()
-        msg.action = 'move_to_joints_state'
-        msg.goal = [j1, j2, j3, j4, j5, j6]
-        msg.velocity = vel
-        msg.acceleration = a
+        vel = 1 if vel > 1 else 0.1 if vel < 0.1 else vel
+        a = 1 if a > 1 else 0.1 if a < 0.1 else a
 
-        rospy.loginfo(msg)
-        self.pub_arm.publish(msg)
+        while self.state_dic["arm_moving"] != 0:
+            time.sleep(0.1)
 
-        self.state_dic["arm_joints_goal"] = 0
+        self.state_dic["arm_moving"] == 1
 
-        if wait:
-            while self.state_dic["arm_joints_goal"] != 1:
-                time.sleep(0.1)
+        req = MoveArmToJointsStateRequest(goal=[j1, j2, j3, j4, j5, j6], velocity=vel, acceleration=a)
 
+        rospy.loginfo(req)
+
+        try:
+            resp = self.move_arm_to_joints_state_proxy(req)
+        except rospy.ServiceException as exc:
+            print("Service did not process request: " + str(exc))
+            return
+
+        if self.state_dic["arm_moving"] == 1:
+            self.state_dic["arm_moving"] == 0
+
+        return resp
+
+    def stop_arm(self):
+        """
+        Sends a message to the arm controller to stop the arm movement
+        """
+        self.state_dic["arm_moving"] == -1
+
+        rospy.loginfo("stopping arm...")
+
+        try:
+            resp = self.stop_arm_proxy()
+        except rospy.ServiceException as exc:
+            print("Service did not process request: " + str(exc))
+            return
+
+        self.state_dic["arm_moving"] == 0
+
+        return resp
 
 # # Sends a message to the gripper controller to open the gripper
 # def gripper_open_fast(pub_gripper):
