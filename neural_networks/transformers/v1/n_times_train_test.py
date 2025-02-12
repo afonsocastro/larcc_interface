@@ -1,110 +1,29 @@
 #!/usr/bin/env python3
 
-from tensorflow import keras
-from tensorflow.keras import layers
+
+import os
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'  # Suppress all logs: INFO, WARN, and DEBUG
+import sys
+import tensorflow as tf
 from keras.optimizers import Adam
-from keras_nlp.layers import SinePositionEncoding, TransformerEncoder
 from tensorflow.keras.utils import to_categorical  # one-hot encode target column
 from sklearn.metrics import confusion_matrix
-from larcc_interface.neural_networks.utils import plot_confusion_matrix_percentage, prediction_classification, simple_metrics_calc, \
+from larcc_interface.neural_networks.utils import plot_confusion_matrix_percentage, prediction_classification, \
+    simple_metrics_calc, \
     prediction_classification_absolute
 from larcc_interface.config.definitions import ROOT_DIR
 import numpy as np
 import json
 from progressbar import progressbar
-
-
-def create_transformer_v1_0():
-    inputs = keras.Input(shape=(20,12))
-    positional_encoding = SinePositionEncoding()(inputs)
-    x = inputs + positional_encoding
-    num_layers = 1
-    # Transformer Encoder Layers
-    for _ in range(num_layers):
-        x = TransformerEncoder(num_heads=4, activation="relu", intermediate_dim=512)(x)
-
-    x = layers.GlobalAveragePooling1D()(x)
-    outputs = layers.Dense(4, activation="softmax")(x)  # 4-class classification
-    model = keras.Model(inputs, outputs)
-
-    return model
-
-def create_transformer_v1_1():
-    inputs = keras.Input(shape=(20,12))
-    positional_encoding = SinePositionEncoding()(inputs)
-    x = inputs + positional_encoding
-    num_layers=2
-    # Transformer Encoder Layers
-    for _ in range(num_layers):
-        x = TransformerEncoder(num_heads=8, activation="relu", intermediate_dim=2048)(x)
-
-    x = layers.GlobalAveragePooling1D()(x)
-    outputs = layers.Dense(4, activation="softmax")(x)  # 4-class classification
-    model = keras.Model(inputs, outputs)
-
-    return model
-
-def create_transformer_v1_2():
-    inputs = keras.Input(shape=(20,12))
-    positional_encoding = SinePositionEncoding()(inputs)
-    x = inputs + positional_encoding
-    num_layers=1
-    # Transformer Encoder Layers
-    for _ in range(num_layers):
-        x = TransformerEncoder(num_heads=8, activation="relu", intermediate_dim=512)(x)
-
-    x = layers.GlobalAveragePooling1D()(x)
-    outputs = layers.Dense(4, activation="softmax")(x)  # 4-class classification
-    model = keras.Model(inputs, outputs)
-
-    return model
-
-def create_transformer_v1_3():
-    inputs = keras.Input(shape=(20,12))
-    positional_encoding = SinePositionEncoding()(inputs)
-    x = inputs + positional_encoding
-    num_layers=1
-    # Transformer Encoder Layers
-    for _ in range(num_layers):
-        x = TransformerEncoder(num_heads=4, activation="relu", intermediate_dim=2048)(x)
-
-    x = layers.GlobalAveragePooling1D()(x)
-    outputs = layers.Dense(4, activation="softmax")(x)  # 4-class classification
-    model = keras.Model(inputs, outputs)
-
-    return model
-
-def create_transformer_v1_4():
-    inputs = keras.Input(shape=(20,12))
-    positional_encoding = SinePositionEncoding()(inputs)
-    x = inputs + positional_encoding
-    num_layers=2
-    # Transformer Encoder Layers
-    for _ in range(num_layers):
-        x = TransformerEncoder(num_heads=4, activation="relu", intermediate_dim=512)(x)
-
-    x = layers.GlobalAveragePooling1D()(x)
-    outputs = layers.Dense(4, activation="softmax")(x)  # 4-class classification
-    model = keras.Model(inputs, outputs)
-
-    return model
-
-def create_transformer_v1_5():
-    inputs = keras.Input(shape=(20,12))
-    positional_encoding = SinePositionEncoding()(inputs)
-    x = inputs + positional_encoding
-    num_layers=2
-    # Transformer Encoder Layers
-    for _ in range(num_layers):
-        x = TransformerEncoder(num_heads=4, activation="relu", intermediate_dim=512, dropout=0.2)(x)
-
-    x = layers.GlobalAveragePooling1D()(x)
-    outputs = layers.Dense(4, activation="softmax")(x)  # 4-class classification
-    model = keras.Model(inputs, outputs)
-
-    return model
+from larcc_interface.neural_networks.utils import NumpyArrayEncoder
+from larcc_interface.neural_networks.transformers.v1.create_models import (create_transformer_v1_0,
+                                                                           create_transformer_v1_1,
+                                                           create_transformer_v1_2, create_transformer_v1_3,
+                                                           create_transformer_v1_4, create_transformer_v1_5)
+from rich.progress import track
 
 if __name__ == '__main__':
+    # tf.config.set_visible_devices([], 'GPU')
     n_times = 100
     validation_split = 0.3
     labels = ['PULL', 'PUSH', 'SHAKE', 'TWIST']
@@ -112,14 +31,14 @@ if __name__ == '__main__':
 
     training_test_list = []
     for n in progressbar(range(n_times), redirect_stdout=True):
+    # for n in track(range(n_times), total=n_times):
         training_data = np.load(ROOT_DIR + "/data_storage/data1/global_normalized_train_data_20ms.npy")
         x_train = np.reshape(training_data[:, :-1], (training_data.shape[0], 20, 13))
         y_train = to_categorical(training_data[:, -1])
 
         x_train = x_train[:, :, 1:]
 
-        model_name = "transformer_v1_0"
-        model = create_transformer_v1_0()
+        model, model_name = create_transformer_v1_0()
 
         model.compile(optimizer=Adam(learning_rate=1e-4), loss='categorical_crossentropy', metrics=['accuracy'])
         model.summary()
@@ -128,18 +47,12 @@ if __name__ == '__main__':
                                 batch_size=32)
 
         print("\n")
-        print("-------------------------------------------------------------------------------------------------")
-        print("TRAINING %d time" % n)
-        print("-------------------------------------------------------------------------------------------------")
-        print("\n")
-
-        print("\n")
-        print("Using %d samples for training and %d for validation" % (len(training_data) * (1 - validation_split),len(training_data) * validation_split ))
-        print("\n")
+        print("Using %d samples for training and %d for validation" % (
+        len(training_data) * (1 - validation_split), len(training_data) * validation_split))
 
         print("\n")
         print("-------------------------------------------------------------------------------------------------")
-        print("TESTING %d time" % n)
+        print("TESTING: %d simulation" % n)
         print("-------------------------------------------------------------------------------------------------")
         print("\n")
 
@@ -181,5 +94,5 @@ if __name__ == '__main__':
         training_test_dict = {"training": fit_history.history, "test": test_dict}
         training_test_list.append(training_test_dict)
 
-    with open(str(n_times)+"_times_train_test_"+model_name+".json", "w") as write_file:
+    with open(str(n_times) + "_times_train_test_" + model_name + ".json", "w") as write_file:
         json.dump(training_test_list, write_file, cls=NumpyArrayEncoder)
