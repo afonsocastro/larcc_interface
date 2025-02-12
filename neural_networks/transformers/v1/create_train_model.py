@@ -8,15 +8,10 @@ from tensorflow.keras.utils import plot_model
 from keras_nlp.layers import SinePositionEncoding, TransformerEncoder
 
 from tensorflow.keras.utils import to_categorical  # one-hot encode target column
-from sklearn.metrics import confusion_matrix
-
-from larcc_interface.larcc_classes.documentation.PDF import PDF
-from larcc_interface.neural_networks.utils import plot_confusion_matrix_percentage, prediction_classification, simple_metrics_calc, \
-    prediction_classification_absolute
-from sklearn.metrics import ConfusionMatrixDisplay
-
 from larcc_interface.config.definitions import ROOT_DIR
 import numpy as np
+
+
 
 def create_transformer_v1_0():
     inputs = keras.Input(shape=(20,12))
@@ -48,6 +43,66 @@ def create_transformer_v1_1():
 
     return model
 
+def create_transformer_v1_2():
+    inputs = keras.Input(shape=(20,12))
+    positional_encoding = SinePositionEncoding()(inputs)
+    x = inputs + positional_encoding
+    num_layers=1
+    # Transformer Encoder Layers
+    for _ in range(num_layers):
+        x = TransformerEncoder(num_heads=8, activation="relu", intermediate_dim=512)(x)
+
+    x = layers.GlobalAveragePooling1D()(x)
+    outputs = layers.Dense(4, activation="softmax")(x)  # 4-class classification
+    model = keras.Model(inputs, outputs)
+
+    return model
+
+def create_transformer_v1_3():
+    inputs = keras.Input(shape=(20,12))
+    positional_encoding = SinePositionEncoding()(inputs)
+    x = inputs + positional_encoding
+    num_layers=1
+    # Transformer Encoder Layers
+    for _ in range(num_layers):
+        x = TransformerEncoder(num_heads=4, activation="relu", intermediate_dim=2048)(x)
+
+    x = layers.GlobalAveragePooling1D()(x)
+    outputs = layers.Dense(4, activation="softmax")(x)  # 4-class classification
+    model = keras.Model(inputs, outputs)
+
+    return model
+
+def create_transformer_v1_4():
+    inputs = keras.Input(shape=(20,12))
+    positional_encoding = SinePositionEncoding()(inputs)
+    x = inputs + positional_encoding
+    num_layers=2
+    # Transformer Encoder Layers
+    for _ in range(num_layers):
+        x = TransformerEncoder(num_heads=4, activation="relu", intermediate_dim=512)(x)
+
+    x = layers.GlobalAveragePooling1D()(x)
+    outputs = layers.Dense(4, activation="softmax")(x)  # 4-class classification
+    model = keras.Model(inputs, outputs)
+
+    return model
+
+def create_transformer_v1_5():
+    inputs = keras.Input(shape=(20,12))
+    positional_encoding = SinePositionEncoding()(inputs)
+    x = inputs + positional_encoding
+    num_layers=1
+    # Transformer Encoder Layers
+    for _ in range(num_layers):
+        x = TransformerEncoder(num_heads=8, activation="relu", intermediate_dim=2048)(x)
+
+    x = layers.GlobalAveragePooling1D()(x)
+    outputs = layers.Dense(4, activation="softmax")(x)  # 4-class classification
+    model = keras.Model(inputs, outputs)
+
+    return model
+
 if __name__ == '__main__':
 
     time_steps = 20
@@ -67,21 +122,20 @@ if __name__ == '__main__':
     print("y_train")
     print(y_train)
 
-
-
-    model = create_transformer_v1_0()
+    model_name = "transformer_v1_5"
+    model = create_transformer_v1_5()
     # model = create_transformer_v1_1()
 
     # loss = "sparse_categorical_crossentropy", optimizer = keras.optimizers.Adam(learning_rate=1e-4), loss="binary_crossentropy"
     model.compile(optimizer=Adam(learning_rate=1e-4), loss='categorical_crossentropy', metrics=['accuracy'])
     model.summary()
-    plot_model(model, to_file="transformer_v1_1.png", show_shapes=True)
+    plot_model(model, to_file=model_name+".png", show_shapes=True)
 
     # callbacks = [keras.callbacks.EarlyStopping(monitor='val_loss', patience=40, restore_best_weights=True)]
 
     fit_history = model.fit(x_train, y_train, shuffle=True, validation_split=validation_split, epochs=500, batch_size=32)
                             # callbacks=callbacks)
-    model.save("transformer_v1_1.keras")
+    model.save(model_name+".keras")
     fig = plt.figure()
 
     plt.subplot(1, 2, 1)

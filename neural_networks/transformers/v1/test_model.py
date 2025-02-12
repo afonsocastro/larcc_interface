@@ -21,13 +21,11 @@ if __name__ == '__main__':
     x_test = test_data_1[:, :-1]
     y_test = test_data_1[:, -1]
     x_test = np.reshape(x_test, (test_data_1.shape[0], input_nn, 13, 1))
-    # y_test = to_categorical(y_test)
 
     x_test = x_test[:, :, 1:, :]
 
-    # transformer_v1_0 = keras.models.load_model("transformer_v1_0.keras")
-    transformer_v1_1 = keras.models.load_model("transformer_v1_1.keras")
-    model_name = "transformer_v1_1"
+    transformer_v1_1 = keras.models.load_model("transformer_v1_5.keras")
+    model_name = "transformer_v1_5"
 
     predictions_list = []
 
@@ -100,5 +98,4 @@ if __name__ == '__main__':
     pdf.create_table(table_data=data, title='Metrics Dataset 1', cell_width='uneven', x_start=25)
     pdf.ln()
 
-    # pdf.output('transformer_v1_0.pdf')
     pdf.output(model_name + '.pdf')
