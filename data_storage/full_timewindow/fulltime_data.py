@@ -121,7 +121,7 @@ class FulltimeData:
 
     def save_trainnning_data(self, data):
 
-        path = "./data"
+        path = "data"
 
         files = os.listdir(path)
 

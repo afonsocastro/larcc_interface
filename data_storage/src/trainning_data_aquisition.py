@@ -54,7 +54,7 @@ def offset_calculation(dic):
 
 def save_trainnning_data(data, categ, action_list):
 
-    path = "./../data/new_acquisition"
+    path = "../data/new_acquisition"
 
     files = os.listdir(path)
 
@@ -103,7 +103,7 @@ if __name__ == '__main__':
 
     args = vars(parser.parse_args())
 
-    f = open('../config/data_storage_config.json')
+    f = open('../../../larcc_interface/data_storage/config/data_storage_config.json')
 
     config = json.load(f)
 
