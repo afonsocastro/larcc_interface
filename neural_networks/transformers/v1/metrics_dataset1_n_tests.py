@@ -7,7 +7,7 @@ import scipy.stats as stats
 from larcc_interface.neural_networks.utils import NumpyArrayEncoder
 
 if __name__ == '__main__':
-    transformer_model = "v1_5"
+    transformer_model = "v1_4"
     json_file = transformer_model + "/100_times_train_test_transformer_"+transformer_model+".json"
 
     with open(json_file, 'r', encoding='utf-8') as file:

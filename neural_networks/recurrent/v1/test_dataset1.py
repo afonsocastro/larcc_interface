@@ -24,7 +24,7 @@ if __name__ == '__main__':
 
     x_test = x_test[:, :, 1:, :]
 
-    version="v1_5"
+    version="v1_4"
     model_name = "lstm_"+version
     model = keras.models.load_model(version+"/lstm_"+version+".keras")
 
