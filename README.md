@@ -86,10 +86,10 @@ After all these installations, on your catkin workspace you need to clone this r
 cd catkin_ws/src
 git clone https://github.com/afonsocastro/larcc_interface.git
 git clone https://github.com/ros-industrial/ur_msgs.git
-git clone https://github.com/ros-industrial/robotiq.git
+# git clone https://github.com/ros-industrial/robotiq.git (not needed anymore)
 ```
 
-There are several packages inside robotiq that do not work are are not needed so they can be removed.
+(same for this:) There are several packages inside robotiq that do not work are are not needed so they can be removed.
 
 ```
 rm -r robotiq/robotiq_2f_gripper_action_server robotiq/robotiq_2f_gripper_control robotiq/robotiq_3f_gripper_articulated_gazebo_plugins robotiq/robotiq_3f_gripper_control robotiq/robotiq_3f_gripper_joint_state_publisher robotiq/robotiq_3f_rviz robotiq/robotiq_ethercat
