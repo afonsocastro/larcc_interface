@@ -1,0 +1,6 @@
+float32[] translation
+float32[] quaternions
+float32 velocity
+float32 acceleration
+---
+string status
