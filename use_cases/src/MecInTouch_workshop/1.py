@@ -12,6 +12,7 @@ if __name__ == '__main__':
     rate = rospy.Rate(1)
     manipulator = UR10eArm()
 
+
     # Para usar o gripper, descomentar:
     # hand = RobotiqHand()
     # hand.connect("192.168.56.2", 54321)
