@@ -2,7 +2,8 @@
 
 import rospy
 from std_msgs.msg import String
-from larcc_classes.gripper.RobotiqHand import RobotiqHand
+# from larcc_classes.gripper.RobotiqHand import RobotiqHand
+from RobotiqHand import RobotiqHand
 import json
 
 # -*- coding: utf-8 -*-

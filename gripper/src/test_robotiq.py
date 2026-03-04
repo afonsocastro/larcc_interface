@@ -5,8 +5,10 @@
 
 import time
 import signal
-from larcc_classes.gripper.RobotiqHand import RobotiqHand
-from larcc_classes.gripper.GripperStatusDTO import GripperStatusDTO
+# from larcc_classes.gripper.RobotiqHand import RobotiqHand
+from RobotiqHand import RobotiqHand
+# from larcc_classes.gripper.GripperStatusDTO import GripperStatusDTO
+from GripperStatusDTO import GripperStatusDTO
 
 #------------------------------------------------------------------------------
 # test_robotiq.py
@@ -45,6 +47,10 @@ def test_robotiq():
         print('close slow')
         hand.move(255, 0, 1)
         (status, position, force) = hand.wait_move_complete()
+        print('\nstatus:')
+        print(status)
+        print("position")
+        print(position)
 
         time.sleep(4)
         print('open fast')
@@ -112,7 +118,6 @@ def test_robotiq():
         #TODO create handler to close the door
 
     hand.disconnect()
-
 
 
 if __name__ == '__main__':
