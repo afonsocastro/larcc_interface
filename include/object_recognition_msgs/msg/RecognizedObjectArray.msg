@@ -1,0 +1,2 @@
+# RecognizedObjectArray.msg
+RecognizedObject[] objects
