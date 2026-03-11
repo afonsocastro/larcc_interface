@@ -2,7 +2,6 @@
 <project version="4">
   <component name="VcsDirectoryMappings">
     <mapping directory="" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/include/Universal_Robots_Client_Library" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/include/object_recognition_msgs" vcs="Git" />
   </component>
 </project>

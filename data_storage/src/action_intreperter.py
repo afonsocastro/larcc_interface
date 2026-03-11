@@ -153,7 +153,8 @@ if __name__ == '__main__':
 
     f.close()
 
-    model = keras.models.load_model(NN_DIR + "/feedforward/myModel")
+    # model = keras.models.load_model(NN_DIR + "/feedforward/myModel")
+    model = keras.models.load_model(ROOT_DIR + "/data_storage/models/cnn_v1_1.keras")
 
     # ---------------------------------------------------------------------------------------------
     # -------------------------------INITIATE COMMUNICATION----------------------------------------
