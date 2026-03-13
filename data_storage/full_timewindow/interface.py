@@ -18,30 +18,53 @@ if __name__ == '__main__':
     root = tk.Tk()
     root.title("Guide")
     root.geometry("1920x1080")
-
-    # primitives = ["PULL", "PUSH", "SHAKE", "TWIST"]
-    primitives = ["PUXAR", "EMPURRAR", "ABANAR", "TORCER"]
-
-    xtime = 60
-
     mixer.init()
     sound = mixer.Sound(ROOT_DIR + "/data_storage/full_timewindow/beep-07a.wav")
-    # sound = mixer.Sound("beep-06.wav")
 
-    while True:
-        times = np.random.choice(range(5, 12), size=random.randint(5, 12), replace=True)
-        # times = np.random.choice(range(5, 15), size=random.randint(4, 12), replace=True)
-        if sum(times) == xtime:
-            break
+    primitives = ["PUXAR", "EMPURRAR", "ABANAR", "TORCER"]
+    xtime = 15
+    min_t = 2
+    max_t = 6
 
-    experiment = []
     Stamp = namedtuple("Stamp", "time primitive")
 
-    for t in times:
-        experiment.append(Stamp(t, random.choice(primitives)))
+    def generate_times(total, min_t, max_t):
+        # número possível de ações
+        min_n = (total + max_t - 1) // max_t
+        max_n = total // min_t
+        while True:
+            n = random.randint(min_n, max_n)
+            # começa com tempo mínimo
+            times = [min_t] * n
+            remaining = total - n * min_t
+            # distribui o tempo restante
+            while remaining > 0:
+                i = random.randint(0, n - 1)
+                if times[i] < max_t:
+                    times[i] += 1
+                    remaining -= 1
+            if sum(times) == total:
+                random.shuffle(times)
+                return times
+
+    def generate_primitives(n, primitives):
+        seq = []
+        last = None
+        for _ in range(n):
+            choices = [p for p in primitives if p != last]
+            p = random.choice(choices)
+            seq.append(p)
+            last = p
+        return seq
+
+    times = generate_times(xtime, min_t, max_t)
+    prims = generate_primitives(len(times), primitives)
+
+    experiment = [Stamp(t, p) for t, p in zip(times, prims)]
 
     print("experiment")
     print(experiment)
+    # exit(0)
 
     label = tk.Label(root, text="Please, perform a continuous: ", font=("Arial", 25), pady=30)
     label.pack()
@@ -84,6 +107,7 @@ if __name__ == '__main__':
         while True:
             if temp <= 0:
                 if xtime <= 0:
+                    pub.publish("END")
                     messagebox.showinfo("Experiment Ended", "We got everything we need :)\nThank you!")
                     root.destroy()
                 break
@@ -93,7 +117,7 @@ if __name__ == '__main__':
             xtime -= 0.01
             message = str(stamp.primitive)
             if temp >= 0:
-                pub.publish(message)
+                    pub.publish(message)
 
             str_temp.set(str(timedelta(seconds=int(temp))))
             str_time.set(str(timedelta(seconds=int(xtime))))
@@ -111,5 +135,5 @@ if __name__ == '__main__':
 
             root.update()
 
-    pub.publish("END")
+    # pub.publish("END")
     root.mainloop()
