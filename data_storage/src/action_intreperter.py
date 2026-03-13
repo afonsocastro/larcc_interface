@@ -9,6 +9,7 @@ from matplotlib import pyplot as plt
 from tensorflow import keras
 from std_msgs.msg import String, Float64MultiArray, Float64, Bool
 from larcc_classes.data_storage.DataForLearning import DataForLearning
+from larcc_classes.arm.UR10eArm import UR10eArm
 import numpy as np
 import rospy
 
@@ -135,22 +136,12 @@ if __name__ == '__main__':
     # --------------------------------------INPUT VARIABLES----------------------------------------
     # ---------------------------------------------------------------------------------------------
 
-    parser = argparse.ArgumentParser(description="Arguments for trainning script")
-    parser.add_argument("-c", "--config_file", type=str, default="data_storage_config",
-                        help="If argmument is present, activates gripper")
-
-    args = vars(parser.parse_args())
-
-    f = open(ROOT_DIR + '/data_storage/config/' + args["config_file"] + '.json')
-
+    f = open(ROOT_DIR + '/data_storage/config/data_storage_config.json')
     storage_config = json.load(f)
-
     f.close()
 
     f = open(ROOT_DIR + '/data_storage/config/training_config.json')
-
     trainning_config = json.load(f)
-
     f.close()
 
     # model = keras.models.load_model(NN_DIR + "/feedforward/myModel")
@@ -172,8 +163,6 @@ if __name__ == '__main__':
     pub_force_detection = rospy.Publisher("force_detection", Bool, queue_size=10)
 
     data_for_learning = DataForLearning()
-    # arm_gripper_comm = ArmGripperComm()
-
     rate = rospy.Rate(storage_config["rate"])
 
     time.sleep(0.2) # Waiting time to ros nodes properly initiate
@@ -181,40 +170,20 @@ if __name__ == '__main__':
     # ---------------------------------------------------------------------------------------------
     # -------------------------------INITIATE ROBOT------------------------------------------------
     # ---------------------------------------------------------------------------------------------
-    #
-    # try:
-    #     if args["move_arm_to_inicial_position"]:
-    #         arm_gripper_comm.move_arm_to_initial_pose()
-    #
-    #     if args["activate_gripper"]:
-    #         input("Press ENTER to activate gripper in 3 secs")
-    #         for i in range(0, 3):
-    #             print(i + 1)
-    #             time.sleep(1)
-    #
-    #         arm_gripper_comm.gripper_init()
-    #         time.sleep(1.5)
-    #
-    #         arm_gripper_comm.gripper_close_fast()
-    #         time.sleep(0.5)
-    #
-    #         arm_gripper_comm.gripper_disconnect()
-    # except:
-    #     print("ctrl+C pressed")
+
+    arm = UR10eArm()
+    state = False
+    while not state:
+        state = arm.go_to_joint_state(storage_config["initial_pose"][0], storage_config["initial_pose"][1],
+                                      storage_config["initial_pose"][2], storage_config["initial_pose"][3],
+                                      storage_config["initial_pose"][4], storage_config["initial_pose"][5], 1, 1)
+        time.sleep(0.1)
 
     list_calibration = []
     dic_offset_calibration = {"fx": [], "fy": [], "fz": [], "mx": [],
                               "my": [], "mz": [], "j0": [], "j1": [],
                               "j2": [], "j3": [], "j4": [], "j5": []}
     dic_variable_offset = None
-
-    # print("Calculating rest state variables...")
-    #
-    # for i in range(0, 99):
-    #     list_calibration.append(calc_data_mean(data_for_learning))
-    #     time.sleep(0.005)
-    #
-    # rest_state_mean = np.mean(np.array(list_calibration))
 
     limit = int(storage_config["time"] * storage_config["rate"])
 
@@ -310,8 +279,6 @@ if __name__ == '__main__':
                 # print(data_for_learning)
                 vector_data, first_time_stamp = add_to_vector(data_for_learning,
                                                               vector_data, first_time_stamp, dic_variable_offset, pub_vector)
-                # vector_data, first_time_stamp = add_to_vector(data_for_learning, vector_data, first_time_stamp,
-                #                                               list_filter_idx)
 
                 data_mean = calc_data_mean(data_for_learning, pub_trigger)
                 variance = data_mean - rest_state_mean
@@ -328,6 +295,7 @@ if __name__ == '__main__':
                 rate.sleep()
         except:
             print("ctrl+C pressed")
+            print("Aqui?")
 
         try:
             if end_experiment:
@@ -336,20 +304,19 @@ if __name__ == '__main__':
                 pub_class.publish("None")
             else:
                 sequential_actions = True
-                # print(vector_data)
                 vector_norm = normalize_data(vector_data, limit, trainning_config)
 
-                predictions = model.predict(x=vector_norm, verbose=2)
+                x_sample = np.reshape(vector_norm, (1, limit, 13))
+                x_sample = x_sample[:, :, 1:]
+
+                predictions = model.predict(x=x_sample, verbose=2)
 
                 labels = storage_config["action_classes"]
                 max_idx = np.argmax(list(predictions))
-                print(max_idx)
-                print(predictions[0][int(max_idx)])
-                print(predictions)
                 predicted_label = labels[int(max_idx)]
 
                 vector_data = np.append(vector_data, max_idx)
-                predicted_data_saved = np.append(predicted_data_saved, [vector_data], axis=0)
+                # predicted_data_saved = np.append(predicted_data_saved, [vector_data], axis=0)
                 predictions_saved = np.append(predictions_saved, predictions, axis=0)
                 # print(predicted_data_saved.shape)
                 # print(predictions_saved.shape)
@@ -362,10 +329,10 @@ if __name__ == '__main__':
         except:
             print("ctrl+C pressed")
 
-    data_save_dic = {"data_predicted": predicted_data_saved.tolist(),
-                     "predictions_confidence": predictions_saved.tolist()}
-    json_object = json.dumps(data_save_dic)
-    with open(ROOT_DIR + "/data_storage/data/predicted_learning_data/multi_class_sample.json", "w") as outfile:
-        outfile.write(json_object)
+    # data_save_dic = {"data_predicted": predicted_data_saved.tolist(),
+    #                  "predictions_confidence": predictions_saved.tolist()}
+    # json_object = json.dumps(data_save_dic)
+    # with open(ROOT_DIR + "/data_storage/data/predicted_learning_data/multi_class_sample.json", "w") as outfile:
+    #     outfile.write(json_object)
 
     del data_for_learning

@@ -123,11 +123,6 @@ class UR10eArm(object):
 
 
     def go_to_joint_state(self, joint1, joint2, joint3, joint4, joint5, joint6, vel, a):
-        # Copy class variables to local variables to make the web tutorials more clear.
-        # In practice, you should use the class variables directly unless you have a good
-        # reason not to.
-        move_group = self.move_group
-
         ## BEGIN_SUB_TUTORIAL plan_to_joint_state
         ##
         ## Planning to a Joint Goal
@@ -136,7 +131,7 @@ class UR10eArm(object):
         ## thing we want to do is move it to a slightly better configuration.
         ## We use the constant `tau = 2*pi <https://en.wikipedia.org/wiki/Turn_(angle)#Tau_proposals>`_ for convenience:
         # We get the joint values from the group and change some of the values:
-        joint_goal = move_group.get_current_joint_values()
+        joint_goal = self.move_group.get_current_joint_values()
         joint_goal[0] = joint1
         joint_goal[1] = joint2
         joint_goal[2] = joint3
@@ -145,20 +140,20 @@ class UR10eArm(object):
         joint_goal[5] = joint6  # 1/6 of a turn
         # joint_goal[6] = 0
 
-        move_group.set_max_velocity_scaling_factor(vel)
-        move_group.set_max_acceleration_scaling_factor(a)
+        self.move_group.set_max_velocity_scaling_factor(vel)
+        self.move_group.set_max_acceleration_scaling_factor(a)
 
         # The go command can be called with joint values, poses, or without any
         # parameters if you have already set the pose or joint target for the group
-        move_group.go(joint_goal, wait=True)
+        self.move_group.go(joint_goal, wait=True)
 
         # Calling ``stop()`` ensures that there is no residual movement
-        move_group.stop()
+        self.move_group.stop()
 
         ## END_SUB_TUTORIAL
 
         # # For testing:
-        current_joints = move_group.get_current_joint_values()
+        current_joints = self.move_group.get_current_joint_values()
         return all_close(joint_goal, current_joints, 0.01)
 
 
@@ -166,8 +161,6 @@ class UR10eArm(object):
         """
         Go to a certain pose goal described by a quaternion tf from 'world' to the end-effector 'tool0'
         """
-        move_group = self.move_group
-
         ## Planning to a Pose Goal
         ## ^^^^^^^^^^^^^^^^^^^^^^^
         ## We can plan a motion for this group to a desired pose for the end-effector:
@@ -181,16 +174,16 @@ class UR10eArm(object):
         pose_goal.position.y = trans_y
         pose_goal.position.z = trans_z
 
-        move_group.set_max_velocity_scaling_factor(vel)
-        move_group.set_max_acceleration_scaling_factor(a)
+        self.move_group.set_max_velocity_scaling_factor(vel)
+        self.move_group.set_max_acceleration_scaling_factor(a)
 
         ## Now, we call the planner to compute the plan and execute it.
-        plan = move_group.go(pose_goal, wait=True)
+        plan = self.move_group.go(pose_goal, wait=True)
         # Calling `stop()` ensures that there is no residual movement
-        move_group.stop()
+        self.move_group.stop()
         # It is always good to clear your targets after planning with poses.
         # Note: there is no equivalent function for clear_joint_value_targets()
-        move_group.clear_pose_targets()
+        self.move_group.clear_pose_targets()
 
         # For testing:
         # Note that since this section of code will not be included in the tutorials
@@ -224,3 +217,16 @@ class UR10eArm(object):
         display_trajectory_publisher.publish(display_trajectory)
 
         ## END_SUB_TUTORIAL
+
+    def get_current_pose(self):
+        current_pose = self.move_group.get_current_pose().pose
+        return current_pose
+
+    def get_current_joint_values(self):
+        current_joints = self.move_group.get_current_joint_values()
+        return current_joints
+
+    def move_arm_to_initial_pose(self):
+        state = self.go_to_joint_state(0.01725006103515625, -1.9415461025633753, 1.8129728476153772, -1.5927173099913539,
+                                      -1.5878670851336878, 0.03150486946105957, 1, 1)
+        return state

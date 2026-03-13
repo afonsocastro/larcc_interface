@@ -76,6 +76,8 @@ sudo apt-get install ros-noetic-pass-through-controllers
 sudo apt-get install ros-noetic-ur-client-library
 sudo apt-get install ros-noetic-velocity-controllers
 sudo apt-get install ros-noetic-force-torque-sensor-controller
+sudo apt-get install ros-noetic-ur-dashboard-msgs
+sudo apt-get install ros-noetic-ur-msgs
 sudo apt-get install socat
 ```
 (**Note:** At this moment, if you do not have a catkin workspace, you should now create one, by following the steps described [here](http://wiki.ros.org/catkin/Tutorials/create_a_workspace))
@@ -85,7 +87,6 @@ After all these installations, on your catkin workspace you need to clone this r
 ```
 cd catkin_ws/src
 git clone https://github.com/afonsocastro/larcc_interface.git
-git clone https://github.com/ros-industrial/ur_msgs.git
 # git clone https://github.com/ros-industrial/robotiq.git (not needed anymore)
 ```
 

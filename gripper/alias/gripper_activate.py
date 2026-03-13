@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 
-# from larcc_classes.gripper.RobotiqHand import RobotiqHand
-from RobotiqHand import RobotiqHand
+from larcc_classes.gripper.RobotiqHand import RobotiqHand
 
 HOST = "192.168.56.2"
 PORT = 54321
