@@ -16,9 +16,9 @@ class FulltimeData:
 
         self.actions = ["PUXAR", "EMPURRAR", "ABANAR", "TORCER"]
 
-        self.vector_data = []
-        self.current_class = None
-        self.recording = False
+        self.vector_data = np.empty((0, 14))
+        # self.current_class = None
+        # self.recording = False
         self.first_time_stamp = None
 
         time.sleep(0.2)
@@ -63,7 +63,7 @@ class FulltimeData:
 
         # ---------------- DATA ACQUISITION LOOP ----------------
 
-        self.acquire_loop()
+        # self.acquire_loop()
 
     # ------------------------------------------------------------
 
@@ -71,18 +71,18 @@ class FulltimeData:
 
         classification = msg.data.upper()
 
-        if classification == "START":
-            print("START RECORDING")
-            self.vector_data = []
-            self.first_time_stamp = None
-            self.recording = True
-            return
+        # if classification == "START":
+        #     print("START RECORDING")
+        #     self.vector_data = []
+        #     self.first_time_stamp = None
+        #     self.recording = True
+        #     return
 
         if classification == "END":
 
             print("END RECORDING")
 
-            self.recording = False
+            # self.recording = False
 
             save_experiment = input("Save data? (s/n) ")
 
@@ -95,20 +95,21 @@ class FulltimeData:
             return
 
         if classification in self.actions:
-            self.current_class = self.actions.index(classification)
+            # self.current_class = self.actions.index(classification)
+            self.add_to_vector(self.actions.index(classification))
 
     # ------------------------------------------------------------
 
-    def acquire_loop(self):
-
-        rate = rospy.Rate(100)
-
-        while not rospy.is_shutdown():
-
-            if self.recording and self.current_class is not None:
-                self.add_to_vector(self.current_class)
-
-            rate.sleep()
+    # def acquire_loop(self):
+    #
+    #     rate = rospy.Rate(100)
+    #
+    #     while not rospy.is_shutdown():
+    #
+    #         if self.recording and self.current_class is not None:
+    #             self.add_to_vector(self.current_class)
+    #
+    #         rate.sleep()
 
     # ------------------------------------------------------------
 
@@ -122,7 +123,7 @@ class FulltimeData:
         else:
             timestamp = data.timestamp() - self.first_time_stamp
 
-        new_data = [
+        new_data = np.array([
             timestamp,
             data.joints_effort[0] - self.dic_offset["j0"],
             data.joints_effort[1] - self.dic_offset["j1"],
@@ -137,9 +138,10 @@ class FulltimeData:
             data.wrench_force_torque.torque.y - self.dic_offset["my"],
             data.wrench_force_torque.torque.z - self.dic_offset["mz"],
             class_int
-        ]
+        ])
 
-        self.vector_data.append(new_data)
+        # self.vector_data.append(new_data)
+        self.vector_data = np.append(self.vector_data, [new_data], axis=0)
 
     # ------------------------------------------------------------
 
@@ -159,12 +161,15 @@ class FulltimeData:
         filepath = "data/raw_learning_data.npy"
 
         if os.path.exists(filepath):
-
             prev_data = np.load(filepath, allow_pickle=True)
-            new_data = np.concatenate((prev_data, [data]), axis=0)
-
+            print("prev_data.shape")
+            print(prev_data.shape)
+            print("data.shape")
+            print(data.shape)
+            # new_data = np.concatenate((prev_data, [data]), axis=0)
+            new_data = np.append(prev_data, [data], axis=0)
+            # np.save(filepath, data)
         else:
-
             new_data = np.array([data])
 
         np.save(filepath, new_data)
