@@ -3,7 +3,7 @@
   "force_threshold_start": 0.2,
   "force_threshold_end": 0.075,
   "threshold_counter_limit": 4,
-  "time": 60,
+  "time": 15,
   "rate": 100.0,
   "waiting_offset": 0.2,
   "data" : ["timestamp", "joint_ef0", "jointe_ef1", "joint_ef2", "jointe_ef3",
