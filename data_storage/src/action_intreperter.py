@@ -7,6 +7,7 @@ import time
 from colorama import Fore
 from matplotlib import pyplot as plt
 from tensorflow import keras
+from keras_nlp.layers import SinePositionEncoding, TransformerEncoder
 from std_msgs.msg import String, Float64MultiArray, Float64, Bool
 from larcc_classes.data_storage.DataForLearning import DataForLearning
 from larcc_classes.arm.UR10eArm import UR10eArm
@@ -32,7 +33,12 @@ def print_tabulate(label, real_time_predictions):
         print("\n")
 
 
-def normalize_data(vector, measurements, train_config):
+def normalize_data(vector, measurements, train_config, clusters_max_min):
+
+    data_max_timestamp = abs(max(clusters_max_min["timestamp"]["max"], clusters_max_min["timestamp"]["min"], key=abs))
+    data_max_joints = abs(max(clusters_max_min["joints"]["max"], clusters_max_min["joints"]["min"], key=abs))
+    data_max_gripper_F = abs(max(clusters_max_min["gripper_F"]["max"], clusters_max_min["gripper_F"]["min"], key=abs))
+    data_max_gripper_M = abs(max(clusters_max_min["gripper_M"]["max"], clusters_max_min["gripper_M"]["min"], key=abs))
 
     data_array = np.reshape(vector, (measurements, int(len(vector) / measurements)))
     data_array_norm = np.empty((data_array.shape[0], 0))
@@ -40,19 +46,20 @@ def normalize_data(vector, measurements, train_config):
     idx = 0
     for n in train_config["normalization_clusters"]:
         data_sub_array = data_array[:, idx:idx + n]
+
+        if idx == 0:
+            data_sub_array_norm = data_sub_array / data_max_timestamp
+        elif idx == 1:
+            data_sub_array_norm = data_sub_array / data_max_joints
+        elif idx == 7:
+            data_sub_array_norm = data_sub_array / data_max_gripper_F
+        elif idx == 10:
+            data_sub_array_norm = data_sub_array / data_max_gripper_M
+
         idx += n
-
-        data_max = abs(max(data_sub_array.min(), data_sub_array.max(), key=abs))
-
-        data_sub_array_norm = data_sub_array / data_max
         data_array_norm = np.hstack((data_array_norm, data_sub_array_norm))
 
     vector_data_norm = np.reshape(data_array_norm, (1, vector.shape[0]))
-
-    # data_array = np.reshape(vector, (measurements, int(len(vector) / measurements)))
-    # experiment_array_norm = normalize(data_array, axis=0, norm='max')
-    #
-    # vector_data_norm = np.reshape(experiment_array_norm, (1, vector.shape[0]))
 
     return vector_data_norm
 
@@ -144,8 +151,13 @@ if __name__ == '__main__':
     trainning_config = json.load(f)
     f.close()
 
-    # model = keras.models.load_model(NN_DIR + "/feedforward/myModel")
-    model = keras.models.load_model(ROOT_DIR + "/data_storage/models/cnn_v1_1.keras")
+    f = open(ROOT_DIR + '/data_storage/src/clusters_max_min.json')
+    clusters_max_min = json.load(f)
+    f.close()
+
+    # model = keras.models.load_model(ROOT_DIR + "/data_storage/models/cnn_v1_1.keras")
+    model = keras.models.load_model(ROOT_DIR + "/data_storage/models/transformer_v1_1.keras",
+        custom_objects={"SinePositionEncoding": SinePositionEncoding, "TransformerEncoder": TransformerEncoder},compile=False)
 
     # ---------------------------------------------------------------------------------------------
     # -------------------------------INITIATE COMMUNICATION----------------------------------------
@@ -297,37 +309,37 @@ if __name__ == '__main__':
             print("ctrl+C pressed")
             print("Aqui?")
 
-        try:
-            if end_experiment:
-                sequential_actions = False
-                print("\nNot enough for prediction\n")
-                pub_class.publish("None")
-            else:
-                sequential_actions = True
-                vector_norm = normalize_data(vector_data, limit, trainning_config)
+        # try:
+        if end_experiment:
+            sequential_actions = False
+            print("\nNot enough for prediction\n")
+            pub_class.publish("None")
+        else:
+            sequential_actions = True
+            vector_norm = normalize_data(vector_data, limit, trainning_config, clusters_max_min)
 
-                x_sample = np.reshape(vector_norm, (1, limit, 13))
-                x_sample = x_sample[:, :, 1:]
+            x_sample = np.reshape(vector_norm, (1, limit, 13))
+            x_sample = x_sample[:, :, 1:]
 
-                predictions = model.predict(x=x_sample, verbose=2)
+            predictions = model.predict(x=x_sample, verbose=2)
 
-                labels = storage_config["action_classes"]
-                max_idx = np.argmax(list(predictions))
-                predicted_label = labels[int(max_idx)]
+            labels = storage_config["action_classes"]
+            max_idx = np.argmax(list(predictions))
+            predicted_label = labels[int(max_idx)]
 
-                vector_data = np.append(vector_data, max_idx)
-                # predicted_data_saved = np.append(predicted_data_saved, [vector_data], axis=0)
-                predictions_saved = np.append(predictions_saved, predictions, axis=0)
-                # print(predicted_data_saved.shape)
-                # print(predictions_saved.shape)
+            vector_data = np.append(vector_data, max_idx)
+            # predicted_data_saved = np.append(predicted_data_saved, [vector_data], axis=0)
+            predictions_saved = np.append(predictions_saved, predictions, axis=0)
+            # print(predicted_data_saved.shape)
+            # print(predictions_saved.shape)
 
-                pub_class.publish(predicted_label + " " + str(round(float(predictions[0][int(max_idx)] * 100), 2)) + "%")
+            pub_class.publish(predicted_label + " " + str(round(float(predictions[0][int(max_idx)] * 100), 2)) + "%")
 
-                print("-----------------------------------------------------------")
-                print_tabulate(predicted_label, predictions)
-                print("-----------------------------------------------------------")
-        except:
-            print("ctrl+C pressed")
+            print("-----------------------------------------------------------")
+            print_tabulate(predicted_label, predictions)
+            print("-----------------------------------------------------------")
+        # except:
+        #     print("ctrl+C pressed")
 
     # data_save_dic = {"data_predicted": predicted_data_saved.tolist(),
     #                  "predictions_confidence": predictions_saved.tolist()}
