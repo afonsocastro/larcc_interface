@@ -14,7 +14,8 @@ class FulltimeData:
 
         self.data_for_learning = DataForLearning()
 
-        self.actions = ["PUXAR", "EMPURRAR", "ABANAR", "TORCER"]
+        # self.actions = ["PUXAR", "EMPURRAR", "ABANAR", "TORCER"]
+        self.actions = ["PULL", "PUSH", "SHAKE", "TWIST"]
 
         self.vector_data = np.empty((0, 14))
         # self.current_class = None

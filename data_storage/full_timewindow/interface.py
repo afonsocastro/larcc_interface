@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import time
 import tkinter as tk
 from tkinter import messagebox
 from datetime import timedelta
@@ -8,7 +9,6 @@ import numpy as np
 import random
 import rospy
 from std_msgs.msg import String
-from pygame import mixer
 from config.definitions import ROOT_DIR
 
 
@@ -48,19 +48,18 @@ if __name__ == '__main__':
     root = tk.Tk()
     root.title("Guide")
     root.geometry("1920x1080")
-    mixer.init()
-    sound = mixer.Sound(ROOT_DIR + "/data_storage/full_timewindow/beep-07a.wav")
+    # mixer.init()
+    # sound = mixer.Sound(ROOT_DIR + "/data_storage/full_timewindow/beep-07a.wav")
 
-    primitives = ["PUXAR", "EMPURRAR", "ABANAR", "TORCER"]
+    primitives = ["PULL", "PUSH", "SHAKE", "TWIST"]
+    # primitives = ["PUXAR", "EMPURRAR", "ABANAR", "TORCER"]
     xtime = 15
     min_t = 3
     max_t = 6
 
     Stamp = namedtuple("Stamp", "time primitive")
-
     times = generate_times(xtime, min_t, max_t)
     prims = generate_primitives(len(times), primitives)
-
     experiment = [Stamp(t, p) for t, p in zip(times, prims)]
 
     print("experiment")
@@ -131,8 +130,8 @@ if __name__ == '__main__':
             str_temp.set(str(timedelta(seconds=int(temp))))
             str_time.set(str(timedelta(seconds=int(xtime))))
             if int(temp) < 2:
-                if (temp - int(temp)) < 0.1:
-                    sound.play()
+                # if (temp - int(temp)) < 0.1:
+                    # sound.play()
                 if i < len(experiment) - 1:
                     str_next_primitive.set(experiment[i+1].primitive)
                     # label_str.config(font=("Arial", 80))
@@ -142,4 +141,5 @@ if __name__ == '__main__':
                 primitive_timer.config(fg="darkgreen")
 
             root.update()
+            time.sleep(0.01)
     root.mainloop()
